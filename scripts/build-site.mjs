@@ -138,9 +138,10 @@ async function main() {
 
   // Copy root index.html (the SPA) so the SPA is served at /
   const rootIndexHtml = path.join(projectRoot, 'index.html');
-  if (await exists(rootIndexHtml)) {
-    await copyFile(rootIndexHtml, path.join(outputDir, 'index.html'));
+  if (!(await exists(rootIndexHtml))) {
+    throw new Error(`Missing SPA entrypoint at ${rootIndexHtml}`);
   }
+  await copyFile(rootIndexHtml, path.join(outputDir, 'index.html'));
 
   // Copy sw.js for service worker support
   const swSrc = path.join(projectRoot, 'sw.js');
