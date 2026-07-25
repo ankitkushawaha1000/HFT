@@ -165,7 +165,7 @@
     "title": "7-Day Emergency Study Plan",
     "topic": "study-plans",
     "path": "content/study-plans/7-day-emergency-plan.md",
-    "excerpt": "This is not a \u201clearn everything\u201d schedule. It is a triage plan. Your objective is to get interview-ready fast enough that your strongest capabilities "
+    "excerpt": "This is not a “learn everything” schedule. It is a triage plan. Your objective is to get interview-ready fast enough that your strongest capabilities "
   },
   {
     "id": "study-plans-interview-day-checklist",
@@ -221,7 +221,7 @@
     "title": "Atomics and Lock-Free Programming",
     "topic": "cpp",
     "path": "content/cpp/atomics-and-lock-free.md",
-    "excerpt": "Atomics are the foundation of low-level concurrency in C++. Senior interviews at trading firms often probe whether you can distinguish \u201catomic,\u201d \u201clock"
+    "excerpt": "Atomics are the foundation of low-level concurrency in C++. Senior interviews at trading firms often probe whether you can distinguish “atomic,” “lock"
   },
   {
     "id": "cpp-compilation-linking-abi",
@@ -285,7 +285,7 @@
     "title": "Object Lifetime",
     "topic": "cpp",
     "path": "content/cpp/object-lifetime.md",
-    "excerpt": "Object lifetime is one of the most important and most misunderstood parts of C++. In interview settings, many \u201ctrick\u201d questions are really about disti"
+    "excerpt": "Object lifetime is one of the most important and most misunderstood parts of C++. In interview settings, many “trick” questions are really about disti"
   },
   {
     "id": "cpp-performance",
@@ -317,7 +317,7 @@
     "title": "Undefined Behavior",
     "topic": "cpp",
     "path": "content/cpp/undefined-behavior.md",
-    "excerpt": "Undefined behavior is not merely \u201cthe program may crash.\u201d It means the C++ standard imposes no requirements on the program's behavior after the violat"
+    "excerpt": "Undefined behavior is not merely “the program may crash.” It means the C++ standard imposes no requirements on the program's behavior after the violat"
   },
   {
     "id": "cpp-value-categories",
@@ -325,7 +325,7 @@
     "title": "Value Categories",
     "topic": "cpp",
     "path": "content/cpp/value-categories.md",
-    "excerpt": "Value categories explain overload resolution, move semantics, perfect forwarding, and many \u201cwhy did the compiler choose that overload?\u201d questions. The"
+    "excerpt": "Value categories explain overload resolution, move semantics, perfect forwarding, and many “why did the compiler choose that overload?” questions. The"
   },
   {
     "id": "systems-cpu-cache-and-numa",
@@ -621,7 +621,7 @@
     "title": "Full Loop Simulation (4 Hours)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/full-loop-simulation.md",
-    "excerpt": "| 00:00-00:30 | Interview 1 \u2014 Recruiter screen | Establish narrative, motivation, logistics fit |"
+    "excerpt": "| 00:00-00:30 | Interview 1 — Recruiter screen | Establish narrative, motivation, logistics fit |"
   },
   {
     "id": "mock-interview-guide",
@@ -637,7 +637,7 @@
     "title": "Optiver Behavioral Interview Simulation (45 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/optiver-behavioral-45min.md",
-    "excerpt": "This interview is not a generic \u201ctell me about yourself\u201d round. It is designed to test whether you would operate well in an environment that is:"
+    "excerpt": "This interview is not a generic “tell me about yourself” round. It is designed to test whether you would operate well in an environment that is:"
   },
   {
     "id": "mock-interviews-optiver-behavioral-60min",
@@ -653,7 +653,7 @@
     "title": "Recruiter Screen Simulation 01 (30 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/recruiter-screen-01.md",
-    "excerpt": "- 0:00-2:00 \u2014 Introductions and agenda"
+    "excerpt": "- 0:00-2:00 — Introductions and agenda"
   },
   {
     "id": "mock-interviews-senior-cpp-60min",
@@ -661,7 +661,7 @@
     "title": "Senior C++ Technical Interview Simulation (60 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/senior-cpp-60min.md",
-    "excerpt": "- 0:00-5:00 \u2014 Intro and calibration"
+    "excerpt": "- 0:00-5:00 — Intro and calibration"
   },
   {
     "id": "mock-interviews-system-design-60min",
@@ -669,7 +669,7 @@
     "title": "System Design Interview Simulation (60 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/system-design-60min.md",
-    "excerpt": "- 0:00-5:00 \u2014 Requirements clarification"
+    "excerpt": "- 0:00-5:00 — Requirements clarification"
   },
   {
     "id": "coding-algorithms",
@@ -718,5 +718,1613 @@
     "topic": "coding",
     "path": "content/coding/implementation-exercises.md",
     "excerpt": "These exercises are representative of the implementation-heavy questions that appear in HFT interviews. The goal is not always to finish every line of"
+  },
+  {
+    "id": "companies-overview",
+    "route": "companies",
+    "title": "Companies Interview Process Overview",
+    "topic": "companies",
+    "path": "content/companies/README.md",
+    "excerpt": "A per-company breakdown of the interview process for **HFT / quant trading firms** and **top-paying employers of C++ engineers**, with a separate folder for ..."
+  },
+  {
+    "id": "companies-optiver-overview",
+    "route": "companies/optiver",
+    "title": "Optiver — Overview",
+    "topic": "companies",
+    "path": "content/companies/optiver/README.md",
+    "excerpt": "Educational guide to Optiver's reported software-engineering interview process for market-making and trading-systems roles."
+  },
+  {
+    "id": "companies-optiver-round-01-recruiter-screen",
+    "route": "companies/optiver/round-01-recruiter-screen",
+    "title": "Optiver — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/optiver/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Career story clarity, motivation for Optiver, level calibration, logistics, and culture-fit signals for a direct, high-performa..."
+  },
+  {
+    "id": "companies-optiver-round-02-online-assessment",
+    "route": "companies/optiver/round-02-online-assessment",
+    "title": "Optiver — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/optiver/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Coding fluency under time pressure, CS fundamentals, ambiguous or longer-form problem solving, and occasionally reasoning or lo..."
+  },
+  {
+    "id": "companies-optiver-round-03-live-video-technical-interviews",
+    "route": "companies/optiver/round-03-live-video-technical-interviews",
+    "title": "Optiver — Round 03 — Live Video Technical Interviews",
+    "topic": "companies",
+    "path": "content/companies/optiver/round-03-live-video-technical-interviews/questions.md",
+    "excerpt": "**What this round assesses:** Live coding/debugging, C++ depth, system design, requirements clarification, edge-case reasoning, runtime/memory awareness, and..."
+  },
+  {
+    "id": "companies-optiver-round-04-final-superday",
+    "route": "companies/optiver/round-04-final-superday",
+    "title": "Optiver — Round 04 — Final Superday",
+    "topic": "companies",
+    "path": "content/companies/optiver/round-04-final-superday/questions.md",
+    "excerpt": "**What this round assesses:** Seniority calibration, values alignment, production ownership, breadth across systems/reliability/collaboration, and sustained ..."
+  },
+  {
+    "id": "companies-citadel-securities-overview",
+    "route": "companies/citadel-securities",
+    "title": "Citadel Securities — Overview",
+    "topic": "companies",
+    "path": "content/companies/citadel-securities/README.md",
+    "excerpt": "Educational guide to Citadel Securities' reported software-engineering interview process for market-making and infrastructure roles."
+  },
+  {
+    "id": "companies-citadel-securities-round-01-recruiter-screen",
+    "route": "companies/citadel-securities/round-01-recruiter-screen",
+    "title": "Citadel Securities — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/citadel-securities/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Basic fit, background, motivation for Citadel Securities, level calibration, compensation range alignment, and logistics."
+  },
+  {
+    "id": "companies-citadel-securities-round-02-online-assessment",
+    "route": "companies/citadel-securities/round-02-online-assessment",
+    "title": "Citadel Securities — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/citadel-securities/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding under timed conditions, with emphasis on data structures, algorithms, and sometimes light system-design awar..."
+  },
+  {
+    "id": "companies-citadel-securities-round-03-technical-phone-screens",
+    "route": "companies/citadel-securities/round-03-technical-phone-screens",
+    "title": "Citadel Securities — Round 03 — Technical Phone Screens",
+    "topic": "companies",
+    "path": "content/companies/citadel-securities/round-03-technical-phone-screens/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, C++ and systems depth, low-latency tradeoffs, and reasoning while coding in a shared editor."
+  },
+  {
+    "id": "companies-citadel-securities-round-04-superday-final-onsite",
+    "route": "companies/citadel-securities/round-04-superday-final-onsite",
+    "title": "Citadel Securities — Round 04 — Superday Final Onsite",
+    "topic": "companies",
+    "path": "content/companies/citadel-securities/round-04-superday-final-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Algorithms, C++ and systems depth, system design, production judgment, and behavioral fit."
+  },
+  {
+    "id": "companies-jane-street-overview",
+    "route": "companies/jane-street",
+    "title": "Jane Street — Overview",
+    "topic": "companies",
+    "path": "content/companies/jane-street/README.md",
+    "excerpt": "Educational guide to Jane Street's reported software-engineering interview process, emphasizing its official collaborative interview style."
+  },
+  {
+    "id": "companies-jane-street-round-01-recruiter-initial-screen",
+    "route": "companies/jane-street/round-01-recruiter-initial-screen",
+    "title": "Jane Street — Round 01 — Recruiter Initial Screen",
+    "topic": "companies",
+    "path": "content/companies/jane-street/round-01-recruiter-initial-screen/questions.md",
+    "excerpt": "**What this round assesses:** Interest in Jane Street's collaborative, intellectually curious culture; background fit; location logistics; and whether to pro..."
+  },
+  {
+    "id": "companies-jane-street-round-02-technical-phone-screens",
+    "route": "companies/jane-street/round-02-technical-phone-screens",
+    "title": "Jane Street — Round 02 — Technical Phone Screens",
+    "topic": "companies",
+    "path": "content/companies/jane-street/round-02-technical-phone-screens/questions.md",
+    "excerpt": "**What this round assesses:** Collaborative live coding, problem solving, communication, clarifying questions, and how the candidate thinks through problems."
+  },
+  {
+    "id": "companies-jane-street-round-03-superday-onsite",
+    "route": "companies/jane-street/round-03-superday-onsite",
+    "title": "Jane Street — Round 03 — Superday Onsite",
+    "topic": "companies",
+    "path": "content/companies/jane-street/round-03-superday-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Coding, system design, behavioral fit, collaborative problem solving, abstraction, decomposition, and reasoning out loud."
+  },
+  {
+    "id": "companies-hudson-river-trading-overview",
+    "route": "companies/hudson-river-trading",
+    "title": "Hudson River Trading (HRT) — Overview",
+    "topic": "companies",
+    "path": "content/companies/hudson-river-trading/README.md",
+    "excerpt": "Educational guide to Hudson River Trading's reported software-engineering interview process for automated trading systems roles."
+  },
+  {
+    "id": "companies-hudson-river-trading-round-01-recruiter-initial-screen",
+    "route": "companies/hudson-river-trading/round-01-recruiter-initial-screen",
+    "title": "Hudson River Trading (HRT) — Round 01 — Recruiter Initial Screen",
+    "topic": "companies",
+    "path": "content/companies/hudson-river-trading/round-01-recruiter-initial-screen/questions.md",
+    "excerpt": "**What this round assesses:** Interest in HRT's automated-trading systems work, systems-engineering background, and cultural fit for a flat, collaborative, i..."
+  },
+  {
+    "id": "companies-hudson-river-trading-round-02-technical-phone-screens",
+    "route": "companies/hudson-river-trading/round-02-technical-phone-screens",
+    "title": "Hudson River Trading (HRT) — Round 02 — Technical Phone Screens",
+    "topic": "companies",
+    "path": "content/companies/hudson-river-trading/round-02-technical-phone-screens/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, CS fundamentals, algorithms, software engineering depth, C++, Linux, and systems topics."
+  },
+  {
+    "id": "companies-hudson-river-trading-round-03-onsite-final-round",
+    "route": "companies/hudson-river-trading/round-03-onsite-final-round",
+    "title": "Hudson River Trading (HRT) — Round 03 — Onsite Final Round",
+    "topic": "companies",
+    "path": "content/companies/hudson-river-trading/round-03-onsite-final-round/questions.md",
+    "excerpt": "**What this round assesses:** Software engineering, algorithms, system design, C++/systems depth, experienced-candidate design judgment, and behavioral/cultu..."
+  },
+  {
+    "id": "companies-jump-trading-overview",
+    "route": "companies/jump-trading",
+    "title": "Jump Trading — Overview",
+    "topic": "companies",
+    "path": "content/companies/jump-trading/README.md",
+    "excerpt": "Educational guide to Jump Trading's reported software-engineering interview process for proprietary trading, systems, and low-latency roles."
+  },
+  {
+    "id": "companies-jump-trading-round-01-recruiter-screen",
+    "route": "companies/jump-trading/round-01-recruiter-screen",
+    "title": "Jump Trading — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/jump-trading/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Fit, background, motivation, systems-building mindset, and exposure to low-latency, networking, or FPGA work."
+  },
+  {
+    "id": "companies-jump-trading-round-02-online-assessment",
+    "route": "companies/jump-trading/round-02-online-assessment",
+    "title": "Jump Trading — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/jump-trading/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Timed algorithmic coding, data-structure implementation, and occasionally role-dependent networking/protocol simulation."
+  },
+  {
+    "id": "companies-jump-trading-round-03-technical-phone-screens",
+    "route": "companies/jump-trading/round-03-technical-phone-screens",
+    "title": "Jump Trading — Round 03 — Technical Phone Screens",
+    "topic": "companies",
+    "path": "content/companies/jump-trading/round-03-technical-phone-screens/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, systems depth, low-level C++ reasoning, and concepts from the lowest levels of the stack."
+  },
+  {
+    "id": "companies-jump-trading-round-04-onsite-final-round",
+    "route": "companies/jump-trading/round-04-onsite-final-round",
+    "title": "Jump Trading — Round 04 — Onsite Final Round",
+    "topic": "companies",
+    "path": "content/companies/jump-trading/round-04-onsite-final-round/questions.md",
+    "excerpt": "**What this round assesses:** Algorithms, C++ depth, systems design, networking/hardware awareness, collaboration between researchers and engineers, and beha..."
+  },
+  {
+    "id": "companies-two-sigma-overview",
+    "route": "companies/two-sigma",
+    "title": "Two Sigma — Overview",
+    "topic": "companies",
+    "path": "content/companies/two-sigma/README.md",
+    "excerpt": "Educational prep guide for publicly reported Two Sigma software engineering interviews."
+  },
+  {
+    "id": "companies-two-sigma-round-01-recruiter-screen",
+    "route": "companies/two-sigma/round-01-recruiter-screen",
+    "title": "Two Sigma — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/two-sigma/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, team fit, expectations, communication, and basic motivation."
+  },
+  {
+    "id": "companies-two-sigma-round-02-online-assessment",
+    "route": "companies/two-sigma/round-02-online-assessment",
+    "title": "Two Sigma — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/two-sigma/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic problem solving, coding fluency, and standard data-structure knowledge."
+  },
+  {
+    "id": "companies-two-sigma-round-03-technical-phone-screen",
+    "route": "companies/two-sigma/round-03-technical-phone-screen",
+    "title": "Two Sigma — Round 03 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/two-sigma/round-03-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, data structures, CS fundamentals, and ability to reason about complexity and trade-offs."
+  },
+  {
+    "id": "companies-two-sigma-round-04-onsite-virtual-onsite",
+    "route": "companies/two-sigma/round-04-onsite-virtual-onsite",
+    "title": "Two Sigma — Round 04 — Onsite Virtual Onsite",
+    "topic": "companies",
+    "path": "content/companies/two-sigma/round-04-onsite-virtual-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Advanced algorithms, deep C++/systems knowledge, distributed/system design, probability/statistics, and behavioral fit."
+  },
+  {
+    "id": "companies-imc-trading-overview",
+    "route": "companies/imc-trading",
+    "title": "IMC Trading — Overview",
+    "topic": "companies",
+    "path": "content/companies/imc-trading/README.md",
+    "excerpt": "Educational prep guide for publicly reported IMC Trading software engineering interviews."
+  },
+  {
+    "id": "companies-imc-trading-round-01-recruiter-screen",
+    "route": "companies/imc-trading/round-01-recruiter-screen",
+    "title": "IMC Trading — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/imc-trading/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, role fit, C++ experience, trading interest, and location/logistics fit."
+  },
+  {
+    "id": "companies-imc-trading-round-02-online-assessment",
+    "route": "companies/imc-trading/round-02-online-assessment",
+    "title": "IMC Trading — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/imc-trading/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Coding fluency, algorithms, data structures, and simulation-style reasoning."
+  },
+  {
+    "id": "companies-imc-trading-round-03-technical-phone-screens",
+    "route": "companies/imc-trading/round-03-technical-phone-screens",
+    "title": "IMC Trading — Round 03 — Technical Phone Screens",
+    "topic": "companies",
+    "path": "content/companies/imc-trading/round-03-technical-phone-screens/questions.md",
+    "excerpt": "**What this round assesses:** Algorithms/data structures in one screen and C++/systems fluency in another."
+  },
+  {
+    "id": "companies-imc-trading-round-04-onsite-virtual-onsite",
+    "route": "companies/imc-trading/round-04-onsite-virtual-onsite",
+    "title": "IMC Trading — Round 04 — Onsite Virtual Onsite",
+    "topic": "companies",
+    "path": "content/companies/imc-trading/round-04-onsite-virtual-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Advanced algorithms, C++ systems, probability, market-making intuition, Bayesian updating, risk management, and behavioral fit."
+  },
+  {
+    "id": "companies-drw-overview",
+    "route": "companies/drw",
+    "title": "DRW — Overview",
+    "topic": "companies",
+    "path": "content/companies/drw/README.md",
+    "excerpt": "Educational prep guide for publicly reported DRW software engineering interviews."
+  },
+  {
+    "id": "companies-drw-round-01-recruiter-screen",
+    "route": "companies/drw/round-01-recruiter-screen",
+    "title": "DRW — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/drw/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Motivation for DRW/proprietary trading, low-latency or systems exposure, background, and logistics."
+  },
+  {
+    "id": "companies-drw-round-02-technical-phone-screen-algorithms",
+    "route": "companies/drw/round-02-technical-phone-screen-algorithms",
+    "title": "DRW — Round 02 — Technical Phone Screen Algorithms",
+    "topic": "companies",
+    "path": "content/companies/drw/round-02-technical-phone-screen-algorithms/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding, data structures, and domain-flavored problem solving."
+  },
+  {
+    "id": "companies-drw-round-03-technical-phone-screen-cpp-systems",
+    "route": "companies/drw/round-03-technical-phone-screen-cpp-systems",
+    "title": "DRW — Round 03 — Technical Phone Screen C++ Systems",
+    "topic": "companies",
+    "path": "content/companies/drw/round-03-technical-phone-screen-cpp-systems/questions.md",
+    "excerpt": "**What this round assesses:** Deep C++, Linux systems, concurrency, memory, networking, and performance concepts."
+  },
+  {
+    "id": "companies-drw-round-04-onsite",
+    "route": "companies/drw/round-04-onsite",
+    "title": "DRW — Round 04 — Onsite",
+    "topic": "companies",
+    "path": "content/companies/drw/round-04-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Systems coding, deep C++ internals, low-latency infrastructure design, debugging/profiling, and team fit."
+  },
+  {
+    "id": "companies-tower-research-capital-overview",
+    "route": "companies/tower-research-capital",
+    "title": "Tower Research Capital — Overview",
+    "topic": "companies",
+    "path": "content/companies/tower-research-capital/README.md",
+    "excerpt": "Educational prep guide for publicly reported Tower Research Capital software engineering interviews."
+  },
+  {
+    "id": "companies-tower-research-capital-round-01-recruiter-screen",
+    "route": "companies/tower-research-capital/round-01-recruiter-screen",
+    "title": "Tower Research Capital — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/tower-research-capital/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** C++ depth, low-latency background, motivation for Tower/HFT, and logistics."
+  },
+  {
+    "id": "companies-tower-research-capital-round-02-technical-phone-screen",
+    "route": "companies/tower-research-capital/round-02-technical-phone-screen",
+    "title": "Tower Research Capital — Round 02 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/tower-research-capital/round-02-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** C++17, concurrency, low-latency reasoning, live coding, and algorithms."
+  },
+  {
+    "id": "companies-tower-research-capital-round-03-onsite",
+    "route": "companies/tower-research-capital/round-03-onsite",
+    "title": "Tower Research Capital — Round 03 — Onsite",
+    "topic": "companies",
+    "path": "content/companies/tower-research-capital/round-03-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Hard algorithms, extreme C++ performance engineering, low-latency trading systems design, probability/math, and hardware-aware ..."
+  },
+  {
+    "id": "companies-sig-susquehanna-overview",
+    "route": "companies/sig-susquehanna",
+    "title": "SIG (Susquehanna) — Overview",
+    "topic": "companies",
+    "path": "content/companies/sig-susquehanna/README.md",
+    "excerpt": "Educational prep guide for publicly reported SIG technology and software engineering interviews."
+  },
+  {
+    "id": "companies-sig-susquehanna-round-01-recruiter-screen",
+    "route": "companies/sig-susquehanna/round-01-recruiter-screen",
+    "title": "SIG (Susquehanna) — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/sig-susquehanna/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Interest in SIG, location fit, C++ background, options/derivatives familiarity, and competitive-programming signals."
+  },
+  {
+    "id": "companies-sig-susquehanna-round-02-online-assessment",
+    "route": "companies/sig-susquehanna/round-02-online-assessment",
+    "title": "SIG (Susquehanna) — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/sig-susquehanna/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding, math/probability-style coding, and domain-flavored simulation."
+  },
+  {
+    "id": "companies-sig-susquehanna-round-03-technical-phone-screen",
+    "route": "companies/sig-susquehanna/round-03-technical-phone-screen",
+    "title": "SIG (Susquehanna) — Round 03 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/sig-susquehanna/round-03-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, data structures, C++ fundamentals, and problem decomposition."
+  },
+  {
+    "id": "companies-sig-susquehanna-round-04-superday",
+    "route": "companies/sig-susquehanna/round-04-superday",
+    "title": "SIG (Susquehanna) — Round 04 — Superday",
+    "topic": "companies",
+    "path": "content/companies/sig-susquehanna/round-04-superday/questions.md",
+    "excerpt": "**What this round assesses:** Algorithms, C++ internals, probability/expected value, decision-making under uncertainty, poker/trading-game reasoning, and beh..."
+  },
+  {
+    "id": "companies-akuna-capital-overview",
+    "route": "companies/akuna-capital",
+    "title": "Akuna Capital — Overview",
+    "topic": "companies",
+    "path": "content/companies/akuna-capital/README.md",
+    "excerpt": "Educational preparation guide for Akuna Capital interviews, focused on C++ engineering, options market-making, probability, and trading simulations."
+  },
+  {
+    "id": "companies-akuna-capital-round-01-online-assessment",
+    "route": "companies/akuna-capital/round-01-online-assessment",
+    "title": "Akuna Capital — Round 01 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/akuna-capital/round-01-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** DSA correctness and efficiency; for some trading-technology tracks, speed arithmetic and probability."
+  },
+  {
+    "id": "companies-akuna-capital-round-02-technical-phone-screen",
+    "route": "companies/akuna-capital/round-02-technical-phone-screen",
+    "title": "Akuna Capital — Round 02 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/akuna-capital/round-02-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Clean C++ implementation, core data structures, memory/value semantics, and basic options or trading interest."
+  },
+  {
+    "id": "companies-akuna-capital-round-03-technical-onsite-virtual-day",
+    "route": "companies/akuna-capital/round-03-technical-onsite-virtual-day",
+    "title": "Akuna Capital — Round 03 — Technical Onsite Virtual Day",
+    "topic": "companies",
+    "path": "content/companies/akuna-capital/round-03-technical-onsite-virtual-day/questions.md",
+    "excerpt": "**What this round assesses:** Deep C++17/20, concurrency, cache behaviour, low-latency systems, probability, EV reasoning, and options market-making intuition."
+  },
+  {
+    "id": "companies-akuna-capital-round-04-market-making-simulation",
+    "route": "companies/akuna-capital/round-04-market-making-simulation",
+    "title": "Akuna Capital — Round 04 — Market Making Simulation",
+    "topic": "companies",
+    "path": "content/companies/akuna-capital/round-04-market-making-simulation/questions.md",
+    "excerpt": "**What this round assesses:** Real-time EV thinking, quoting discipline, inventory management, spread adjustment, and calm under adverse selection."
+  },
+  {
+    "id": "companies-akuna-capital-round-05-hiring-manager-culture-fit",
+    "route": "companies/akuna-capital/round-05-hiring-manager-culture-fit",
+    "title": "Akuna Capital — Round 05 — Hiring Manager Culture Fit",
+    "topic": "companies",
+    "path": "content/companies/akuna-capital/round-05-hiring-manager-culture-fit/questions.md",
+    "excerpt": "**What this round assesses:** Motivation for options market-making, resilience under pressure, ownership, and communication."
+  },
+  {
+    "id": "companies-five-rings-overview",
+    "route": "companies/five-rings",
+    "title": "Five Rings — Overview",
+    "topic": "companies",
+    "path": "content/companies/five-rings/README.md",
+    "excerpt": "Educational preparation guide for Five Rings Capital interviews, emphasizing probability, puzzles, mental math, EV reasoning, and developer-track C++ where r..."
+  },
+  {
+    "id": "companies-five-rings-round-01-online-assessment-probability-puzzles",
+    "route": "companies/five-rings/round-01-online-assessment-probability-puzzles",
+    "title": "Five Rings — Round 01 — Online Assessment Probability Puzzles",
+    "topic": "companies",
+    "path": "content/companies/five-rings/round-01-online-assessment-probability-puzzles/questions.md",
+    "excerpt": "**What this round assesses:** Probability intuition, combinatorics, logical reasoning, puzzles, and speed under uncertainty."
+  },
+  {
+    "id": "companies-five-rings-round-02-phone-screen-probability-logical-reasoning",
+    "route": "companies/five-rings/round-02-phone-screen-probability-logical-reasoning",
+    "title": "Five Rings — Round 02 — Phone Screen Probability Logical Reasoning",
+    "topic": "companies",
+    "path": "content/companies/five-rings/round-02-phone-screen-probability-logical-reasoning/questions.md",
+    "excerpt": "**What this round assesses:** First-principles probability reasoning, mental math, verbal structure, and ability to reason aloud."
+  },
+  {
+    "id": "companies-five-rings-round-03-onsite-virtual-day-games-talk-through",
+    "route": "companies/five-rings/round-03-onsite-virtual-day-games-talk-through",
+    "title": "Five Rings — Round 03 — Onsite Virtual Day Games Talk Through",
+    "topic": "companies",
+    "path": "content/companies/five-rings/round-03-onsite-virtual-day-games-talk-through/questions.md",
+    "excerpt": "**What this round assesses:** Deeper probability, communication under pressure, EV-based decision-making, and for developer-track candidates C++ and data str..."
+  },
+  {
+    "id": "companies-five-rings-round-04-trading-game-ev-decisions",
+    "route": "companies/five-rings/round-04-trading-game-ev-decisions",
+    "title": "Five Rings — Round 04 — Trading Game EV Decisions",
+    "topic": "companies",
+    "path": "content/companies/five-rings/round-04-trading-game-ev-decisions/questions.md",
+    "excerpt": "**What this round assesses:** EV calculation speed, calm under adversity, bidding discipline, and real-time position risk management."
+  },
+  {
+    "id": "companies-virtu-financial-overview",
+    "route": "companies/virtu-financial",
+    "title": "Virtu Financial — Overview",
+    "topic": "companies",
+    "path": "content/companies/virtu-financial/README.md",
+    "excerpt": "Educational preparation guide for Virtu Financial interviews, focused on coding, low-latency systems, market microstructure, and inventory-aware quoting."
+  },
+  {
+    "id": "companies-virtu-financial-round-01-online-assessment-probability-coding",
+    "route": "companies/virtu-financial/round-01-online-assessment-probability-coding",
+    "title": "Virtu Financial — Round 01 — Online Assessment Probability Coding",
+    "topic": "companies",
+    "path": "content/companies/virtu-financial/round-01-online-assessment-probability-coding/questions.md",
+    "excerpt": "**What this round assesses:** Basic DSA fluency, EV reasoning, and market-making intuition."
+  },
+  {
+    "id": "companies-virtu-financial-round-02-technical-phone-screen-market-making-systems",
+    "route": "companies/virtu-financial/round-02-technical-phone-screen-market-making-systems",
+    "title": "Virtu Financial — Round 02 — Technical Phone Screen Market Making Systems",
+    "topic": "companies",
+    "path": "content/companies/virtu-financial/round-02-technical-phone-screen-market-making-systems/questions.md",
+    "excerpt": "**What this round assesses:** C++ proficiency, low-latency data pipelines, order books, FIX, and market microstructure."
+  },
+  {
+    "id": "companies-virtu-financial-round-03-quoting-simulation-inventory-management",
+    "route": "companies/virtu-financial/round-03-quoting-simulation-inventory-management",
+    "title": "Virtu Financial — Round 03 — Quoting Simulation Inventory Management",
+    "topic": "companies",
+    "path": "content/companies/virtu-financial/round-03-quoting-simulation-inventory-management/questions.md",
+    "excerpt": "**What this round assesses:** Real-time EV, risk management, quote adjustment with inventory, and adverse-selection awareness."
+  },
+  {
+    "id": "companies-virtu-financial-round-04-final-round-behavioural-system-design",
+    "route": "companies/virtu-financial/round-04-final-round-behavioural-system-design",
+    "title": "Virtu Financial — Round 04 — Final Round Behavioural System Design",
+    "topic": "companies",
+    "path": "content/companies/virtu-financial/round-04-final-round-behavioural-system-design/questions.md",
+    "excerpt": "**What this round assesses:** Production systems judgment, ownership, communication, and senior-level technical trade-offs."
+  },
+  {
+    "id": "companies-xtx-markets-overview",
+    "route": "companies/xtx-markets",
+    "title": "XTX Markets — Overview",
+    "topic": "companies",
+    "path": "content/companies/xtx-markets/README.md",
+    "excerpt": "Educational preparation guide for XTX Markets interviews, emphasizing quantitative coding, C++ systems, statistics, ML research, and low-latency infrastructure."
+  },
+  {
+    "id": "companies-xtx-markets-round-01-online-assessment-quantitative-coding",
+    "route": "companies/xtx-markets/round-01-online-assessment-quantitative-coding",
+    "title": "XTX Markets — Round 01 — Online Assessment Quantitative Coding",
+    "topic": "companies",
+    "path": "content/companies/xtx-markets/round-01-online-assessment-quantitative-coding/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding, quantitative reasoning, data analysis, and statistical thinking."
+  },
+  {
+    "id": "companies-xtx-markets-round-02-technical-interview-coding-systems-research",
+    "route": "companies/xtx-markets/round-02-technical-interview-coding-systems-research",
+    "title": "XTX Markets — Round 02 — Technical Interview Coding Systems Research",
+    "topic": "companies",
+    "path": "content/companies/xtx-markets/round-02-technical-interview-coding-systems-research/questions.md",
+    "excerpt": "**What this round assesses:** C++/Python programming, DSA depth, low-latency systems for SWE, and quantitative research methodology for research roles."
+  },
+  {
+    "id": "companies-xtx-markets-round-03-advanced-technical-research-interview",
+    "route": "companies/xtx-markets/round-03-advanced-technical-research-interview",
+    "title": "XTX Markets — Round 03 — Advanced Technical Research Interview",
+    "topic": "companies",
+    "path": "content/companies/xtx-markets/round-03-advanced-technical-research-interview/questions.md",
+    "excerpt": "**What this round assesses:** Expert-level systems knowledge, latency measurement, Linux/networking awareness, ML system design, and research rigour."
+  },
+  {
+    "id": "companies-xtx-markets-round-04-final-round-systems-design-behavioural",
+    "route": "companies/xtx-markets/round-04-final-round-systems-design-behavioural",
+    "title": "XTX Markets — Round 04 — Final Round Systems Design Behavioural",
+    "topic": "companies",
+    "path": "content/companies/xtx-markets/round-04-final-round-systems-design-behavioural/questions.md",
+    "excerpt": "**What this round assesses:** End-to-end thinking, ownership, communication, and fit with a research-first culture."
+  },
+  {
+    "id": "companies-g-research-overview",
+    "route": "companies/g-research",
+    "title": "G-Research — Overview",
+    "topic": "companies",
+    "path": "content/companies/g-research/README.md",
+    "excerpt": "Educational preparation guide for G-Research interviews, focused on aptitude/numerical screening, coding, C++, systems, mathematics, and research depth."
+  },
+  {
+    "id": "companies-g-research-round-01-aptitude-psychometric-test",
+    "route": "companies/g-research/round-01-aptitude-psychometric-test",
+    "title": "G-Research — Round 01 — Aptitude Psychometric Test",
+    "topic": "companies",
+    "path": "content/companies/g-research/round-01-aptitude-psychometric-test/questions.md",
+    "excerpt": "**What this round assesses:** Cognitive ability, numerical speed, logical reasoning, and abstract pattern recognition."
+  },
+  {
+    "id": "companies-g-research-round-02-coding-test",
+    "route": "companies/g-research/round-02-coding-test",
+    "title": "G-Research — Round 02 — Coding Test",
+    "topic": "companies",
+    "path": "content/companies/g-research/round-02-coding-test/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic problem-solving, data structures, code correctness, and C++ or Python implementation ability."
+  },
+  {
+    "id": "companies-g-research-round-03-technical-interview-cpp-systems-mathematics",
+    "route": "companies/g-research/round-03-technical-interview-cpp-systems-mathematics",
+    "title": "G-Research — Round 03 — Technical Interview C++ Systems Mathematics",
+    "topic": "companies",
+    "path": "content/companies/g-research/round-03-technical-interview-cpp-systems-mathematics/questions.md",
+    "excerpt": "**What this round assesses:** Production C++ expertise, systems understanding, mathematical rigour, and probabilistic reasoning."
+  },
+  {
+    "id": "companies-g-research-round-04-advanced-technical-research-interview",
+    "route": "companies/g-research/round-04-advanced-technical-research-interview",
+    "title": "G-Research — Round 04 — Advanced Technical Research Interview",
+    "topic": "companies",
+    "path": "content/companies/g-research/round-04-advanced-technical-research-interview/questions.md",
+    "excerpt": "**What this round assesses:** Expert-level engineering depth, performance diagnosis, distributed/system design, statistical modelling, and research methodology."
+  },
+  {
+    "id": "companies-g-research-round-05-final-round-hiring-manager-behavioural",
+    "route": "companies/g-research/round-05-final-round-hiring-manager-behavioural",
+    "title": "G-Research — Round 05 — Final Round Hiring Manager Behavioural",
+    "topic": "companies",
+    "path": "content/companies/g-research/round-05-final-round-hiring-manager-behavioural/questions.md",
+    "excerpt": "**What this round assesses:** Long-term fit, intellectual curiosity, collaboration, ownership, and motivation for quant research."
+  },
+  {
+    "id": "companies-millennium-overview",
+    "route": "companies/millennium",
+    "title": "Millennium — Overview",
+    "topic": "companies",
+    "path": "content/companies/millennium/README.md",
+    "excerpt": "Educational guide to publicly reported and inferred interview patterns for C++/software engineering roles at Millennium Management."
+  },
+  {
+    "id": "companies-millennium-round-01-hr-recruiter-screen",
+    "route": "companies/millennium/round-01-hr-recruiter-screen",
+    "title": "Millennium — Round 01 — HR Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/millennium/round-01-hr-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Communication clarity, motivation, location/visa fit, and high-level technical background."
+  },
+  {
+    "id": "companies-millennium-round-02-online-assessment",
+    "route": "companies/millennium/round-02-online-assessment",
+    "title": "Millennium — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/millennium/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Correctness and efficiency of algorithmic solutions under time pressure."
+  },
+  {
+    "id": "companies-millennium-round-03-technical-phone-screen",
+    "route": "companies/millennium/round-03-technical-phone-screen",
+    "title": "Millennium — Round 03 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/millennium/round-03-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, C++ language depth, and basic systems knowledge."
+  },
+  {
+    "id": "companies-millennium-round-04-onsite-coding-algorithms",
+    "route": "companies/millennium/round-04-onsite-coding-algorithms",
+    "title": "Millennium — Round 04 — Onsite Coding Algorithms",
+    "topic": "companies",
+    "path": "content/companies/millennium/round-04-onsite-coding-algorithms/questions.md",
+    "excerpt": "**What this round assesses:** Problem decomposition, clean implementation, complexity reasoning, and edge-case handling."
+  },
+  {
+    "id": "companies-millennium-round-05-onsite-cpp-systems-depth",
+    "route": "companies/millennium/round-05-onsite-cpp-systems-depth",
+    "title": "Millennium — Round 05 — Onsite C++ Systems Depth",
+    "topic": "companies",
+    "path": "content/companies/millennium/round-05-onsite-cpp-systems-depth/questions.md",
+    "excerpt": "**What this round assesses:** C++ mastery, undefined behavior, atomics, cache effects, and production performance reasoning."
+  },
+  {
+    "id": "companies-millennium-round-06-onsite-domain-trading-systems-design",
+    "route": "companies/millennium/round-06-onsite-domain-trading-systems-design",
+    "title": "Millennium — Round 06 — Onsite Domain Trading Systems Design",
+    "topic": "companies",
+    "path": "content/companies/millennium/round-06-onsite-domain-trading-systems-design/questions.md",
+    "excerpt": "**What this round assesses:** Trading infrastructure knowledge, latency-aware design, and order lifecycle understanding."
+  },
+  {
+    "id": "companies-millennium-round-07-behavioral",
+    "route": "companies/millennium/round-07-behavioral",
+    "title": "Millennium — Round 07 — Behavioral",
+    "topic": "companies",
+    "path": "content/companies/millennium/round-07-behavioral/questions.md",
+    "excerpt": "**What this round assesses:** Ownership, collaboration, handling failure, and motivation."
+  },
+  {
+    "id": "companies-point72-overview",
+    "route": "companies/point72",
+    "title": "Point72 (Cubist) — Overview",
+    "topic": "companies",
+    "path": "content/companies/point72/README.md",
+    "excerpt": "Educational guide to publicly reported and inferred interview patterns for Point72 and Cubist C++/software engineering roles."
+  },
+  {
+    "id": "companies-point72-round-01-recruiter-screen",
+    "route": "companies/point72/round-01-recruiter-screen",
+    "title": "Point72 (Cubist) — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/point72/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Communication, motivation, and basic background plausibility."
+  },
+  {
+    "id": "companies-point72-round-02-online-assessment",
+    "route": "companies/point72/round-02-online-assessment",
+    "title": "Point72 (Cubist) — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/point72/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic problem-solving speed and correctness."
+  },
+  {
+    "id": "companies-point72-round-03-technical-phone-screen",
+    "route": "companies/point72/round-03-technical-phone-screen",
+    "title": "Point72 (Cubist) — Round 03 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/point72/round-03-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, communication while coding, and C++ core knowledge."
+  },
+  {
+    "id": "companies-point72-round-04-onsite-coding-round-1",
+    "route": "companies/point72/round-04-onsite-coding-round-1",
+    "title": "Point72 (Cubist) — Round 04 — Onsite Coding Round 1",
+    "topic": "companies",
+    "path": "content/companies/point72/round-04-onsite-coding-round-1/questions.md",
+    "excerpt": "**What this round assesses:** Correct idiomatic C++ coding, complexity analysis, and edge-case discipline."
+  },
+  {
+    "id": "companies-point72-round-05-onsite-coding-round-2",
+    "route": "companies/point72/round-05-onsite-coding-round-2",
+    "title": "Point72 (Cubist) — Round 05 — Onsite Coding Round 2",
+    "topic": "companies",
+    "path": "content/companies/point72/round-05-onsite-coding-round-2/questions.md",
+    "excerpt": "**What this round assesses:** Depth beyond typical LeetCode prep and translation of financial requirements into efficient code."
+  },
+  {
+    "id": "companies-point72-round-06-onsite-cpp-systems-deep-dive",
+    "route": "companies/point72/round-06-onsite-cpp-systems-deep-dive",
+    "title": "Point72 (Cubist) — Round 06 — Onsite C++ Systems Deep Dive",
+    "topic": "companies",
+    "path": "content/companies/point72/round-06-onsite-cpp-systems-deep-dive/questions.md",
+    "excerpt": "**What this round assesses:** Senior-level C++ and systems mastery for trading infrastructure."
+  },
+  {
+    "id": "companies-point72-round-07-onsite-system-design",
+    "route": "companies/point72/round-07-onsite-system-design",
+    "title": "Point72 (Cubist) — Round 07 — Onsite System Design",
+    "topic": "companies",
+    "path": "content/companies/point72/round-07-onsite-system-design/questions.md",
+    "excerpt": "**What this round assesses:** Architecture judgment, tradeoff defense, and production thinking."
+  },
+  {
+    "id": "companies-point72-round-08-behavioral-culture",
+    "route": "companies/point72/round-08-behavioral-culture",
+    "title": "Point72 (Cubist) — Round 08 — Behavioral Culture",
+    "topic": "companies",
+    "path": "content/companies/point72/round-08-behavioral-culture/questions.md",
+    "excerpt": "**What this round assesses:** Collaboration, ownership, disagreement, failure handling, and motivation for systematic trading."
+  },
+  {
+    "id": "companies-worldquant-overview",
+    "route": "companies/worldquant",
+    "title": "WorldQuant — Overview",
+    "topic": "companies",
+    "path": "content/companies/worldquant/README.md",
+    "excerpt": "Educational guide to publicly reported and inferred interview patterns for WorldQuant C++/software engineering and infrastructure roles."
+  },
+  {
+    "id": "companies-worldquant-round-01-recruiter-application-screen",
+    "route": "companies/worldquant/round-01-recruiter-application-screen",
+    "title": "WorldQuant — Round 01 — Recruiter Application Screen",
+    "topic": "companies",
+    "path": "content/companies/worldquant/round-01-recruiter-application-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background plausibility, motivation, and compensation fit."
+  },
+  {
+    "id": "companies-worldquant-round-02-online-assessment-coding-challenge",
+    "route": "companies/worldquant/round-02-online-assessment-coding-challenge",
+    "title": "WorldQuant — Round 02 — Online Assessment Coding Challenge",
+    "topic": "companies",
+    "path": "content/companies/worldquant/round-02-online-assessment-coding-challenge/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic problem-solving and, for some roles, quantitative/statistics reasoning."
+  },
+  {
+    "id": "companies-worldquant-round-03-technical-video-interviews",
+    "route": "companies/worldquant/round-03-technical-video-interviews",
+    "title": "WorldQuant — Round 03 — Technical Video Interviews",
+    "topic": "companies",
+    "path": "content/companies/worldquant/round-03-technical-video-interviews/questions.md",
+    "excerpt": "**What this round assesses:** Coding depth, C++ proficiency, and ability to discuss trading-related systems."
+  },
+  {
+    "id": "companies-worldquant-round-04-onsite-cpp-systems",
+    "route": "companies/worldquant/round-04-onsite-cpp-systems",
+    "title": "WorldQuant — Round 04 — Onsite C++ Systems",
+    "topic": "companies",
+    "path": "content/companies/worldquant/round-04-onsite-cpp-systems/questions.md",
+    "excerpt": "**What this round assesses:** Senior C++ proficiency for production data/trading pipelines."
+  },
+  {
+    "id": "companies-worldquant-round-05-domain-finance-research-knowledge",
+    "route": "companies/worldquant/round-05-domain-finance-research-knowledge",
+    "title": "WorldQuant — Round 05 — Domain Finance Research Knowledge",
+    "topic": "companies",
+    "path": "content/companies/worldquant/round-05-domain-finance-research-knowledge/questions.md",
+    "excerpt": "**What this round assesses:** Alpha research, factor models, quantitative finance concepts, and financial time-series data pipelines."
+  },
+  {
+    "id": "companies-worldquant-round-06-behavioral",
+    "route": "companies/worldquant/round-06-behavioral",
+    "title": "WorldQuant — Round 06 — Behavioral",
+    "topic": "companies",
+    "path": "content/companies/worldquant/round-06-behavioral/questions.md",
+    "excerpt": "**What this round assesses:** Cross-functional collaboration, ownership, and motivation."
+  },
+  {
+    "id": "companies-squarepoint-overview",
+    "route": "companies/squarepoint",
+    "title": "Squarepoint Capital — Overview",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/README.md",
+    "excerpt": "Educational guide to publicly reported and inferred interview patterns for Squarepoint Capital C++/software engineering roles."
+  },
+  {
+    "id": "companies-squarepoint-round-01-recruiter-hr-contact",
+    "route": "companies/squarepoint/round-01-recruiter-hr-contact",
+    "title": "Squarepoint Capital — Round 01 — Recruiter HR Contact",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/round-01-recruiter-hr-contact/questions.md",
+    "excerpt": "**What this round assesses:** Basic profile fit, C++ background, and availability."
+  },
+  {
+    "id": "companies-squarepoint-round-02-technical-coding-assessment",
+    "route": "companies/squarepoint/round-02-technical-coding-assessment",
+    "title": "Squarepoint Capital — Round 02 — Technical Coding Assessment",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/round-02-technical-coding-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Basic algorithmic competence as an initial filter."
+  },
+  {
+    "id": "companies-squarepoint-round-03-technical-phone-video-interviews",
+    "route": "companies/squarepoint/round-03-technical-phone-video-interviews",
+    "title": "Squarepoint Capital — Round 03 — Technical Phone Video Interviews",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/round-03-technical-phone-video-interviews/questions.md",
+    "excerpt": "**What this round assesses:** C++ language mastery, correct coding, memory, and concurrency fundamentals."
+  },
+  {
+    "id": "companies-squarepoint-round-04-onsite-cpp-deep-dive",
+    "route": "companies/squarepoint/round-04-onsite-cpp-deep-dive",
+    "title": "Squarepoint Capital — Round 04 — Onsite C++ Deep Dive",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/round-04-onsite-cpp-deep-dive/questions.md",
+    "excerpt": "**What this round assesses:** Advanced C++: memory layout, ABI, templates, concurrency, undefined behavior, and performance."
+  },
+  {
+    "id": "companies-squarepoint-round-05-onsite-algorithms-data-structures",
+    "route": "companies/squarepoint/round-05-onsite-algorithms-data-structures",
+    "title": "Squarepoint Capital — Round 05 — Onsite Algorithms Data Structures",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/round-05-onsite-algorithms-data-structures/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic implementation depth, complexity analysis, and C++ data-structure design."
+  },
+  {
+    "id": "companies-squarepoint-round-06-onsite-system-design",
+    "route": "companies/squarepoint/round-06-onsite-system-design",
+    "title": "Squarepoint Capital — Round 06 — Onsite System Design",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/round-06-onsite-system-design/questions.md",
+    "excerpt": "**What this round assesses:** Low-latency systems thinking, failure modes, and tradeoff reasoning."
+  },
+  {
+    "id": "companies-squarepoint-round-07-behavioral-culture",
+    "route": "companies/squarepoint/round-07-behavioral-culture",
+    "title": "Squarepoint Capital — Round 07 — Behavioral Culture",
+    "topic": "companies",
+    "path": "content/companies/squarepoint/round-07-behavioral-culture/questions.md",
+    "excerpt": "**What this round assesses:** Cultural fit, motivation, and past technical ownership."
+  },
+  {
+    "id": "companies-de-shaw-overview",
+    "route": "companies/de-shaw",
+    "title": "D. E. Shaw — Overview",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/README.md",
+    "excerpt": "Educational guide to publicly reported and inferred interview patterns for D.E. Shaw C++/software engineering roles."
+  },
+  {
+    "id": "companies-de-shaw-round-01-recruiter-screen",
+    "route": "companies/de-shaw/round-01-recruiter-screen",
+    "title": "D. E. Shaw — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Fit, communication, and technical background credibility."
+  },
+  {
+    "id": "companies-de-shaw-round-02-online-assessment",
+    "route": "companies/de-shaw/round-02-online-assessment",
+    "title": "D. E. Shaw — Round 02 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-02-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic problem-solving efficiency and correctness."
+  },
+  {
+    "id": "companies-de-shaw-round-03-technical-phone-video-screens",
+    "route": "companies/de-shaw/round-03-technical-phone-video-screens",
+    "title": "D. E. Shaw — Round 03 — Technical Phone Video Screens",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-03-technical-phone-video-screens/questions.md",
+    "excerpt": "**What this round assesses:** Live coding ability, C++ depth, and communication under pressure."
+  },
+  {
+    "id": "companies-de-shaw-round-04-superday-coding-round-1",
+    "route": "companies/de-shaw/round-04-superday-coding-round-1",
+    "title": "D. E. Shaw — Round 04 — Superday Coding Round 1",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-04-superday-coding-round-1/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic thinking, clean C++ code, edge cases, and complexity."
+  },
+  {
+    "id": "companies-de-shaw-round-05-superday-coding-round-2",
+    "route": "companies/de-shaw/round-05-superday-coding-round-2",
+    "title": "D. E. Shaw — Round 05 — Superday Coding Round 2",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-05-superday-coding-round-2/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic depth and ability to manage multiple constraints."
+  },
+  {
+    "id": "companies-de-shaw-round-06-superday-cpp-systems-depth",
+    "route": "companies/de-shaw/round-06-superday-cpp-systems-depth",
+    "title": "D. E. Shaw — Round 06 — Superday C++ Systems Depth",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-06-superday-cpp-systems-depth/questions.md",
+    "excerpt": "**What this round assesses:** Expert C++ and systems knowledge for production HFT/trading infrastructure."
+  },
+  {
+    "id": "companies-de-shaw-round-07-superday-probability-analytical-reasoning",
+    "route": "companies/de-shaw/round-07-superday-probability-analytical-reasoning",
+    "title": "D. E. Shaw — Round 07 — Superday Probability Analytical Reasoning",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-07-superday-probability-analytical-reasoning/questions.md",
+    "excerpt": "**What this round assesses:** Probabilistic thinking, first-principles reasoning, mental arithmetic, and Bayesian reasoning."
+  },
+  {
+    "id": "companies-de-shaw-round-08-superday-system-design",
+    "route": "companies/de-shaw/round-08-superday-system-design",
+    "title": "D. E. Shaw — Round 08 — Superday System Design",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-08-superday-system-design/questions.md",
+    "excerpt": "**What this round assesses:** Architecture judgment, latency/correctness/maintainability tradeoffs, and production systems experience."
+  },
+  {
+    "id": "companies-de-shaw-round-09-superday-behavioral-culture",
+    "route": "companies/de-shaw/round-09-superday-behavioral-culture",
+    "title": "D. E. Shaw — Round 09 — Superday Behavioral Culture",
+    "topic": "companies",
+    "path": "content/companies/de-shaw/round-09-superday-behavioral-culture/questions.md",
+    "excerpt": "**What this round assesses:** Technical ownership, collaboration, handling complexity, and motivation."
+  },
+  {
+    "id": "companies-flow-traders-overview",
+    "route": "companies/flow-traders",
+    "title": "Flow Traders — Overview",
+    "topic": "companies",
+    "path": "content/companies/flow-traders/README.md",
+    "excerpt": "Educational interview-prep guide for software/C++ and trading-adjacent engineering roles at Flow Traders."
+  },
+  {
+    "id": "companies-flow-traders-round-01-online-assessment",
+    "route": "companies/flow-traders/round-01-online-assessment",
+    "title": "Flow Traders — Round 01 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/flow-traders/round-01-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding skill, data-structure fluency, and ability to reason through medium-to-hard problems under time pressure."
+  },
+  {
+    "id": "companies-flow-traders-round-02-technical-phone-video-screen",
+    "route": "companies/flow-traders/round-02-technical-phone-video-screen",
+    "title": "Flow Traders — Round 02 — Technical Phone Video Screen",
+    "topic": "companies",
+    "path": "content/companies/flow-traders/round-02-technical-phone-video-screen/questions.md",
+    "excerpt": "**What this round assesses:** Live coding ability, C++ fundamentals, basic systems knowledge, and communication under pressure."
+  },
+  {
+    "id": "companies-flow-traders-round-03-onsite-virtual-onsite",
+    "route": "companies/flow-traders/round-03-onsite-virtual-onsite",
+    "title": "Flow Traders — Round 03 — Onsite Virtual Onsite",
+    "topic": "companies",
+    "path": "content/companies/flow-traders/round-03-onsite-virtual-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Full-stack depth: algorithmic correctness, C++ production judgment, systems reasoning, trading intuition, and culture fit."
+  },
+  {
+    "id": "companies-headlands-technologies-overview",
+    "route": "companies/headlands-technologies",
+    "title": "Headlands Technologies — Overview",
+    "topic": "companies",
+    "path": "content/companies/headlands-technologies/README.md",
+    "excerpt": "Educational interview-prep guide for engineering roles at Headlands Technologies, with explicit caveats because public interview data is very sparse."
+  },
+  {
+    "id": "companies-headlands-technologies-round-01-technical-phone-video-screen",
+    "route": "companies/headlands-technologies/round-01-technical-phone-video-screen",
+    "title": "Headlands Technologies — Round 01 — Technical Phone Video Screen",
+    "topic": "companies",
+    "path": "content/companies/headlands-technologies/round-01-technical-phone-video-screen/questions.md",
+    "excerpt": "**What this round assesses:** Baseline coding ability, C++ fluency, and communication."
+  },
+  {
+    "id": "companies-headlands-technologies-round-02-technical-interviews",
+    "route": "companies/headlands-technologies/round-02-technical-interviews",
+    "title": "Headlands Technologies — Round 02 — Technical Interviews",
+    "topic": "companies",
+    "path": "content/companies/headlands-technologies/round-02-technical-interviews/questions.md",
+    "excerpt": "**What this round assesses:** Likely coding, C++ depth, systems fundamentals, and possibly probability, inferred from similar small systematic market makers."
+  },
+  {
+    "id": "companies-headlands-technologies-round-03-final-onsite",
+    "route": "companies/headlands-technologies/round-03-final-onsite",
+    "title": "Headlands Technologies — Round 03 — Final Onsite",
+    "topic": "companies",
+    "path": "content/companies/headlands-technologies/round-03-final-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Overall technical depth, engineering judgment, and team fit, though public evidence is insufficient to describe the loop reliably."
+  },
+  {
+    "id": "companies-radix-trading-overview",
+    "route": "companies/radix-trading",
+    "title": "Radix Trading — Overview",
+    "topic": "companies",
+    "path": "content/companies/radix-trading/README.md",
+    "excerpt": "Educational interview-prep guide for Radix Trading, emphasizing sparse public interview data and the firm’s distinctive Rust/C++ systems signal."
+  },
+  {
+    "id": "companies-radix-trading-round-01-technical-screen",
+    "route": "companies/radix-trading/round-01-technical-screen",
+    "title": "Radix Trading — Round 01 — Technical Screen",
+    "topic": "companies",
+    "path": "content/companies/radix-trading/round-01-technical-screen/questions.md",
+    "excerpt": "**What this round assesses:** Coding ability, C++ and/or Rust fluency, concurrency fundamentals, and systems communication."
+  },
+  {
+    "id": "companies-radix-trading-round-02-technical-project-deep-dive",
+    "route": "companies/radix-trading/round-02-technical-project-deep-dive",
+    "title": "Radix Trading — Round 02 — Technical Project Deep Dive",
+    "topic": "companies",
+    "path": "content/companies/radix-trading/round-02-technical-project-deep-dive/questions.md",
+    "excerpt": "**What this round assesses:** Potential deeper evaluation of systems design, Rust/C++ engineering judgment, and production-readiness; this round is not firml..."
+  },
+  {
+    "id": "companies-radix-trading-round-03-final-onsite",
+    "route": "companies/radix-trading/round-03-final-onsite",
+    "title": "Radix Trading — Round 03 — Final Onsite",
+    "topic": "companies",
+    "path": "content/companies/radix-trading/round-03-final-onsite/questions.md",
+    "excerpt": "**What this round assesses:** Overall technical depth, systems judgment, and fit for a small quantitative trading firm."
+  },
+  {
+    "id": "companies-quadrature-capital-overview",
+    "route": "companies/quadrature-capital",
+    "title": "Quadrature Capital — Overview",
+    "topic": "companies",
+    "path": "content/companies/quadrature-capital/README.md",
+    "excerpt": "Educational interview-prep guide for software engineering and quantitative-development interviews at Quadrature Capital."
+  },
+  {
+    "id": "companies-quadrature-capital-round-01-online-assessment",
+    "route": "companies/quadrature-capital/round-01-online-assessment",
+    "title": "Quadrature Capital — Round 01 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/quadrature-capital/round-01-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding, data-structure fluency, and numerical or mathematical problem solving."
+  },
+  {
+    "id": "companies-quadrature-capital-round-02-technical-phone-video-screen",
+    "route": "companies/quadrature-capital/round-02-technical-phone-video-screen",
+    "title": "Quadrature Capital — Round 02 — Technical Phone Video Screen",
+    "topic": "companies",
+    "path": "content/companies/quadrature-capital/round-02-technical-phone-video-screen/questions.md",
+    "excerpt": "**What this round assesses:** Coding skill, algorithmic explanation, Python/C++ fundamentals, systems basics, and communication."
+  },
+  {
+    "id": "companies-quadrature-capital-round-03-onsite-in-london",
+    "route": "companies/quadrature-capital/round-03-onsite-in-london",
+    "title": "Quadrature Capital — Round 03 — Onsite In London",
+    "topic": "companies",
+    "path": "content/companies/quadrature-capital/round-03-onsite-in-london/questions.md",
+    "excerpt": "**What this round assesses:** Algorithms, C++/systems depth, math/statistics/probability, research intuition, and behavioral fit."
+  },
+  {
+    "id": "companies-maven-securities-overview",
+    "route": "companies/maven-securities",
+    "title": "Maven Securities — Overview",
+    "topic": "companies",
+    "path": "content/companies/maven-securities/README.md",
+    "excerpt": "Educational interview-prep guide for software/C++ and trading-technology roles at Maven Securities."
+  },
+  {
+    "id": "companies-maven-securities-round-01-recruiter-screen",
+    "route": "companies/maven-securities/round-01-recruiter-screen",
+    "title": "Maven Securities — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/maven-securities/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, motivation, availability, and role fit; no substantive technical content reported."
+  },
+  {
+    "id": "companies-maven-securities-round-02-online-coding-assessment",
+    "route": "companies/maven-securities/round-02-online-coding-assessment",
+    "title": "Maven Securities — Round 02 — Online Coding Assessment",
+    "topic": "companies",
+    "path": "content/companies/maven-securities/round-02-online-coding-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding, data structures, and problem-solving under time limits."
+  },
+  {
+    "id": "companies-maven-securities-round-03-technical-video-phone-interviews",
+    "route": "companies/maven-securities/round-03-technical-video-phone-interviews",
+    "title": "Maven Securities — Round 03 — Technical Video Phone Interviews",
+    "topic": "companies",
+    "path": "content/companies/maven-securities/round-03-technical-video-phone-interviews/questions.md",
+    "excerpt": "**What this round assesses:** Coding, C++/systems fundamentals, market-connectivity basics, and engineering communication."
+  },
+  {
+    "id": "companies-maven-securities-round-04-onsite-in-london",
+    "route": "companies/maven-securities/round-04-onsite-in-london",
+    "title": "Maven Securities — Round 04 — Onsite In London",
+    "topic": "companies",
+    "path": "content/companies/maven-securities/round-04-onsite-in-london/questions.md",
+    "excerpt": "**What this round assesses:** Coding, C++ depth, probability, trading intuition, and behavioral fit for an ETP market maker."
+  },
+  {
+    "id": "companies-pdt-partners-overview",
+    "route": "companies/pdt-partners",
+    "title": "PDT Partners — Overview",
+    "topic": "companies",
+    "path": "content/companies/pdt-partners/README.md",
+    "excerpt": "Educational interview-prep guide for software engineering, quantitative-development, and research-adjacent technical interviews at PDT Partners."
+  },
+  {
+    "id": "companies-pdt-partners-round-01-recruiter-hr-screen",
+    "route": "companies/pdt-partners/round-01-recruiter-hr-screen",
+    "title": "PDT Partners — Round 01 — Recruiter HR Screen",
+    "topic": "companies",
+    "path": "content/companies/pdt-partners/round-01-recruiter-hr-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, role fit, motivation for quantitative trading, and logistics; no substantive technical content reported."
+  },
+  {
+    "id": "companies-pdt-partners-round-02-online-coding-assessment",
+    "route": "companies/pdt-partners/round-02-online-coding-assessment",
+    "title": "PDT Partners — Round 02 — Online Coding Assessment",
+    "topic": "companies",
+    "path": "content/companies/pdt-partners/round-02-online-coding-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding, data structures, and possibly a statistics/math component consistent with PDT’s quant-research culture."
+  },
+  {
+    "id": "companies-pdt-partners-round-03-technical-phone-video-screens",
+    "route": "companies/pdt-partners/round-03-technical-phone-video-screens",
+    "title": "PDT Partners — Round 03 — Technical Phone Video Screens",
+    "topic": "companies",
+    "path": "content/companies/pdt-partners/round-03-technical-phone-video-screens/questions.md",
+    "excerpt": "**What this round assesses:** Coding, probability/statistics, data structures, and concise technical explanation."
+  },
+  {
+    "id": "companies-pdt-partners-round-04-onsite-virtual-superday",
+    "route": "companies/pdt-partners/round-04-onsite-virtual-superday",
+    "title": "PDT Partners — Round 04 — Onsite Virtual Superday",
+    "topic": "companies",
+    "path": "content/companies/pdt-partners/round-04-onsite-virtual-superday/questions.md",
+    "excerpt": "**What this round assesses:** Coding depth, quantitative/statistical reasoning, system design for experienced hires, research thinking, and behavioral fit."
+  },
+  {
+    "id": "companies-old-mission-capital-overview",
+    "route": "companies/old-mission-capital",
+    "title": "Old Mission Capital — Overview",
+    "topic": "companies",
+    "path": "content/companies/old-mission-capital/README.md",
+    "excerpt": "Educational interview-prep guide for software/C++ and trading-technology interviews at Old Mission Capital."
+  },
+  {
+    "id": "companies-old-mission-capital-round-01-recruiter-hr-screen",
+    "route": "companies/old-mission-capital/round-01-recruiter-hr-screen",
+    "title": "Old Mission Capital — Round 01 — Recruiter HR Screen",
+    "topic": "companies",
+    "path": "content/companies/old-mission-capital/round-01-recruiter-hr-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, motivations, availability, and fit; no technical content reported."
+  },
+  {
+    "id": "companies-old-mission-capital-round-02-online-coding-assessment",
+    "route": "companies/old-mission-capital/round-02-online-coding-assessment",
+    "title": "Old Mission Capital — Round 02 — Online Coding Assessment",
+    "topic": "companies",
+    "path": "content/companies/old-mission-capital/round-02-online-coding-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic coding, data structures, basic simulation, and optimization under a time limit."
+  },
+  {
+    "id": "companies-old-mission-capital-round-03-technical-phone-video-screen",
+    "route": "companies/old-mission-capital/round-03-technical-phone-video-screen",
+    "title": "Old Mission Capital — Round 03 — Technical Phone Video Screen",
+    "topic": "companies",
+    "path": "content/companies/old-mission-capital/round-03-technical-phone-video-screen/questions.md",
+    "excerpt": "**What this round assesses:** Live coding, C++ fundamentals, memory/data-structure understanding, and communication."
+  },
+  {
+    "id": "companies-old-mission-capital-round-04-onsite-super-day",
+    "route": "companies/old-mission-capital/round-04-onsite-super-day",
+    "title": "Old Mission Capital — Round 04 — Onsite Super Day",
+    "topic": "companies",
+    "path": "content/companies/old-mission-capital/round-04-onsite-super-day/questions.md",
+    "excerpt": "**What this round assesses:** Coding, C++ depth, systems design, probability market-making, adaptive reasoning, and behavioral fit."
+  },
+  {
+    "id": "companies-google-overview",
+    "route": "companies/google",
+    "title": "Google — Overview",
+    "topic": "companies",
+    "path": "content/companies/google/README.md",
+    "excerpt": "Google is a non-HFT high-comp employer with strong C++ usage in performance-sensitive systems, infrastructure, platforms, or product runtimes."
+  },
+  {
+    "id": "companies-google-round-01-recruiter-screen",
+    "route": "companies/google/round-01-recruiter-screen",
+    "title": "Google — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/google/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background verification, motivation for Google, relocation/visa status, logistics, and light resume depth."
+  },
+  {
+    "id": "companies-google-round-02-technical-phone-screen",
+    "route": "companies/google/round-02-technical-phone-screen",
+    "title": "Google — Round 02 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/google/round-02-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Coding fluency, problem-solving approach, tradeoff discussion, and code quality under time pressure."
+  },
+  {
+    "id": "companies-google-round-03-onsite-coding-algorithm",
+    "route": "companies/google/round-03-onsite-coding-algorithm",
+    "title": "Google — Round 03 — Onsite Coding Algorithm",
+    "topic": "companies",
+    "path": "content/companies/google/round-03-onsite-coding-algorithm/questions.md",
+    "excerpt": "**What this round assesses:** Data structures, algorithm complexity, clean code, edge cases, communication, and optimization thinking."
+  },
+  {
+    "id": "companies-google-round-04-onsite-system-design",
+    "route": "companies/google/round-04-onsite-system-design",
+    "title": "Google — Round 04 — Onsite System Design",
+    "topic": "companies",
+    "path": "content/companies/google/round-04-onsite-system-design/questions.md",
+    "excerpt": "**What this round assesses:** Scalable architecture, distributed systems primitives, API/data modeling, and tradeoff reasoning."
+  },
+  {
+    "id": "companies-google-round-05-googleyness-leadership",
+    "route": "companies/google/round-05-googleyness-leadership",
+    "title": "Google — Round 05 — Googleyness Leadership",
+    "topic": "companies",
+    "path": "content/companies/google/round-05-googleyness-leadership/questions.md",
+    "excerpt": "**What this round assesses:** Leadership, teamwork, conflict resolution, handling failure, ambiguity, and impact beyond assigned work."
+  },
+  {
+    "id": "companies-meta-overview",
+    "route": "companies/meta",
+    "title": "Meta — Overview",
+    "topic": "companies",
+    "path": "content/companies/meta/README.md",
+    "excerpt": "Meta is a non-HFT high-comp employer with strong C++ usage in performance-sensitive systems, infrastructure, platforms, or product runtimes."
+  },
+  {
+    "id": "companies-meta-round-01-recruiter-screen",
+    "route": "companies/meta/round-01-recruiter-screen",
+    "title": "Meta — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/meta/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, interest in Meta products and teams, logistics, and team fit."
+  },
+  {
+    "id": "companies-meta-round-02-coding-screen",
+    "route": "companies/meta/round-02-coding-screen",
+    "title": "Meta — Round 02 — Coding Screen",
+    "topic": "companies",
+    "path": "content/companies/meta/round-02-coding-screen/questions.md",
+    "excerpt": "**What this round assesses:** Problem decomposition speed, DS/algorithm choice, clean code, and edge-case coverage."
+  },
+  {
+    "id": "companies-meta-round-03-onsite-coding-algorithm",
+    "route": "companies/meta/round-03-onsite-coding-algorithm",
+    "title": "Meta — Round 03 — Onsite Coding Algorithm",
+    "topic": "companies",
+    "path": "content/companies/meta/round-03-onsite-coding-algorithm/questions.md",
+    "excerpt": "**What this round assesses:** Algorithm depth, Big-O analysis, pressure handling, and clean code habits."
+  },
+  {
+    "id": "companies-meta-round-04-onsite-system-design",
+    "route": "companies/meta/round-04-onsite-system-design",
+    "title": "Meta — Round 04 — Onsite System Design",
+    "topic": "companies",
+    "path": "content/companies/meta/round-04-onsite-system-design/questions.md",
+    "excerpt": "**What this round assesses:** Distributed systems literacy, API design, storage choices, scalability patterns, realtime messaging, and consistency tradeoffs."
+  },
+  {
+    "id": "companies-meta-round-05-behavioral-jedi",
+    "route": "companies/meta/round-05-behavioral-jedi",
+    "title": "Meta — Round 05 — Behavioral Jedi",
+    "topic": "companies",
+    "path": "content/companies/meta/round-05-behavioral-jedi/questions.md",
+    "excerpt": "**What this round assesses:** Initiative, impact, collaboration, failure handling, directness, and end-to-end ownership."
+  },
+  {
+    "id": "companies-nvidia-overview",
+    "route": "companies/nvidia",
+    "title": "NVIDIA — Overview",
+    "topic": "companies",
+    "path": "content/companies/nvidia/README.md",
+    "excerpt": "NVIDIA is a non-HFT high-comp employer with strong C++ usage in performance-sensitive systems, infrastructure, platforms, or product runtimes."
+  },
+  {
+    "id": "companies-nvidia-round-01-recruiter-screen",
+    "route": "companies/nvidia/round-01-recruiter-screen",
+    "title": "NVIDIA — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/nvidia/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Motivation, background, logistics, team fit, and interest in NVIDIA products."
+  },
+  {
+    "id": "companies-nvidia-round-02-technical-phone-screen",
+    "route": "companies/nvidia/round-02-technical-phone-screen",
+    "title": "NVIDIA — Round 02 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/nvidia/round-02-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Baseline algorithm proficiency, C++ fluency, and domain awareness."
+  },
+  {
+    "id": "companies-nvidia-round-03-onsite-coding-algorithms",
+    "route": "companies/nvidia/round-03-onsite-coding-algorithms",
+    "title": "NVIDIA — Round 03 — Onsite Coding Algorithms",
+    "topic": "companies",
+    "path": "content/companies/nvidia/round-03-onsite-coding-algorithms/questions.md",
+    "excerpt": "**What this round assesses:** Data structures, algorithm design, C++ implementation quality, and complexity analysis."
+  },
+  {
+    "id": "companies-nvidia-round-04-cuda-gpu-architecture-depth",
+    "route": "companies/nvidia/round-04-cuda-gpu-architecture-depth",
+    "title": "NVIDIA — Round 04 — Cuda GPU Architecture Depth",
+    "topic": "companies",
+    "path": "content/companies/nvidia/round-04-cuda-gpu-architecture-depth/questions.md",
+    "excerpt": "**What this round assesses:** GPU memory hierarchy, CUDA programming model, performance optimization, and parallel algorithm design."
+  },
+  {
+    "id": "companies-nvidia-round-05-onsite-system-software-design",
+    "route": "companies/nvidia/round-05-onsite-system-software-design",
+    "title": "NVIDIA — Round 05 — Onsite System Software Design",
+    "topic": "companies",
+    "path": "content/companies/nvidia/round-05-onsite-system-software-design/questions.md",
+    "excerpt": "**What this round assesses:** Software architecture, API design, performance/scalability tradeoffs, and distributed/parallel system patterns."
+  },
+  {
+    "id": "companies-nvidia-round-06-hiring-manager-behavioral",
+    "route": "companies/nvidia/round-06-hiring-manager-behavioral",
+    "title": "NVIDIA — Round 06 — Hiring Manager Behavioral",
+    "topic": "companies",
+    "path": "content/companies/nvidia/round-06-hiring-manager-behavioral/questions.md",
+    "excerpt": "**What this round assesses:** Motivation, team fit, past project depth, performance debugging, and domain learning habits."
+  },
+  {
+    "id": "companies-bloomberg-overview",
+    "route": "companies/bloomberg",
+    "title": "Bloomberg — Overview",
+    "topic": "companies",
+    "path": "content/companies/bloomberg/README.md",
+    "excerpt": "Bloomberg is a non-HFT high-comp employer with strong C++ usage in performance-sensitive systems, infrastructure, platforms, or product runtimes."
+  },
+  {
+    "id": "companies-bloomberg-round-01-recruiter-screen",
+    "route": "companies/bloomberg/round-01-recruiter-screen",
+    "title": "Bloomberg — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/bloomberg/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, motivation for Bloomberg, C++ exposure, financial-data interest, and NYC/team logistics."
+  },
+  {
+    "id": "companies-bloomberg-round-02-technical-phone-screen",
+    "route": "companies/bloomberg/round-02-technical-phone-screen",
+    "title": "Bloomberg — Round 02 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/bloomberg/round-02-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic problem-solving and core C++ language knowledge."
+  },
+  {
+    "id": "companies-bloomberg-round-03-onsite-coding-algorithm",
+    "route": "companies/bloomberg/round-03-onsite-coding-algorithm",
+    "title": "Bloomberg — Round 03 — Onsite Coding Algorithm",
+    "topic": "companies",
+    "path": "content/companies/bloomberg/round-03-onsite-coding-algorithm/questions.md",
+    "excerpt": "**What this round assesses:** Algorithm correctness, complexity, data-structure selection, and C++ implementation quality."
+  },
+  {
+    "id": "companies-bloomberg-round-04-onsite-cpp-language-depth",
+    "route": "companies/bloomberg/round-04-onsite-cpp-language-depth",
+    "title": "Bloomberg — Round 04 — Onsite C++ Language Depth",
+    "topic": "companies",
+    "path": "content/companies/bloomberg/round-04-onsite-cpp-language-depth/questions.md",
+    "excerpt": "**What this round assesses:** Core C++ semantics, memory model, lifecycle, templates, concurrency primitives, and design patterns."
+  },
+  {
+    "id": "companies-bloomberg-round-05-onsite-system-software-design",
+    "route": "companies/bloomberg/round-05-onsite-system-software-design",
+    "title": "Bloomberg — Round 05 — Onsite System Software Design",
+    "topic": "companies",
+    "path": "content/companies/bloomberg/round-05-onsite-system-software-design/questions.md",
+    "excerpt": "**What this round assesses:** Software architecture, data modeling, real-time systems, fault tolerance, and latency considerations."
+  },
+  {
+    "id": "companies-bloomberg-round-06-behavioral-hr",
+    "route": "companies/bloomberg/round-06-behavioral-hr",
+    "title": "Bloomberg — Round 06 — Behavioral HR",
+    "topic": "companies",
+    "path": "content/companies/bloomberg/round-06-behavioral-hr/questions.md",
+    "excerpt": "**What this round assesses:** Teamwork, technical communication, debugging process, and motivation for financial technology."
+  },
+  {
+    "id": "companies-microsoft-overview",
+    "route": "companies/microsoft",
+    "title": "Microsoft — Overview",
+    "topic": "companies",
+    "path": "content/companies/microsoft/README.md",
+    "excerpt": "Microsoft is a non-HFT high-comp employer with strong C++ usage in performance-sensitive systems, infrastructure, platforms, or product runtimes."
+  },
+  {
+    "id": "companies-microsoft-round-01-recruiter-screen",
+    "route": "companies/microsoft/round-01-recruiter-screen",
+    "title": "Microsoft — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/microsoft/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Background, team matching, logistics, and product interest."
+  },
+  {
+    "id": "companies-microsoft-round-02-technical-phone-screen-oa",
+    "route": "companies/microsoft/round-02-technical-phone-screen-oa",
+    "title": "Microsoft — Round 02 — Technical Phone Screen OA",
+    "topic": "companies",
+    "path": "content/companies/microsoft/round-02-technical-phone-screen-oa/questions.md",
+    "excerpt": "**What this round assesses:** Basic algorithm/DS competency and ability to write clean code while communicating."
+  },
+  {
+    "id": "companies-microsoft-round-03-onsite-coding-algorithm",
+    "route": "companies/microsoft/round-03-onsite-coding-algorithm",
+    "title": "Microsoft — Round 03 — Onsite Coding Algorithm",
+    "topic": "companies",
+    "path": "content/companies/microsoft/round-03-onsite-coding-algorithm/questions.md",
+    "excerpt": "**What this round assesses:** Problem-solving process, code quality, edge-case coverage, and time/space complexity analysis."
+  },
+  {
+    "id": "companies-microsoft-round-04-onsite-system-design",
+    "route": "companies/microsoft/round-04-onsite-system-design",
+    "title": "Microsoft — Round 04 — Onsite System Design",
+    "topic": "companies",
+    "path": "content/companies/microsoft/round-04-onsite-system-design/questions.md",
+    "excerpt": "**What this round assesses:** OOP design, API clarity, scalability reasoning, and tradeoff articulation."
+  },
+  {
+    "id": "companies-microsoft-round-05-hiring-manager-behavioral",
+    "route": "companies/microsoft/round-05-hiring-manager-behavioral",
+    "title": "Microsoft — Round 05 — Hiring Manager Behavioral",
+    "topic": "companies",
+    "path": "content/companies/microsoft/round-05-hiring-manager-behavioral/questions.md",
+    "excerpt": "**What this round assesses:** Collaboration, learning orientation, ambiguity, leadership, and Microsoft Growth Mindset alignment."
+  },
+  {
+    "id": "companies-amazon-overview",
+    "route": "companies/amazon",
+    "title": "Amazon — Overview",
+    "topic": "companies",
+    "path": "content/companies/amazon/README.md",
+    "excerpt": "Amazon is a non-HFT high-comp employer with strong C++ usage in performance-sensitive systems, infrastructure, platforms, or product runtimes."
+  },
+  {
+    "id": "companies-amazon-round-01-online-assessment",
+    "route": "companies/amazon/round-01-online-assessment",
+    "title": "Amazon — Round 01 — Online Assessment",
+    "topic": "companies",
+    "path": "content/companies/amazon/round-01-online-assessment/questions.md",
+    "excerpt": "**What this round assesses:** Baseline coding ability and Work Style Assessment alignment with Amazon Leadership Principles."
+  },
+  {
+    "id": "companies-amazon-round-02-phone-screen",
+    "route": "companies/amazon/round-02-phone-screen",
+    "title": "Amazon — Round 02 — Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/amazon/round-02-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Algorithm problem-solving and Leadership Principles behavioral depth."
+  },
+  {
+    "id": "companies-amazon-round-03-onsite-coding-algorithm",
+    "route": "companies/amazon/round-03-onsite-coding-algorithm",
+    "title": "Amazon — Round 03 — Onsite Coding Algorithm",
+    "topic": "companies",
+    "path": "content/companies/amazon/round-03-onsite-coding-algorithm/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic correctness, complexity, C++ code quality, and LP evidence in each round."
+  },
+  {
+    "id": "companies-amazon-round-04-onsite-system-design",
+    "route": "companies/amazon/round-04-onsite-system-design",
+    "title": "Amazon — Round 04 — Onsite System Design",
+    "topic": "companies",
+    "path": "content/companies/amazon/round-04-onsite-system-design/questions.md",
+    "excerpt": "**What this round assesses:** Distributed systems design, scalability, AWS/product knowledge, API design, and LP reasoning through design decisions."
+  },
+  {
+    "id": "companies-amazon-round-05-bar-raiser",
+    "route": "companies/amazon/round-05-bar-raiser",
+    "title": "Amazon — Round 05 — Bar Raiser",
+    "topic": "companies",
+    "path": "content/companies/amazon/round-05-bar-raiser/questions.md",
+    "excerpt": "**What this round assesses:** Overall candidate quality, Leadership Principles depth, judgment, influence, and whether the candidate raises the bar."
+  },
+  {
+    "id": "companies-apple-overview",
+    "route": "companies/apple",
+    "title": "Apple — Overview",
+    "topic": "companies",
+    "path": "content/companies/apple/README.md",
+    "excerpt": "Apple is a non-HFT high-comp employer with strong C++ usage in performance-sensitive systems, infrastructure, platforms, or product runtimes."
+  },
+  {
+    "id": "companies-apple-round-01-recruiter-screen",
+    "route": "companies/apple/round-01-recruiter-screen",
+    "title": "Apple — Round 01 — Recruiter Screen",
+    "topic": "companies",
+    "path": "content/companies/apple/round-01-recruiter-screen/questions.md",
+    "excerpt": "**What this round assesses:** Team matching, product/technology interest, C++ background, and location logistics."
+  },
+  {
+    "id": "companies-apple-round-02-technical-phone-screen",
+    "route": "companies/apple/round-02-technical-phone-screen",
+    "title": "Apple — Round 02 — Technical Phone Screen",
+    "topic": "companies",
+    "path": "content/companies/apple/round-02-technical-phone-screen/questions.md",
+    "excerpt": "**What this round assesses:** Algorithmic fluency, C++ coding quality, and communication while coding."
+  },
+  {
+    "id": "companies-apple-round-03-take-home-project",
+    "route": "companies/apple/round-03-take-home-project",
+    "title": "Apple — Round 03 — Take Home Project",
+    "topic": "companies",
+    "path": "content/companies/apple/round-03-take-home-project/questions.md",
+    "excerpt": "**What this round assesses:** Real-world C++ coding practices, design choices, correctness, performance awareness, and testing habits."
+  },
+  {
+    "id": "companies-apple-round-04-onsite-coding-algorithm",
+    "route": "companies/apple/round-04-onsite-coding-algorithm",
+    "title": "Apple — Round 04 — Onsite Coding Algorithm",
+    "topic": "companies",
+    "path": "content/companies/apple/round-04-onsite-coding-algorithm/questions.md",
+    "excerpt": "**What this round assesses:** Efficient algorithm design, clean C++ code, and tradeoff discussion."
+  },
+  {
+    "id": "companies-apple-round-05-domain-technical-depth",
+    "route": "companies/apple/round-05-domain-technical-depth",
+    "title": "Apple — Round 05 — Domain Technical Depth",
+    "topic": "companies",
+    "path": "content/companies/apple/round-05-domain-technical-depth/questions.md",
+    "excerpt": "**What this round assesses:** Deep team-specific technical knowledge in audio, GPU, compiler, or browser systems."
+  },
+  {
+    "id": "companies-apple-round-06-hiring-manager-behavioral",
+    "route": "companies/apple/round-06-hiring-manager-behavioral",
+    "title": "Apple — Round 06 — Hiring Manager Behavioral",
+    "topic": "companies",
+    "path": "content/companies/apple/round-06-hiring-manager-behavioral/questions.md",
+    "excerpt": "**What this round assesses:** Technical background depth, team fit, communication clarity, and ownership of past work."
+  },
+  {
+    "id": "examples-foundations",
+    "route": "examples",
+    "title": "Coding Examples Overview",
+    "topic": "examples",
+    "path": "content/examples/foundations.md",
+    "excerpt": "Use these pages to review compilable implementations and discuss trade-offs in interviews."
+  },
+  {
+    "id": "examples-hft-ring-buffer",
+    "route": "examples/hft/ring-buffer",
+    "title": "HFT Example — Ring Buffer",
+    "topic": "examples",
+    "path": "content/examples/hft/ring-buffer.md",
+    "excerpt": "Source folder: examples/hft/01-ring-buffer."
+  },
+  {
+    "id": "examples-hft-order-book",
+    "route": "examples/hft/order-book",
+    "title": "HFT Example — Order Book",
+    "topic": "examples",
+    "path": "content/examples/hft/order-book.md",
+    "excerpt": "Source folder: examples/hft/02-order-book."
+  },
+  {
+    "id": "examples-hft-lock-free-queue",
+    "route": "examples/hft/lock-free-queue",
+    "title": "HFT Example — Lock Free Queue",
+    "topic": "examples",
+    "path": "content/examples/hft/lock-free-queue.md",
+    "excerpt": "Source folder: examples/hft/03-lock-free-queue."
+  },
+  {
+    "id": "examples-hft-memory-pool",
+    "route": "examples/hft/memory-pool",
+    "title": "HFT Example — Memory Pool",
+    "topic": "examples",
+    "path": "content/examples/hft/memory-pool.md",
+    "excerpt": "Source folder: examples/hft/04-memory-pool."
+  },
+  {
+    "id": "examples-hft-feed-handler",
+    "route": "examples/hft/feed-handler",
+    "title": "HFT Example — Feed Handler",
+    "topic": "examples",
+    "path": "content/examples/hft/feed-handler.md",
+    "excerpt": "Source folder: examples/hft/05-feed-handler."
+  },
+  {
+    "id": "examples-cpp",
+    "route": "examples/cpp",
+    "title": "C++ Example Implementations",
+    "topic": "examples",
+    "path": "content/examples/cpp/examples.md",
+    "excerpt": "Representative C++ examples from examples/cpp/ grouped by topic."
+  },
+  {
+    "id": "coding-hft-coding-questions-and-prep-plan",
+    "route": "coding/hft-coding-questions-and-prep-plan",
+    "title": "HFT Coding Questions & Full Prep Plan",
+    "topic": "coding",
+    "path": "content/coding/hft-coding-questions-and-prep-plan.md",
+    "excerpt": "**official**: explicitly stated on official company/careers material"
   }
 ]
