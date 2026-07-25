@@ -312,6 +312,150 @@ a:focus-visible {
 .nav-link--design.is-active { color: var(--accent-design); background: color-mix(in srgb, var(--accent-design) 12%, var(--surface) 88%); }
 .nav-link--trading.is-active { color: var(--accent-trading); background: color-mix(in srgb, var(--accent-trading) 12%, var(--surface) 88%); }
 .nav-link--lowlatency.is-active { color: var(--accent-lowlatency); background: color-mix(in srgb, var(--accent-lowlatency) 12%, var(--surface) 88%); }
+.nav-link--optiver.is-active { color: var(--primary); background: var(--primary-subtle); }
+
+/* ── Collapsible Nav Sections ── */
+.nav-section {
+  border-radius: var(--radius-sm);
+}
+
+/* Remove the default triangle marker from <details><summary> */
+.nav-section > summary {
+  list-style: none;
+}
+.nav-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-section__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.65rem var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  transition: background var(--transition), color var(--transition);
+}
+
+.nav-section__toggle:hover {
+  color: var(--text);
+  background: var(--surface-muted);
+}
+
+.nav-section__count {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.nav-section__chevron {
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: transform var(--transition);
+  margin-left: 2px;
+}
+
+details[open].nav-section > summary .nav-section__chevron {
+  transform: rotate(90deg);
+}
+
+.nav-section__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 0 6px var(--space-3);
+  border-left: 2px solid var(--border);
+  margin-left: var(--space-3);
+  margin-top: 2px;
+}
+
+/* Sub-page links inside collapsible sections */
+.nav-sublink {
+  font-size: 0.82rem;
+  padding: 0.35rem var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-sublink:hover {
+  color: var(--text);
+  background: var(--surface-muted);
+}
+
+.nav-sublink.is-active {
+  color: var(--primary);
+  background: var(--primary-subtle);
+  font-weight: 600;
+}
+
+.nav-link--behavioral.nav-sublink.is-active { color: var(--accent-behavioral); background: color-mix(in srgb, var(--accent-behavioral) 12%, var(--surface) 88%); }
+.nav-link--cpp.nav-sublink.is-active { color: var(--accent-cpp); background: color-mix(in srgb, var(--accent-cpp) 12%, var(--surface) 88%); }
+.nav-link--systems.nav-sublink.is-active { color: var(--accent-systems); background: color-mix(in srgb, var(--accent-systems) 12%, var(--surface) 88%); }
+.nav-link--design.nav-sublink.is-active { color: var(--accent-design); background: color-mix(in srgb, var(--accent-design) 12%, var(--surface) 88%); }
+.nav-link--trading.nav-sublink.is-active { color: var(--accent-trading); background: color-mix(in srgb, var(--accent-trading) 12%, var(--surface) 88%); }
+.nav-link--lowlatency.nav-sublink.is-active { color: var(--accent-lowlatency); background: color-mix(in srgb, var(--accent-lowlatency) 12%, var(--surface) 88%); }
+.nav-link--optiver.nav-sublink.is-active { color: var(--primary); background: var(--primary-subtle); }
+
+/* ── Breadcrumb Navigation ── */
+.content-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.content-breadcrumb a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.content-breadcrumb a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.content-breadcrumb span[aria-hidden] {
+  opacity: 0.5;
+}
+
+/* ── Prev/Next Navigation ── */
+.content-prev-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.content-prev-next a {
+  font-size: 0.875rem;
+  max-width: 45%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 
 /* ══════════════════════════════════════════════
    WORKSPACE & TOPBAR
