@@ -312,7 +312,7 @@
       "Bound fan-out and protect against slow consumers",
       "Support replay validation with known scenarios"
     ],
-    "sampleAnswer": "I would avoid turning the order book into a kitchen sink, because every extra derived metric in the mutation path expands latency variance and complicates correctness reasoning. Instead I would publish a compact internal event stream from the book—level changed, best bid moved, trade applied, stale state changed—and let analytics modules subscribe according to their latency class. The fastest analytics can run in-process with incremental updates, while heavier ones can consume asynchronously from a ring or snapshot stream, each output tagged with book version or sequence so consumers know exactly what state it reflects. Backpressure matters here: a slow analytics consumer must not block the book owner, so I would use bounded queues, drop or degrade policies for noncritical outputs, and explicit monitoring of lag. Replay is powerful because I can validate both the book and analytics against historical events and ensure derived values remain consistent after implementation changes. The design principle is to preserve a clean single source of truth for the book while letting analytics evolve at their own pace.",
+    "sampleAnswer": "I would avoid turning the order book into a kitchen sink, because every extra derived metric in the mutation path expands latency variance and complicates correctness reasoning. Instead I would publish a compact internal event stream from the book\u2014level changed, best bid moved, trade applied, stale state changed\u2014and let analytics modules subscribe according to their latency class. The fastest analytics can run in-process with incremental updates, while heavier ones can consume asynchronously from a ring or snapshot stream, each output tagged with book version or sequence so consumers know exactly what state it reflects. Backpressure matters here: a slow analytics consumer must not block the book owner, so I would use bounded queues, drop or degrade policies for noncritical outputs, and explicit monitoring of lag. Replay is powerful because I can validate both the book and analytics against historical events and ensure derived values remain consistent after implementation changes. The design principle is to preserve a clean single source of truth for the book while letting analytics evolve at their own pace.",
     "commonMistakes": [
       "Recomputing heavy analytics on every update",
       "Allowing slow consumers to block the core book owner"
@@ -376,7 +376,7 @@
       "Store enough metadata to reproduce sequence anomalies",
       "Use golden scenarios and fuzz edge cases"
     ],
-    "sampleAnswer": "For fast stateful systems, replay is not a nice-to-have; it is the main way to understand correctness after the fact without slowing the production path excessively. I would capture deterministic inputs at the closest practical boundary—ideally raw packets or normalized events with sequence metadata—and version the schema so old captures remain usable as the code evolves. The production book code should expose lightweight invariant hooks and state snapshots that a replay harness can enable more aggressively offline, rather than embedding expensive debug logic in the hot path all the time. I also like having a slower reference implementation or validator for small scenarios so I can compare behavior under cancellations, crossed books, reset messages, and gap recovery events. When bugs occur, the replay tooling needs to answer not just what the final state was, but exactly which input caused divergence and what upstream recovery or stale flags were active. The design goal is a book that is both fast live and scientifically debuggable afterward.",
+    "sampleAnswer": "For fast stateful systems, replay is not a nice-to-have; it is the main way to understand correctness after the fact without slowing the production path excessively. I would capture deterministic inputs at the closest practical boundary\u2014ideally raw packets or normalized events with sequence metadata\u2014and version the schema so old captures remain usable as the code evolves. The production book code should expose lightweight invariant hooks and state snapshots that a replay harness can enable more aggressively offline, rather than embedding expensive debug logic in the hot path all the time. I also like having a slower reference implementation or validator for small scenarios so I can compare behavior under cancellations, crossed books, reset messages, and gap recovery events. When bugs occur, the replay tooling needs to answer not just what the final state was, but exactly which input caused divergence and what upstream recovery or stale flags were active. The design goal is a book that is both fast live and scientifically debuggable afterward.",
     "commonMistakes": [
       "Relying only on unit tests with synthetic happy-path updates",
       "Capturing too little metadata to reproduce sequence or stale-state problems"
@@ -577,7 +577,7 @@
       "Journal enough state for replay and dispute resolution",
       "Design operator controls for emergency slowdown or halt"
     ],
-    "sampleAnswer": "I would define idempotency at each boundary explicitly, because strategy retries, OMS retries, and venue resends are related but not identical events. Stable client order identifiers, internal transition journals, and gateway-side resend history let the system answer whether a given instruction is new, retried safely, or dangerous to repeat. Throttling should exist both as venue-specific protection and as an upstream fairness policy, with clear backpressure signals instead of hidden queues that silently increase risk and latency. When limits are hit, I want deterministic behavior: reject, delay, or reroute according to policy, with telemetry that explains the decision to both operators and downstream systems. Because duplicates can become financial rather than merely technical bugs, I would bias the design toward explicit state and replayability even if that costs some complexity. The strong answer is about protecting correctness under retries, reconnects, and overload—not just rate limiting requests.",
+    "sampleAnswer": "I would define idempotency at each boundary explicitly, because strategy retries, OMS retries, and venue resends are related but not identical events. Stable client order identifiers, internal transition journals, and gateway-side resend history let the system answer whether a given instruction is new, retried safely, or dangerous to repeat. Throttling should exist both as venue-specific protection and as an upstream fairness policy, with clear backpressure signals instead of hidden queues that silently increase risk and latency. When limits are hit, I want deterministic behavior: reject, delay, or reroute according to policy, with telemetry that explains the decision to both operators and downstream systems. Because duplicates can become financial rather than merely technical bugs, I would bias the design toward explicit state and replayability even if that costs some complexity. The strong answer is about protecting correctness under retries, reconnects, and overload\u2014not just rate limiting requests. I would also make the operational model explicit, including failure drills, observability, and rollback paths, because architecture quality only matters if the system remains understandable under stress.",
     "commonMistakes": [
       "Assuming one order ID solves duplicates at every boundary",
       "Adding queues without clear expiry or backpressure semantics"
@@ -707,7 +707,7 @@
       "Design snapshot plus replay recovery",
       "Continuously reconcile against external truth"
     ],
-    "sampleAnswer": "I would build positions and exposure around authoritative events—order acknowledgements, fills, cancels, reference data, and market prices—with every mutation applied through a sequenced, idempotent event pipeline. The hot state should be sharded by a dimension that matches trading and risk usage, such as account or strategy plus instrument, so updates remain local and deterministic under load. I would separate fast incremental state from broader analytical query views; the core engine computes current positions and exposure deltas, while downstream materializations serve dashboards and historical analysis. Recovery needs both periodic snapshots and exact event replay so the service can rebuild state after a restart and still explain why a number moved when it did. Because silent drift is dangerous, I would continuously reconcile against venue drop copies, clearing events, or other external truths and surface discrepancy alarms early. The goal is an exposure platform that can answer now, recover later, and prove consistency across both.",
+    "sampleAnswer": "I would build positions and exposure around authoritative events\u2014order acknowledgements, fills, cancels, reference data, and market prices\u2014with every mutation applied through a sequenced, idempotent event pipeline. The hot state should be sharded by a dimension that matches trading and risk usage, such as account or strategy plus instrument, so updates remain local and deterministic under load. I would separate fast incremental state from broader analytical query views; the core engine computes current positions and exposure deltas, while downstream materializations serve dashboards and historical analysis. Recovery needs both periodic snapshots and exact event replay so the service can rebuild state after a restart and still explain why a number moved when it did. Because silent drift is dangerous, I would continuously reconcile against venue drop copies, clearing events, or other external truths and surface discrepancy alarms early. The goal is an exposure platform that can answer now, recover later, and prove consistency across both.",
     "commonMistakes": [
       "Using only mutable current state with no event history",
       "Ignoring reconciliation until end of day"
@@ -771,7 +771,7 @@
       "Plan fail-safe behavior if control propagation is partial",
       "Test drills and dry-runs regularly"
     ],
-    "sampleAnswer": "Emergency controls need clear scope boundaries first: disable one strategy, one account, one venue, or the whole plant, because an ambiguous kill switch is dangerous even if the code path is fast. Enforcement should happen close to the order gateways so new flow can be stopped immediately, while separate control actions handle canceling open orders or entering venue-specific protective modes. I would require authenticated operator actions, immutable audit logs, and positive acknowledgement from controlled components so we can prove what happened and detect partial propagation. If part of the system is unreachable, the design should fail safe where possible—for example defaulting to block new orders rather than assuming an unseen component is healthy. Operational drills matter because emergency systems that are never exercised are often too slow or confusing when the real incident arrives. The strong design is not just low-latency control propagation; it is confidence that the right thing actually happened and can be explained afterward.",
+    "sampleAnswer": "Emergency controls need clear scope boundaries first: disable one strategy, one account, one venue, or the whole plant, because an ambiguous kill switch is dangerous even if the code path is fast. Enforcement should happen close to the order gateways so new flow can be stopped immediately, while separate control actions handle canceling open orders or entering venue-specific protective modes. I would require authenticated operator actions, immutable audit logs, and positive acknowledgement from controlled components so we can prove what happened and detect partial propagation. If part of the system is unreachable, the design should fail safe where possible\u2014for example defaulting to block new orders rather than assuming an unseen component is healthy. Operational drills matter because emergency systems that are never exercised are often too slow or confusing when the real incident arrives. The strong design is not just low-latency control propagation; it is confidence that the right thing actually happened and can be explained afterward.",
     "commonMistakes": [
       "Designing only the command path and not the verification path",
       "Creating a kill switch that depends on fragile central infrastructure to work"
@@ -835,7 +835,7 @@
       "Separate always-on cheap metrics from high-cost diagnostics",
       "Support replay and incident deep dives"
     ],
-    "sampleAnswer": "I would start by naming the important latency segments explicitly—wire to capture, capture to decode, decode to strategy, strategy to risk, risk to gateway, and gateway to wire—because vague end-to-end timing hides where the real variance lives. Each boundary needs a trustworthy clock source appropriate to its scope, whether that is NIC hardware timestamps, synchronized host clocks, or carefully validated TSC-based local probes. I care more about distributions than means, so the default outputs should include p50, p99, worst slices, burst behavior, and correlation with queue depth, packet gaps, drops, and CPU scheduling anomalies. The system also needs layered detail: cheap always-on counters and histograms for broad coverage, plus richer tracing or capture modes that can be enabled during investigations without distorting the hot path too much. Replay support is important because some of the nastiest latency issues are traffic-shape dependent and impossible to reconstruct from counters alone. The aim is observability that helps engineers answer why the tail moved, not just that it moved.",
+    "sampleAnswer": "I would start by naming the important latency segments explicitly\u2014wire to capture, capture to decode, decode to strategy, strategy to risk, risk to gateway, and gateway to wire\u2014because vague end-to-end timing hides where the real variance lives. Each boundary needs a trustworthy clock source appropriate to its scope, whether that is NIC hardware timestamps, synchronized host clocks, or carefully validated TSC-based local probes. I care more about distributions than means, so the default outputs should include p50, p99, worst slices, burst behavior, and correlation with queue depth, packet gaps, drops, and CPU scheduling anomalies. The system also needs layered detail: cheap always-on counters and histograms for broad coverage, plus richer tracing or capture modes that can be enabled during investigations without distorting the hot path too much. Replay support is important because some of the nastiest latency issues are traffic-shape dependent and impossible to reconstruct from counters alone. The aim is observability that helps engineers answer why the tail moved, not just that it moved.",
     "commonMistakes": [
       "Reporting only average end-to-end latency",
       "Adding heavy tracing directly to the hot path with no cost budget"
@@ -905,7 +905,7 @@
       "Retain event history and replay artifacts",
       "Design clear ownership and communication paths"
     ],
-    "sampleAnswer": "For latency-sensitive systems I want deployment safety built into the platform, not improvised during incidents, so staged rollout and canaries are the default rather than the exception. Each component should have explicit rollback criteria tied to its real failure modes—latency regression, reject spikes, feed gaps, or session instability—not just generic health checks. I prefer a deployment model where binaries, configs, and feature flags are independently visible and reversible, because mixed hidden state is a common reason rollbacks fail under pressure. During incidents, operators need dependency-aware dashboards and clear ownership maps so they can isolate whether the problem is in market data, strategy, risk, or venue gateways instead of flooding every team at once. Post-incident, the platform should retain enough timelines, configuration versions, and replay inputs that the root cause can be reconstructed without guesswork. The design goal is to make the safe action easy when time pressure is highest.",
+    "sampleAnswer": "For latency-sensitive systems I want deployment safety built into the platform, not improvised during incidents, so staged rollout and canaries are the default rather than the exception. Each component should have explicit rollback criteria tied to its real failure modes\u2014latency regression, reject spikes, feed gaps, or session instability\u2014not just generic health checks. I prefer a deployment model where binaries, configs, and feature flags are independently visible and reversible, because mixed hidden state is a common reason rollbacks fail under pressure. During incidents, operators need dependency-aware dashboards and clear ownership maps so they can isolate whether the problem is in market data, strategy, risk, or venue gateways instead of flooding every team at once. Post-incident, the platform should retain enough timelines, configuration versions, and replay inputs that the root cause can be reconstructed without guesswork. The design goal is to make the safe action easy when time pressure is highest. I would also make the operational model explicit, including failure drills, observability, and rollback paths, because architecture quality only matters if the system remains understandable under stress.",
     "commonMistakes": [
       "Using generic health checks that miss latency-specific regressions",
       "Treating rollback as simply redeploying old code without considering config and state"
@@ -969,7 +969,7 @@
       "Feed findings back into rollout gates and hardware planning",
       "Model venue or market-event specific stress patterns"
     ],
-    "sampleAnswer": "I define capacity as the point where the platform can still meet latency and correctness goals under stressful traffic, not merely the point where it has not crashed. To plan for that, I use historical captures from volatile sessions plus synthetic worst-case bursts so we understand queue growth, recovery behavior, and tail latency before the real market day arrives. Headroom needs to be tracked per stage and per resource domain—CPU, memory bandwidth, NIC queues, exchange throttles, and downstream consumers—because the first bottleneck is rarely the same across all conditions. I would automate regression detection against baseline runs so new code, new configs, or even new hardware microcode cannot drift into production unnoticed. Those results should feed rollout gates and hardware planning, otherwise load tests become ceremonial and disconnected from operational decisions. The strong design plans for burst behavior explicitly because that is where trading systems earn or lose trust.",
+    "sampleAnswer": "I define capacity as the point where the platform can still meet latency and correctness goals under stressful traffic, not merely the point where it has not crashed. To plan for that, I use historical captures from volatile sessions plus synthetic worst-case bursts so we understand queue growth, recovery behavior, and tail latency before the real market day arrives. Headroom needs to be tracked per stage and per resource domain\u2014CPU, memory bandwidth, NIC queues, exchange throttles, and downstream consumers\u2014because the first bottleneck is rarely the same across all conditions. I would automate regression detection against baseline runs so new code, new configs, or even new hardware microcode cannot drift into production unnoticed. Those results should feed rollout gates and hardware planning, otherwise load tests become ceremonial and disconnected from operational decisions. The strong design plans for burst behavior explicitly because that is where trading systems earn or lose trust. I would also make the operational model explicit, including failure drills, observability, and rollback paths, because architecture quality only matters if the system remains understandable under stress.",
     "commonMistakes": [
       "Planning capacity on average message rates only",
       "Treating performance testing as an occasional manual exercise"
@@ -1000,6 +1000,1804 @@
       {
         "title": "Performance Analysis and Tuning on Modern CPU",
         "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-001",
+    "title": "Design a low-latency FIX gateway",
+    "question": "Design a low-latency exchange gateway that speaks FIX to an exchange and internal clients.",
+    "topics": [
+      "gateway",
+      "fix",
+      "session-management"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that session state, sequencing, and business rejects must remain explicit while the order path stays lean. My design would therefore separate fast order handling from slower session admin and recovery work. On the hot path I would rely on single-writer shards, strict sequence tracking, prevalidated messages, and bounded queues, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include drop-copy, replay, and operator controls. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-002",
+    "title": "Gateway with drop copy and audit",
+    "question": "How would you design an exchange gateway that supports both fast order routing and reliable drop-copy or audit publication?",
+    "topics": [
+      "gateway",
+      "audit",
+      "drop-copy"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that the trading path needs low jitter while the audit path needs completeness and durable traceability. My design would therefore make the audit path asynchronous but causally linked to accepted events. On the hot path I would rely on append-only eventing, durable sequencing, and clear backpressure isolation, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include reconciliation and replay tools. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-003",
+    "title": "Session recovery after disconnect",
+    "question": "Design the session-management and recovery behavior for a gateway that loses and restores exchange connectivity.",
+    "topics": [
+      "gateway",
+      "recovery",
+      "sessions"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that disconnects create ambiguity about which messages were received, acknowledged, or need replay. My design would therefore model session and order state machines explicitly rather than inferring them ad hoc. On the hot path I would rely on retransmit requests, gap handling, idempotent recovery, and stale-mode signaling, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include operator visibility into reconnect progress. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-004",
+    "title": "Multi-session sharded gateway",
+    "question": "How would you scale a gateway across many sessions or partitions while preserving determinism?",
+    "topics": [
+      "gateway",
+      "sharding",
+      "scalability"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that scaling must not create hidden reordering or ownership confusion. My design would therefore shard by session or account with clear affinity and ownership. On the hot path I would rely on single-writer shards, per-shard risk gates, and global observability, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include drain and failover procedures. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-005",
+    "title": "Gateway risk checks on the hot path",
+    "question": "Where would you place gateway-level risk checks so they remain fast but trustworthy?",
+    "topics": [
+      "gateway",
+      "risk",
+      "order-entry"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that some controls must be synchronous, while richer analysis can be asynchronous. My design would therefore separate must-block checks from monitor-only workflows. On the hot path I would rely on prefetched reference data, lock-free snapshots, and explicit degraded modes, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include control ownership and emergency disable rules. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-006",
+    "title": "Binary protocol order gateway",
+    "question": "Design an exchange gateway for a binary order-entry protocol rather than FIX. What changes?",
+    "topics": [
+      "gateway",
+      "binary-protocol",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that binary protocols shift parsing and state-management tradeoffs but not the need for exact sequencing. My design would therefore exploit fixed layout and preallocation while keeping protocol versioning manageable. On the hot path I would rely on codec isolation, schema validation, and session correctness, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include replay and compatibility testing. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-007",
+    "title": "Gateway observability design",
+    "question": "What observability would you build into an exchange gateway without bloating the hot path?",
+    "topics": [
+      "gateway",
+      "observability",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that you need enough telemetry to debug loss, rejects, and latency without turning tracing into the bottleneck. My design would therefore split always-on lightweight counters from sampled or asynchronous diagnostics. On the hot path I would rely on wire-to-app timing, queue depth, state transitions, and rejection reason tracking, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include incident-focused replay hooks. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-gateway-008",
+    "title": "Active-active gateway failover",
+    "question": "Design active-active or hot-standby failover for a gateway while avoiding duplicate orders or confused session state.",
+    "topics": [
+      "gateway",
+      "failover",
+      "resilience"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "What exchange protocol, flow, and latency budget should we assume?",
+      "What resilience and operational guarantees do clients expect from the gateway?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end exchange connectivity design",
+      "Evaluating whether the candidate balances protocol correctness, latency, and operability"
+    ],
+    "answerOutline": [
+      "Clarify scope, protocol, and failure model",
+      "Design the hot path and control path separately",
+      "Cover sequencing, session state, risk, and observability",
+      "Explain failure handling, rollout, and replay or testing"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that failover logic must protect correctness first because duplicate or ambiguous orders are worse than a brief pause. My design would therefore define source of truth for session and order ownership before discussing mechanics. On the hot path I would rely on heartbeat, fencing, takeover criteria, and reconciliation on role change, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include operational drills and manual overrides. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Drawing a generic service without exchange-session specifics",
+      "Ignoring stale state, throttling, or operator workflows"
+    ],
+    "followUps": [
+      "How would you shard or scale it?",
+      "What metrics or runbooks would make it supportable?"
+    ],
+    "seniorExtension": "Extend the answer to how you keep the gateway fast while still leaving a clear audit and recovery trail.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-replay-001",
+    "title": "Deterministic market-data replay",
+    "question": "Design a deterministic market-data replay system for debugging feed-handler or strategy behavior.",
+    "topics": [
+      "replay",
+      "market-data",
+      "determinism"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Is the goal deterministic debugging, research backtesting, operator training, or all three?",
+      "What fidelity and throughput requirements matter most?"
+    ],
+    "interviewerIntent": [
+      "Evaluating replay and simulation design",
+      "Evaluating whether the candidate thinks about determinism, data lineage, and practical usability"
+    ],
+    "answerOutline": [
+      "Clarify replay goals and fidelity requirements",
+      "Design ingestion, storage, indexing, and playback controls",
+      "Discuss determinism, clocks, and side effects",
+      "Cover scale, usability, and validation"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that the replay must preserve ordering, timing semantics, and provenance well enough to reproduce decisions. My design would therefore store raw packets plus normalized events and metadata needed for reconstruction. On the hot path I would rely on index by venue, channel, symbol, and time while keeping immutable source records, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include validation against live captures and expected state. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating replay as only a storage problem",
+      "Ignoring time semantics, determinism, or schema evolution"
+    ],
+    "followUps": [
+      "How would you validate replay fidelity?",
+      "What data would you store versus derive later?"
+    ],
+    "seniorExtension": "Extend the answer to how you would share one replay platform across engineering, trading, and research users without compromising determinism.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-replay-002",
+    "title": "Backtesting infrastructure design",
+    "question": "How would you design backtesting infrastructure that is useful to both researchers and production engineers?",
+    "topics": [
+      "replay",
+      "backtesting",
+      "research"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Is the goal deterministic debugging, research backtesting, operator training, or all three?",
+      "What fidelity and throughput requirements matter most?"
+    ],
+    "interviewerIntent": [
+      "Evaluating replay and simulation design",
+      "Evaluating whether the candidate thinks about determinism, data lineage, and practical usability"
+    ],
+    "answerOutline": [
+      "Clarify replay goals and fidelity requirements",
+      "Design ingestion, storage, indexing, and playback controls",
+      "Discuss determinism, clocks, and side effects",
+      "Cover scale, usability, and validation"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that different users need flexibility, scale, and trust that results correspond to real system behavior. My design would therefore share data lineage and canonical event models while allowing user-specific compute layers. On the hot path I would rely on deterministic data snapshots, versioned transforms, and reproducible job configs, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include cost controls and result auditing. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating replay as only a storage problem",
+      "Ignoring time semantics, determinism, or schema evolution"
+    ],
+    "followUps": [
+      "How would you validate replay fidelity?",
+      "What data would you store versus derive later?"
+    ],
+    "seniorExtension": "Extend the answer to how you would share one replay platform across engineering, trading, and research users without compromising determinism.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-replay-003",
+    "title": "Order and execution replay",
+    "question": "Design a replay system for orders, acknowledgements, fills, and risk events to debug trading incidents.",
+    "topics": [
+      "replay",
+      "orders",
+      "incident-analysis"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Is the goal deterministic debugging, research backtesting, operator training, or all three?",
+      "What fidelity and throughput requirements matter most?"
+    ],
+    "interviewerIntent": [
+      "Evaluating replay and simulation design",
+      "Evaluating whether the candidate thinks about determinism, data lineage, and practical usability"
+    ],
+    "answerOutline": [
+      "Clarify replay goals and fidelity requirements",
+      "Design ingestion, storage, indexing, and playback controls",
+      "Discuss determinism, clocks, and side effects",
+      "Cover scale, usability, and validation"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that incident replay needs causality across internal and external events, not just one data stream. My design would therefore capture a unified event timeline with stable identifiers and clock context. On the hot path I would rely on queryable storage, scenario extraction, and safe local reenactment tools, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include privacy and access controls. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating replay as only a storage problem",
+      "Ignoring time semantics, determinism, or schema evolution"
+    ],
+    "followUps": [
+      "How would you validate replay fidelity?",
+      "What data would you store versus derive later?"
+    ],
+    "seniorExtension": "Extend the answer to how you would share one replay platform across engineering, trading, and research users without compromising determinism.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-replay-004",
+    "title": "Time control in replay systems",
+    "question": "How do you design time in a replay system so users can choose real-time, accelerated, or stepwise playback?",
+    "topics": [
+      "replay",
+      "time",
+      "simulation"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Is the goal deterministic debugging, research backtesting, operator training, or all three?",
+      "What fidelity and throughput requirements matter most?"
+    ],
+    "interviewerIntent": [
+      "Evaluating replay and simulation design",
+      "Evaluating whether the candidate thinks about determinism, data lineage, and practical usability"
+    ],
+    "answerOutline": [
+      "Clarify replay goals and fidelity requirements",
+      "Design ingestion, storage, indexing, and playback controls",
+      "Discuss determinism, clocks, and side effects",
+      "Cover scale, usability, and validation"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that clock semantics determine determinism, user experience, and how external interactions are mocked. My design would therefore separate event time, ingest time, and wall-clock playback control explicitly. On the hot path I would rely on virtual clocks, pause-step APIs, and deterministic scheduling, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include cross-mode consistency tests. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating replay as only a storage problem",
+      "Ignoring time semantics, determinism, or schema evolution"
+    ],
+    "followUps": [
+      "How would you validate replay fidelity?",
+      "What data would you store versus derive later?"
+    ],
+    "seniorExtension": "Extend the answer to how you would share one replay platform across engineering, trading, and research users without compromising determinism.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-replay-005",
+    "title": "Data storage for replay at scale",
+    "question": "What storage layout would you choose for very large replay datasets, and how would you keep retrieval efficient?",
+    "topics": [
+      "replay",
+      "storage",
+      "scalability"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Is the goal deterministic debugging, research backtesting, operator training, or all three?",
+      "What fidelity and throughput requirements matter most?"
+    ],
+    "interviewerIntent": [
+      "Evaluating replay and simulation design",
+      "Evaluating whether the candidate thinks about determinism, data lineage, and practical usability"
+    ],
+    "answerOutline": [
+      "Clarify replay goals and fidelity requirements",
+      "Design ingestion, storage, indexing, and playback controls",
+      "Discuss determinism, clocks, and side effects",
+      "Cover scale, usability, and validation"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that raw fidelity, queryability, and storage cost often pull in different directions. My design would therefore tier raw immutable archives from indexed derived stores. On the hot path I would rely on partitioning, compression, and metadata catalogs with strong provenance, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include replay latency and cost monitoring. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating replay as only a storage problem",
+      "Ignoring time semantics, determinism, or schema evolution"
+    ],
+    "followUps": [
+      "How would you validate replay fidelity?",
+      "What data would you store versus derive later?"
+    ],
+    "seniorExtension": "Extend the answer to how you would share one replay platform across engineering, trading, and research users without compromising determinism.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-replay-006",
+    "title": "Schema evolution in replay",
+    "question": "How would you handle schema evolution so old captures remain usable as systems change?",
+    "topics": [
+      "replay",
+      "schema-evolution",
+      "compatibility"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Is the goal deterministic debugging, research backtesting, operator training, or all three?",
+      "What fidelity and throughput requirements matter most?"
+    ],
+    "interviewerIntent": [
+      "Evaluating replay and simulation design",
+      "Evaluating whether the candidate thinks about determinism, data lineage, and practical usability"
+    ],
+    "answerOutline": [
+      "Clarify replay goals and fidelity requirements",
+      "Design ingestion, storage, indexing, and playback controls",
+      "Discuss determinism, clocks, and side effects",
+      "Cover scale, usability, and validation"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that replay platforms live long enough that versioning becomes central, not incidental. My design would therefore store versioned raw records and explicit transform steps instead of silently mutating history. On the hot path I would rely on compatibility adapters and validation suites across versions, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include golden datasets and migration tests. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating replay as only a storage problem",
+      "Ignoring time semantics, determinism, or schema evolution"
+    ],
+    "followUps": [
+      "How would you validate replay fidelity?",
+      "What data would you store versus derive later?"
+    ],
+    "seniorExtension": "Extend the answer to how you would share one replay platform across engineering, trading, and research users without compromising determinism.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-replay-007",
+    "title": "Replay for operator training and drills",
+    "question": "Design a replay environment that helps operators practice incident response without risking production.",
+    "topics": [
+      "replay",
+      "training",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Is the goal deterministic debugging, research backtesting, operator training, or all three?",
+      "What fidelity and throughput requirements matter most?"
+    ],
+    "interviewerIntent": [
+      "Evaluating replay and simulation design",
+      "Evaluating whether the candidate thinks about determinism, data lineage, and practical usability"
+    ],
+    "answerOutline": [
+      "Clarify replay goals and fidelity requirements",
+      "Design ingestion, storage, indexing, and playback controls",
+      "Discuss determinism, clocks, and side effects",
+      "Cover scale, usability, and validation"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that the platform should simulate pressure and tooling realistically while keeping actions isolated. My design would therefore scenario packs, realistic dashboards, and safe control-plane mocks. On the hot path I would rely on deterministic scenarios plus branching for alternative decisions, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include post-drill review artifacts. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating replay as only a storage problem",
+      "Ignoring time semantics, determinism, or schema evolution"
+    ],
+    "followUps": [
+      "How would you validate replay fidelity?",
+      "What data would you store versus derive later?"
+    ],
+    "seniorExtension": "Extend the answer to how you would share one replay platform across engineering, trading, and research users without compromising determinism.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-throttle-001",
+    "title": "Outbound message rate limiting",
+    "question": "Design a rate-limiting system for outbound order messages so exchange throttle limits are respected without surprising traders.",
+    "topics": [
+      "throttling",
+      "rate-limits",
+      "orders"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "What type of rate, exposure, or anomaly should the mechanism constrain?",
+      "Should the control fail open, fail closed, or degrade by mode?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-system design",
+      "Evaluating whether the candidate can turn policy into fast, reliable enforcement"
+    ],
+    "answerOutline": [
+      "Define the protected resource or failure mode",
+      "Design enforcement points and state management",
+      "Discuss latency impact, overrides, and observability",
+      "Cover testing and operational controls"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that the control must be predictable, low-latency, and visible enough that users understand why behavior changes. My design would therefore enforce near the gateway with per-session and per-strategy views. On the hot path I would rely on token-bucket or leaky-bucket models with bounded queues and explicit defer or reject semantics, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include dashboards and override workflow. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Designing a safety feature with no clear state model or operator workflow",
+      "Ignoring false positives and recovery behavior"
+    ],
+    "followUps": [
+      "How would you keep it from becoming a single point of failure?",
+      "Who can override it and how is that audited?"
+    ],
+    "seniorExtension": "Extend the answer to how you build trust in protective controls so traders respect them rather than routing around them.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-throttle-002",
+    "title": "Circuit breaker for anomalous behavior",
+    "question": "How would you design a circuit breaker that trips when a strategy or service behaves abnormally?",
+    "topics": [
+      "throttling",
+      "circuit-breaker",
+      "safety"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "What type of rate, exposure, or anomaly should the mechanism constrain?",
+      "Should the control fail open, fail closed, or degrade by mode?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-system design",
+      "Evaluating whether the candidate can turn policy into fast, reliable enforcement"
+    ],
+    "answerOutline": [
+      "Define the protected resource or failure mode",
+      "Design enforcement points and state management",
+      "Discuss latency impact, overrides, and observability",
+      "Cover testing and operational controls"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that the hard part is defining anomaly and recovery so you reduce harm without causing needless outages. My design would therefore combine fast local checks with slower contextual validation. On the hot path I would rely on a state machine with cool-down, operator acknowledgement, and audit trail, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include simulation against historical incidents. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Designing a safety feature with no clear state model or operator workflow",
+      "Ignoring false positives and recovery behavior"
+    ],
+    "followUps": [
+      "How would you keep it from becoming a single point of failure?",
+      "Who can override it and how is that audited?"
+    ],
+    "seniorExtension": "Extend the answer to how you build trust in protective controls so traders respect them rather than routing around them.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-throttle-003",
+    "title": "Kill switch architecture",
+    "question": "Design a kill switch for a trading stack. Where should it live and how do you make it trustworthy?",
+    "topics": [
+      "throttling",
+      "kill-switch",
+      "risk"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "What type of rate, exposure, or anomaly should the mechanism constrain?",
+      "Should the control fail open, fail closed, or degrade by mode?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-system design",
+      "Evaluating whether the candidate can turn policy into fast, reliable enforcement"
+    ],
+    "answerOutline": [
+      "Define the protected resource or failure mode",
+      "Design enforcement points and state management",
+      "Discuss latency impact, overrides, and observability",
+      "Cover testing and operational controls"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that a kill switch must be simple, authoritative, and testable under stress. My design would therefore layer venue, gateway, and internal disable points so one failure does not neuter the control. On the hot path I would rely on minimal dependencies, explicit scope, and clear confirmation of effect, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include drills and reconciliation after activation. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Designing a safety feature with no clear state model or operator workflow",
+      "Ignoring false positives and recovery behavior"
+    ],
+    "followUps": [
+      "How would you keep it from becoming a single point of failure?",
+      "Who can override it and how is that audited?"
+    ],
+    "seniorExtension": "Extend the answer to how you build trust in protective controls so traders respect them rather than routing around them.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-throttle-004",
+    "title": "Position or exposure throttling",
+    "question": "How would you design a fast exposure throttle that slows or stops flow as limits are approached?",
+    "topics": [
+      "throttling",
+      "exposure",
+      "risk-controls"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "What type of rate, exposure, or anomaly should the mechanism constrain?",
+      "Should the control fail open, fail closed, or degrade by mode?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-system design",
+      "Evaluating whether the candidate can turn policy into fast, reliable enforcement"
+    ],
+    "answerOutline": [
+      "Define the protected resource or failure mode",
+      "Design enforcement points and state management",
+      "Discuss latency impact, overrides, and observability",
+      "Cover testing and operational controls"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that state freshness and contention matter because the control is only useful if it is both timely and reliable. My design would therefore use read-optimized snapshots for checks and authoritative asynchronous accounting for deeper review. On the hot path I would rely on threshold bands, hysteresis, and deterministic action policy, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include latency measurement and false-positive analysis. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Designing a safety feature with no clear state model or operator workflow",
+      "Ignoring false positives and recovery behavior"
+    ],
+    "followUps": [
+      "How would you keep it from becoming a single point of failure?",
+      "Who can override it and how is that audited?"
+    ],
+    "seniorExtension": "Extend the answer to how you build trust in protective controls so traders respect them rather than routing around them.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-throttle-005",
+    "title": "Multi-tenant throttling policy",
+    "question": "Design throttling for multiple strategies sharing one gateway or venue session.",
+    "topics": [
+      "throttling",
+      "multi-tenant",
+      "fairness"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "What type of rate, exposure, or anomaly should the mechanism constrain?",
+      "Should the control fail open, fail closed, or degrade by mode?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-system design",
+      "Evaluating whether the candidate can turn policy into fast, reliable enforcement"
+    ],
+    "answerOutline": [
+      "Define the protected resource or failure mode",
+      "Design enforcement points and state management",
+      "Discuss latency impact, overrides, and observability",
+      "Cover testing and operational controls"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that controls need to protect the shared resource without letting one tenant starve or hide behind others. My design would therefore maintain per-tenant budgets with global caps and explicit scheduling policy. On the hot path I would rely on fair queueing or weighted budgeting with auditability, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include stress tests with adversarial mixes. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Designing a safety feature with no clear state model or operator workflow",
+      "Ignoring false positives and recovery behavior"
+    ],
+    "followUps": [
+      "How would you keep it from becoming a single point of failure?",
+      "Who can override it and how is that audited?"
+    ],
+    "seniorExtension": "Extend the answer to how you build trust in protective controls so traders respect them rather than routing around them.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-throttle-006",
+    "title": "Safe overrides and operator controls",
+    "question": "How would you allow emergency overrides to throttles or breakers without undermining trust in the system?",
+    "topics": [
+      "throttling",
+      "operations",
+      "governance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "What type of rate, exposure, or anomaly should the mechanism constrain?",
+      "Should the control fail open, fail closed, or degrade by mode?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-system design",
+      "Evaluating whether the candidate can turn policy into fast, reliable enforcement"
+    ],
+    "answerOutline": [
+      "Define the protected resource or failure mode",
+      "Design enforcement points and state management",
+      "Discuss latency impact, overrides, and observability",
+      "Cover testing and operational controls"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that override paths are necessary but dangerous if they become informal shortcuts. My design would therefore require scoped permissions, dual control where appropriate, expiry, and durable audit logs. On the hot path I would rely on stateful override events visible to relevant monitoring, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include regular review of override usage. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Designing a safety feature with no clear state model or operator workflow",
+      "Ignoring false positives and recovery behavior"
+    ],
+    "followUps": [
+      "How would you keep it from becoming a single point of failure?",
+      "Who can override it and how is that audited?"
+    ],
+    "seniorExtension": "Extend the answer to how you build trust in protective controls so traders respect them rather than routing around them.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-throttle-007",
+    "title": "Throttling without hot-path lock contention",
+    "question": "How would you implement fast throttling decisions without turning the throttle itself into a bottleneck?",
+    "topics": [
+      "throttling",
+      "performance",
+      "concurrency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "What type of rate, exposure, or anomaly should the mechanism constrain?",
+      "Should the control fail open, fail closed, or degrade by mode?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-system design",
+      "Evaluating whether the candidate can turn policy into fast, reliable enforcement"
+    ],
+    "answerOutline": [
+      "Define the protected resource or failure mode",
+      "Design enforcement points and state management",
+      "Discuss latency impact, overrides, and observability",
+      "Cover testing and operational controls"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that shared counters and centralized decision logic can create exactly the latency problem they were meant to manage. My design would therefore design sharded or snapshot-based checks with clear reconciliation semantics. On the hot path I would rely on single-writer accounting where possible and approximate prechecks with authoritative follow-up, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include contention benchmarks and correctness tests. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Designing a safety feature with no clear state model or operator workflow",
+      "Ignoring false positives and recovery behavior"
+    ],
+    "followUps": [
+      "How would you keep it from becoming a single point of failure?",
+      "Who can override it and how is that audited?"
+    ],
+    "seniorExtension": "Extend the answer to how you build trust in protective controls so traders respect them rather than routing around them.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-colocation-001",
+    "title": "Co-location architecture goals",
+    "question": "Design the high-level architecture for a co-located trading deployment and explain the main tradeoffs.",
+    "topics": [
+      "colocation",
+      "architecture",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "What is the performance objective: lower median latency, tighter jitter, or better resilience?",
+      "What budget and operational constraints apply to the colo footprint?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems-and-infrastructure tradeoff thinking",
+      "Evaluating whether the candidate can reason about hardware, timing, and operations together"
+    ],
+    "answerOutline": [
+      "Clarify business objective and constraints",
+      "Describe host, network, and timing architecture",
+      "Discuss redundancy, deployment, and observability",
+      "Explain what you would measure and optimize first"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that colo emphasizes proximity and determinism, but resilience and supportability still matter. My design would therefore split trading, market-data, and support roles intentionally across hosts and networks. On the hot path I would rely on dedicated low-jitter hosts plus separate operational services and failover paths, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include site health and latency telemetry. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating hardware choices as folklore rather than measured tradeoffs",
+      "Ignoring operational support and timing visibility"
+    ],
+    "followUps": [
+      "How would you justify the spend?",
+      "What would you optimize after the obvious hardware choices are made?"
+    ],
+    "seniorExtension": "Extend the answer to how you separate mythology from measurable advantage in a colo environment.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-colocation-002",
+    "title": "Hardware selection for low jitter",
+    "question": "How would you choose CPUs, NICs, memory, and storage for a low-latency colocated stack?",
+    "topics": [
+      "colocation",
+      "hardware",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "What is the performance objective: lower median latency, tighter jitter, or better resilience?",
+      "What budget and operational constraints apply to the colo footprint?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems-and-infrastructure tradeoff thinking",
+      "Evaluating whether the candidate can reason about hardware, timing, and operations together"
+    ],
+    "answerOutline": [
+      "Clarify business objective and constraints",
+      "Describe host, network, and timing architecture",
+      "Discuss redundancy, deployment, and observability",
+      "Explain what you would measure and optimize first"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that hardware choice should reflect measured bottlenecks rather than folklore alone. My design would therefore optimize for cache behavior, clock stability, NIC capabilities, and predictable memory performance. On the hot path I would rely on standardize where it improves operability and benchmark where it affects critical paths, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include hardware A-B testing with representative workloads. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating hardware choices as folklore rather than measured tradeoffs",
+      "Ignoring operational support and timing visibility"
+    ],
+    "followUps": [
+      "How would you justify the spend?",
+      "What would you optimize after the obvious hardware choices are made?"
+    ],
+    "seniorExtension": "Extend the answer to how you separate mythology from measurable advantage in a colo environment.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-colocation-003",
+    "title": "Timing synchronization design",
+    "question": "How would you design timing synchronization and timestamping in a colo environment?",
+    "topics": [
+      "colocation",
+      "timing",
+      "ptp"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "What is the performance objective: lower median latency, tighter jitter, or better resilience?",
+      "What budget and operational constraints apply to the colo footprint?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems-and-infrastructure tradeoff thinking",
+      "Evaluating whether the candidate can reason about hardware, timing, and operations together"
+    ],
+    "answerOutline": [
+      "Clarify business objective and constraints",
+      "Describe host, network, and timing architecture",
+      "Discuss redundancy, deployment, and observability",
+      "Explain what you would measure and optimize first"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that timing is required for debugging, sequencing, and some strategies, but clocks have failure modes too. My design would therefore use PTP or hardware timestamping with clear clock hierarchy and monitoring. On the hot path I would rely on separate trading logic from blind trust in wall-clock precision, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include clock-skew alerts and drift audits. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating hardware choices as folklore rather than measured tradeoffs",
+      "Ignoring operational support and timing visibility"
+    ],
+    "followUps": [
+      "How would you justify the spend?",
+      "What would you optimize after the obvious hardware choices are made?"
+    ],
+    "seniorExtension": "Extend the answer to how you separate mythology from measurable advantage in a colo environment.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-colocation-004",
+    "title": "Redundancy in constrained rack space",
+    "question": "How do you design redundancy and failover when colo space and ports are constrained?",
+    "topics": [
+      "colocation",
+      "redundancy",
+      "capacity"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "What is the performance objective: lower median latency, tighter jitter, or better resilience?",
+      "What budget and operational constraints apply to the colo footprint?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems-and-infrastructure tradeoff thinking",
+      "Evaluating whether the candidate can reason about hardware, timing, and operations together"
+    ],
+    "answerOutline": [
+      "Clarify business objective and constraints",
+      "Describe host, network, and timing architecture",
+      "Discuss redundancy, deployment, and observability",
+      "Explain what you would measure and optimize first"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that space limits force hard prioritization about what must be duplicated physically versus logically. My design would therefore choose redundant network and compute for critical paths while keeping support functions lighter. On the hot path I would rely on explicit failover plans, cable-path diversity, and inventory discipline, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include failover drills and capacity models. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating hardware choices as folklore rather than measured tradeoffs",
+      "Ignoring operational support and timing visibility"
+    ],
+    "followUps": [
+      "How would you justify the spend?",
+      "What would you optimize after the obvious hardware choices are made?"
+    ],
+    "seniorExtension": "Extend the answer to how you separate mythology from measurable advantage in a colo environment.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-colocation-005",
+    "title": "Deployment and change management in colo",
+    "question": "What does safe change management look like in a colocated low-latency environment?",
+    "topics": [
+      "colocation",
+      "deployments",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "What is the performance objective: lower median latency, tighter jitter, or better resilience?",
+      "What budget and operational constraints apply to the colo footprint?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems-and-infrastructure tradeoff thinking",
+      "Evaluating whether the candidate can reason about hardware, timing, and operations together"
+    ],
+    "answerOutline": [
+      "Clarify business objective and constraints",
+      "Describe host, network, and timing architecture",
+      "Discuss redundancy, deployment, and observability",
+      "Explain what you would measure and optimize first"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that physical remoteness and tight performance tuning make uncontrolled changes expensive to diagnose. My design would therefore treat firmware, BIOS, kernel, and app changes as one risk surface with staged rollout. On the hot path I would rely on immutable artifacts, tight inventory, and pre-post change measurements, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include change windows and rollback playbooks. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating hardware choices as folklore rather than measured tradeoffs",
+      "Ignoring operational support and timing visibility"
+    ],
+    "followUps": [
+      "How would you justify the spend?",
+      "What would you optimize after the obvious hardware choices are made?"
+    ],
+    "seniorExtension": "Extend the answer to how you separate mythology from measurable advantage in a colo environment.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-colocation-006",
+    "title": "Environmental and operational telemetry",
+    "question": "What non-application telemetry matters in a colo environment, and how would you use it?",
+    "topics": [
+      "colocation",
+      "observability",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "What is the performance objective: lower median latency, tighter jitter, or better resilience?",
+      "What budget and operational constraints apply to the colo footprint?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems-and-infrastructure tradeoff thinking",
+      "Evaluating whether the candidate can reason about hardware, timing, and operations together"
+    ],
+    "answerOutline": [
+      "Clarify business objective and constraints",
+      "Describe host, network, and timing architecture",
+      "Discuss redundancy, deployment, and observability",
+      "Explain what you would measure and optimize first"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that power, temperature, link health, clock status, and hardware errors can explain behavior that code metrics cannot. My design would therefore integrate infrastructure telemetry with application timelines rather than keeping it siloed. On the hot path I would rely on thresholds, anomaly detection, and correlation views, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include postmortem use and alert tuning loops. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating hardware choices as folklore rather than measured tradeoffs",
+      "Ignoring operational support and timing visibility"
+    ],
+    "followUps": [
+      "How would you justify the spend?",
+      "What would you optimize after the obvious hardware choices are made?"
+    ],
+    "seniorExtension": "Extend the answer to how you separate mythology from measurable advantage in a colo environment.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-colocation-007",
+    "title": "When more hardware is not the answer",
+    "question": "Give an example where buying faster hardware would be less valuable than improving software or operations in colo.",
+    "topics": [
+      "colocation",
+      "tradeoffs",
+      "optimization"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "What is the performance objective: lower median latency, tighter jitter, or better resilience?",
+      "What budget and operational constraints apply to the colo footprint?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems-and-infrastructure tradeoff thinking",
+      "Evaluating whether the candidate can reason about hardware, timing, and operations together"
+    ],
+    "answerOutline": [
+      "Clarify business objective and constraints",
+      "Describe host, network, and timing architecture",
+      "Discuss redundancy, deployment, and observability",
+      "Explain what you would measure and optimize first"
+    ],
+    "sampleAnswer": "I would begin by clarifying the success contract and failure model, because in these systems correctness under stress is as important as raw speed. Here the central concern is that some latency or reliability issues are dominated by queueing, synchronization, or deployment discipline rather than raw silicon. My design would therefore distinguish bottleneck classes before spending capital. On the hot path I would rely on measure first, fix software or process waste, then reevaluate hardware limits, while keeping slower control, recovery, and operator workflows clearly separated so they cannot accidentally inject jitter or ambiguity into the critical loop. I would make state transitions explicit, keep queues bounded, and instrument every stage with enough low-overhead telemetry to explain latency, backlog, and recovery behavior during real incidents. Operationally, I would include cost-benefit reviews tied to observable bottlenecks. The strong senior answer is not a catalog of components; it is a design that stays understandable, measurable, and recoverable when production stops matching the happy path.",
+    "commonMistakes": [
+      "Treating hardware choices as folklore rather than measured tradeoffs",
+      "Ignoring operational support and timing visibility"
+    ],
+    "followUps": [
+      "How would you justify the spend?",
+      "What would you optimize after the obvious hardware choices are made?"
+    ],
+    "seniorExtension": "Extend the answer to how you separate mythology from measurable advantage in a colo environment.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
         "source": "book",
         "accessDate": "2026-07-24"
       }

@@ -30,7 +30,7 @@
       "Discuss context switches and isolation tradeoffs",
       "Tie to deployment choices"
     ],
-    "sampleAnswer": "Threads share an address space, so they communicate cheaply through shared memory but also share corruption risk and require careful synchronization around memory visibility and ownership. Processes isolate faults and memory better, which is valuable for blast-radius control, but communication now needs IPC, shared memory segments, sockets, or kernel-mediated mechanisms that add complexity and often more latency. From a scheduler perspective both are scheduled entities on Linux, so the main latency difference is less about the word process versus thread and more about cache/TLB disruption, synchronization patterns, and cross-core migration behavior. In low-latency systems I often keep the true hot path within a process boundary to avoid extra copies, while using process boundaries around less latency-sensitive or less trusted components for fault isolation. The strong answer is a tradeoff: shared-state efficiency versus failure containment, all filtered through real workload and operational constraints.",
+    "sampleAnswer": "Threads share an address space, so they communicate cheaply through shared memory but also share corruption risk and require careful synchronization around memory visibility and ownership. Processes isolate faults and memory better, which is valuable for blast-radius control, but communication now needs IPC, shared memory segments, sockets, or kernel-mediated mechanisms that add complexity and often more latency. From a scheduler perspective both are scheduled entities on Linux, so the main latency difference is less about the word process versus thread and more about cache/TLB disruption, synchronization patterns, and cross-core migration behavior. In low-latency systems I often keep the true hot path within a process boundary to avoid extra copies, while using process boundaries around less latency-sensitive or less trusted components for fault isolation. The strong answer is a tradeoff: shared-state efficiency versus failure containment, all filtered through real workload and operational constraints. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Assuming processes are always slower in every meaningful way",
       "Ignoring fault isolation and deployment consequences"
@@ -92,7 +92,7 @@
       "Call out starvation and priority inversion",
       "Mention guardrails"
     ],
-    "sampleAnswer": "`SCHED_FIFO` and `SCHED_RR` sit above normal CFS tasks and are designed to minimize preemption by ordinary work, which can be useful when you want a dedicated latency-sensitive thread to run as soon as it is runnable. `SCHED_FIFO` keeps the highest-priority runnable thread running until it blocks, yields, or a higher-priority RT thread appears, while `SCHED_RR` adds time slicing among same-priority RT threads. The danger is that a buggy or overly busy RT thread can starve the rest of the machine, including housekeeping work, or create nasty priority inversion if it waits on lower-priority holders of needed resources. That is why I only use RT scheduling with strong guardrails: isolated cores, explicit CPU affinity, memory prefaulting where appropriate, bounded blocking, and careful monitoring of run queues and system responsiveness. A good senior answer shows both the latency benefit and the operational blast radius of getting RT policy wrong.",
+    "sampleAnswer": "`SCHED_FIFO` and `SCHED_RR` sit above normal CFS tasks and are designed to minimize preemption by ordinary work, which can be useful when you want a dedicated latency-sensitive thread to run as soon as it is runnable. `SCHED_FIFO` keeps the highest-priority runnable thread running until it blocks, yields, or a higher-priority RT thread appears, while `SCHED_RR` adds time slicing among same-priority RT threads. The danger is that a buggy or overly busy RT thread can starve the rest of the machine, including housekeeping work, or create nasty priority inversion if it waits on lower-priority holders of needed resources. That is why I only use RT scheduling with strong guardrails: isolated cores, explicit CPU affinity, memory prefaulting where appropriate, bounded blocking, and careful monitoring of run queues and system responsiveness. A good senior answer shows both the latency benefit and the operational blast radius of getting RT policy wrong. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Thinking real-time scheduling makes code deterministic by itself",
       "Ignoring starvation and housekeeping effects"
@@ -154,7 +154,7 @@
       "Explain isolation limits",
       "Tie to observability"
     ],
-    "sampleAnswer": "CPU affinity helps by reducing scheduler migration, which preserves cache warmth, avoids some TLB disruption, and makes latency behavior more repeatable for threads that are sensitive to jitter. In practice I often combine pinning with isolated cores, IRQ steering, and careful placement of communicating threads so I am not just moving user threads while interrupts and kernel work still land on the same CPU. The limitation is that pinning is not a silver bullet: if the core still shares resources with noisy neighbors, competes for LLC or memory bandwidth, or handles network interrupts, the latency benefit can be much smaller than expected. Pinning can also hurt if it creates imbalance or forces communicating threads onto distant NUMA nodes, so placement must reflect the actual topology and traffic pattern. The strong answer treats affinity as one part of a whole-machine scheduling and topology strategy rather than a checkbox tweak.",
+    "sampleAnswer": "CPU affinity helps by reducing scheduler migration, which preserves cache warmth, avoids some TLB disruption, and makes latency behavior more repeatable for threads that are sensitive to jitter. In practice I often combine pinning with isolated cores, IRQ steering, and careful placement of communicating threads so I am not just moving user threads while interrupts and kernel work still land on the same CPU. The limitation is that pinning is not a silver bullet: if the core still shares resources with noisy neighbors, competes for LLC or memory bandwidth, or handles network interrupts, the latency benefit can be much smaller than expected. Pinning can also hurt if it creates imbalance or forces communicating threads onto distant NUMA nodes, so placement must reflect the actual topology and traffic pattern. The strong answer treats affinity as one part of a whole-machine scheduling and topology strategy rather than a checkbox tweak. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Pinning application threads but ignoring IRQ placement",
       "Assuming pinning always helps regardless of NUMA and communication patterns"
@@ -216,7 +216,7 @@
       "Discuss wakeups and scheduler involvement",
       "Tie to lock behavior under load"
     ],
-    "sampleAnswer": "A futex is a Linux primitive that lets synchronization stay in user space when uncontended and only enter the kernel when a thread actually has to sleep or wake another waiter. That is why many mutexes are cheap in the uncontended case: the lock acquisition is just atomic user-space state manipulation until contention forces a `futex` wait or wake syscall. For latency reasoning, this matters because once threads block you have scheduler queues, wakeup delays, priority interactions, and cache disruption in play, which are often much more expensive and variable than the atomic fast path itself. In practice, a lock that is mostly uncontended can be perfectly acceptable, but a lock that enters futex sleep under burst traffic may create long tail behavior and convoying. The strong answer connects the API-level mutex choice to the kernel path that appears only when contention or blocking happens.",
+    "sampleAnswer": "A futex is a Linux primitive that lets synchronization stay in user space when uncontended and only enter the kernel when a thread actually has to sleep or wake another waiter. That is why many mutexes are cheap in the uncontended case: the lock acquisition is just atomic user-space state manipulation until contention forces a `futex` wait or wake syscall. For latency reasoning, this matters because once threads block you have scheduler queues, wakeup delays, priority interactions, and cache disruption in play, which are often much more expensive and variable than the atomic fast path itself. In practice, a lock that is mostly uncontended can be perfectly acceptable, but a lock that enters futex sleep under burst traffic may create long tail behavior and convoying. The strong answer connects the API-level mutex choice to the kernel path that appears only when contention or blocking happens. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Describing futex as only a kernel lock",
       "Ignoring the distinction between uncontended and contended behavior"
@@ -278,7 +278,7 @@
       "Mention signal-safety and handlers",
       "Discuss when posix_spawn or exec-only workers are better"
     ],
-    "sampleAnswer": "`fork()` duplicates the calling process with copy-on-write memory and inherited file descriptors, which is powerful but tricky once the parent is multithreaded because only the calling thread survives in the child. That means the child must be extremely careful before `exec()`: many library states may be mid-update, and only async-signal-safe operations are really safe in the post-fork, pre-exec window. Signals add another layer of subtlety because handlers run asynchronously, can interrupt syscalls, and must avoid unsafe operations unless you deliberately route them through mechanisms like `signalfd` or a self-pipe. In production services I prefer simple models: launch helper processes early, use `exec` quickly after `fork`, set `FD_CLOEXEC` correctly, and keep signal handling centralized and minimal. The strong answer is less about remembering every POSIX detail and more about respecting how process control interacts with shared runtime state.",
+    "sampleAnswer": "`fork()` duplicates the calling process with copy-on-write memory and inherited file descriptors, which is powerful but tricky once the parent is multithreaded because only the calling thread survives in the child. That means the child must be extremely careful before `exec()`: many library states may be mid-update, and only async-signal-safe operations are really safe in the post-fork, pre-exec window. Signals add another layer of subtlety because handlers run asynchronously, can interrupt syscalls, and must avoid unsafe operations unless you deliberately route them through mechanisms like `signalfd` or a self-pipe. In production services I prefer simple models: launch helper processes early, use `exec` quickly after `fork`, set `FD_CLOEXEC` correctly, and keep signal handling centralized and minimal. The strong answer is less about remembering every POSIX detail and more about respecting how process control interacts with shared runtime state. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Forgetting only one thread survives fork",
       "Doing complex work in signal handlers"
@@ -334,7 +334,7 @@
       "Discuss huge page benefits and tradeoffs",
       "Mention prefaulting or mlock when relevant"
     ],
-    "sampleAnswer": "A page fault happens when a virtual page mapping is not currently usable, and the cost ranges from a minor fault that just populates metadata to a major fault that requires disk I/O and is disastrous for latency. Even without faults, TLB misses matter because every memory access needs address translation; if the working set touches many pages, the CPU spends more time refilling translation entries. Huge pages can help by covering more memory with fewer TLB entries, which is valuable for large contiguous buffers, order books, or other structures with predictable access patterns. The tradeoff is flexibility and fragmentation: huge pages are not automatically better for all allocations, and they can make memory management or startup provisioning more complex. The strong answer ties VM behavior to actual latency symptoms and knows when techniques like prefaulting or memory locking are justified.",
+    "sampleAnswer": "A page fault happens when a virtual page mapping is not currently usable, and the cost ranges from a minor fault that just populates metadata to a major fault that requires disk I/O and is disastrous for latency. Even without faults, TLB misses matter because every memory access needs address translation; if the working set touches many pages, the CPU spends more time refilling translation entries. Huge pages can help by covering more memory with fewer TLB entries, which is valuable for large contiguous buffers, order books, or other structures with predictable access patterns. The tradeoff is flexibility and fragmentation: huge pages are not automatically better for all allocations, and they can make memory management or startup provisioning more complex. The strong answer ties VM behavior to actual latency symptoms and knows when techniques like prefaulting or memory locking are justified. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Confusing TLB misses with page faults",
       "Assuming huge pages always improve performance"
@@ -396,7 +396,7 @@
       "Contrast with explicit reads and buffering",
       "Tie to workload shape"
     ],
-    "sampleAnswer": "`mmap` is attractive when I want the kernel page cache to back file access directly into my address space, especially for random access or sharing data structures across processes without an extra copy. The downside is that I am now exposed to page-fault latency on first touch and to signal-style failure modes such as `SIGBUS` if the underlying file mapping becomes invalid or truncated unexpectedly. With `read`, I control when I issue I/O, how I size buffers, and how I surface errors, which can be simpler and sometimes more predictable for streaming patterns. So for memory-mapped configuration snapshots or large readonly reference data, `mmap` can be elegant and fast, while for strict latency control in streaming ingestion I often prefer explicit buffered reads. The strong answer is workload-specific and mentions both performance and operational failure semantics, not just fewer copies.",
+    "sampleAnswer": "`mmap` is attractive when I want the kernel page cache to back file access directly into my address space, especially for random access or sharing data structures across processes without an extra copy. The downside is that I am now exposed to page-fault latency on first touch and to signal-style failure modes such as `SIGBUS` if the underlying file mapping becomes invalid or truncated unexpectedly. With `read`, I control when I issue I/O, how I size buffers, and how I surface errors, which can be simpler and sometimes more predictable for streaming patterns. So for memory-mapped configuration snapshots or large readonly reference data, `mmap` can be elegant and fast, while for strict latency control in streaming ingestion I often prefer explicit buffered reads. The strong answer is workload-specific and mentions both performance and operational failure semantics, not just fewer copies. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Assuming mmap avoids copies in all relevant layers",
       "Ignoring page-fault timing and signal semantics"
@@ -458,7 +458,7 @@
       "Mention page-table cost and allocator interaction",
       "Tie to large services"
     ],
-    "sampleAnswer": "After `fork`, the parent and child initially share physical pages, and the kernel marks them copy-on-write so each side gets a private copy only when one writes to a shared page. That makes `fork` look cheap at first, but the illusion breaks if either side touches many pages afterward, because the resulting page copies can create latency spikes and memory pressure. There is also nontrivial page-table work up front, and large fragmented heaps can make the post-fork state expensive or operationally awkward even if the child `exec`s quickly. That is why for large multithreaded servers or memory-heavy low-latency processes I avoid casual forking during critical periods and prefer dedicated helper processes or spawn models designed earlier. The strong answer recognizes that COW is a deferred cost model, not free cloning.",
+    "sampleAnswer": "After `fork`, the parent and child initially share physical pages, and the kernel marks them copy-on-write so each side gets a private copy only when one writes to a shared page. That makes `fork` look cheap at first, but the illusion breaks if either side touches many pages afterward, because the resulting page copies can create latency spikes and memory pressure. There is also nontrivial page-table work up front, and large fragmented heaps can make the post-fork state expensive or operationally awkward even if the child `exec`s quickly. That is why for large multithreaded servers or memory-heavy low-latency processes I avoid casual forking during critical periods and prefer dedicated helper processes or spawn models designed earlier. The strong answer recognizes that COW is a deferred cost model, not free cloning. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Saying fork copies all memory immediately",
       "Ignoring page-table overhead and allocator behavior"
@@ -582,7 +582,7 @@
       "Mention long-running services",
       "Offer mitigation strategies"
     ],
-    "sampleAnswer": "Allocator behavior can show up as latency even without OOM because allocation may contend on internal locks, touch cold pages, or return memory layouts that worsen cache locality for the objects you care about. Fragmentation makes this worse over time by increasing the working set, reducing locality, and making it harder for the allocator or kernel to satisfy requests from already-hot memory. In long-running services, you may see stable average latency but rising tails because burst allocations now bounce across more arenas or page ranges than they did after startup. The practical mitigations are workload-dependent: reserve capacity, pool hot objects, isolate thread-local allocators, and measure allocation rate and heap growth so you know whether allocator behavior is part of the real problem. The strong answer is that memory performance is shaped by layout and lifetime patterns, not just by total bytes allocated.",
+    "sampleAnswer": "Allocator behavior can show up as latency even without OOM because allocation may contend on internal locks, touch cold pages, or return memory layouts that worsen cache locality for the objects you care about. Fragmentation makes this worse over time by increasing the working set, reducing locality, and making it harder for the allocator or kernel to satisfy requests from already-hot memory. In long-running services, you may see stable average latency but rising tails because burst allocations now bounce across more arenas or page ranges than they did after startup. The practical mitigations are workload-dependent: reserve capacity, pool hot objects, isolate thread-local allocators, and measure allocation rate and heap growth so you know whether allocator behavior is part of the real problem. The strong answer is that memory performance is shaped by layout and lifetime patterns, not just by total bytes allocated. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Treating fragmentation as only a memory-capacity issue",
       "Ignoring allocator contention and locality effects"
@@ -706,7 +706,7 @@
       "Explain drain-until-EAGAIN rule",
       "Compare complexity and wakeup behavior"
     ],
-    "sampleAnswer": "With level-triggered epoll, a file descriptor remains reported as ready as long as the readiness condition still holds, which is simpler and harder to get wrong. With edge-triggered epoll, you are notified only when the state changes, so once you get a read event you must usually drain the socket until `EAGAIN` or you risk leaving unread data without another notification. Edge-triggered mode can reduce redundant wakeups and system-call overhead in well-structured nonblocking loops, but it raises the correctness bar and makes partial-read bugs more subtle. I choose level-triggered when simplicity and safety dominate, and edge-triggered when the event loop is mature, the handlers are disciplined, and avoiding repeated readiness notifications materially helps. The strong answer includes the operational rule: edge-triggered is fine only if every handler is written as if missed wakeups are your fault.",
+    "sampleAnswer": "With level-triggered epoll, a file descriptor remains reported as ready as long as the readiness condition still holds, which is simpler and harder to get wrong. With edge-triggered epoll, you are notified only when the state changes, so once you get a read event you must usually drain the socket until `EAGAIN` or you risk leaving unread data without another notification. Edge-triggered mode can reduce redundant wakeups and system-call overhead in well-structured nonblocking loops, but it raises the correctness bar and makes partial-read bugs more subtle. I choose level-triggered when simplicity and safety dominate, and edge-triggered when the event loop is mature, the handlers are disciplined, and avoiding repeated readiness notifications materially helps. The strong answer includes the operational rule: edge-triggered is fine only if every handler is written as if missed wakeups are your fault. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Using edge-triggered mode without draining until EAGAIN",
       "Thinking edge-triggered is automatically lower latency in every workload"
@@ -768,7 +768,7 @@
       "Discuss operational and portability costs",
       "State when normal sockets remain sufficient"
     ],
-    "sampleAnswer": "Kernel-bypass approaches reduce the cost and jitter of the normal network stack by moving packet handling closer to user space, often with NIC queues mapped directly into process memory and fewer context switches or copies. That can materially improve latency and determinism for extreme trading paths, especially when combined with polling, dedicated cores, and careful queue placement. What you give up is convenience and sometimes portability: you may lose mature kernel features, increase operational complexity, tie yourself to specific NICs or drivers, and need stronger in-house tooling for observability and failure handling. For many systems, especially control-plane services or lower-rate paths, standard sockets with good tuning are more than adequate and much easier to operate. The strong answer is not 'bypass is better'; it is knowing the latency target where the complexity premium becomes justified.",
+    "sampleAnswer": "Kernel-bypass approaches reduce the cost and jitter of the normal network stack by moving packet handling closer to user space, often with NIC queues mapped directly into process memory and fewer context switches or copies. That can materially improve latency and determinism for extreme trading paths, especially when combined with polling, dedicated cores, and careful queue placement. What you give up is convenience and sometimes portability: you may lose mature kernel features, increase operational complexity, tie yourself to specific NICs or drivers, and need stronger in-house tooling for observability and failure handling. For many systems, especially control-plane services or lower-rate paths, standard sockets with good tuning are more than adequate and much easier to operate. The strong answer is not 'bypass is better'; it is knowing the latency target where the complexity premium becomes justified. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Treating kernel bypass as a free universal win",
       "Ignoring debugging and portability costs"
@@ -830,7 +830,7 @@
       "Tie features to measurement accuracy and batching",
       "Mention environment-specific tuning"
     ],
-    "sampleAnswer": "Hardware timestamps are valuable because they let you anchor timing much closer to the wire than application or even kernel software timestamps, which absorb scheduler and stack noise. Offloads are more nuanced: features like TSO, GRO, or LRO can improve throughput by batching work, but they can also distort packet timing, coalesce boundaries, or make fine-grained latency analysis less representative of actual wire behavior. In a latency-sensitive environment I want to know which offloads are enabled and why, because the right setting for bulk throughput testing may be wrong for deterministic packet handling or accurate latency attribution. That said, I do not disable features blindly; some offloads are harmless or useful depending on the path, the NIC, and whether the bottleneck is CPU or jitter. The strong answer ties measurement fidelity and packet-shape semantics back to the exact workload rather than treating NIC settings as generic folklore.",
+    "sampleAnswer": "Hardware timestamps are valuable because they let you anchor timing much closer to the wire than application or even kernel software timestamps, which absorb scheduler and stack noise. Offloads are more nuanced: features like TSO, GRO, or LRO can improve throughput by batching work, but they can also distort packet timing, coalesce boundaries, or make fine-grained latency analysis less representative of actual wire behavior. In a latency-sensitive environment I want to know which offloads are enabled and why, because the right setting for bulk throughput testing may be wrong for deterministic packet handling or accurate latency attribution. That said, I do not disable features blindly; some offloads are harmless or useful depending on the path, the NIC, and whether the bottleneck is CPU or jitter. The strong answer ties measurement fidelity and packet-shape semantics back to the exact workload rather than treating NIC settings as generic folklore. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Assuming all offloads are bad for latency",
       "Measuring wire latency using only application timestamps"
@@ -892,7 +892,7 @@
       "Use retransmit or snapshot recovery",
       "Define when to halt downstream publication"
     ],
-    "sampleAnswer": "I start by treating sequence numbers as first-class state: every channel or instrument group needs explicit gap detection, duplicate handling, and a policy for small out-of-order windows if the feed can exhibit them. When a gap appears, the handler should buffer a bounded amount of later traffic, request retransmission or a snapshot depending on venue semantics, and decide quickly whether downstream consumers can continue safely or must pause publication. The design needs to distinguish recoverable gaps from unrecoverable state drift; if the missing packet invalidates book correctness, I would rather mark the book stale than publish a guess. Operationally, I expose gap rate, replay success, buffer pressure, and time-to-recover because feed quality issues are often intermittent and hard to diagnose without these signals. The strong answer is that recovery logic is part of correctness, not an afterthought bolted onto a fast UDP parser.",
+    "sampleAnswer": "I start by treating sequence numbers as first-class state: every channel or instrument group needs explicit gap detection, duplicate handling, and a policy for small out-of-order windows if the feed can exhibit them. When a gap appears, the handler should buffer a bounded amount of later traffic, request retransmission or a snapshot depending on venue semantics, and decide quickly whether downstream consumers can continue safely or must pause publication. The design needs to distinguish recoverable gaps from unrecoverable state drift; if the missing packet invalidates book correctness, I would rather mark the book stale than publish a guess. Operationally, I expose gap rate, replay success, buffer pressure, and time-to-recover because feed quality issues are often intermittent and hard to diagnose without these signals. The strong answer is that recovery logic is part of correctness, not an afterthought bolted onto a fast UDP parser. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Continuing to publish potentially inconsistent book state",
       "Not bounding buffering while waiting for recovery"
@@ -954,7 +954,7 @@
       "Describe detection signals",
       "Offer mitigation patterns"
     ],
-    "sampleAnswer": "False sharing happens when threads modify different variables that reside on the same cache line, forcing the coherence protocol to bounce ownership even though the logical data is unrelated. The symptom is often surprising contention or latency in code that appears lock-free, because the real bottleneck is cache-line invalidation rather than algorithmic blocking. I detect it with a mix of code inspection, structure layout awareness, and hardware counter or profiling evidence pointing to coherence traffic and stalled cores under concurrent updates. Mitigations include padding or aligning hot counters to cache-line boundaries, separating producer and consumer indices, and redesigning update patterns to reduce cross-core writes. The strong answer connects the language-level object layout to the hardware coherence system instead of stopping at a definition.",
+    "sampleAnswer": "False sharing happens when threads modify different variables that reside on the same cache line, forcing the coherence protocol to bounce ownership even though the logical data is unrelated. The symptom is often surprising contention or latency in code that appears lock-free, because the real bottleneck is cache-line invalidation rather than algorithmic blocking. I detect it with a mix of code inspection, structure layout awareness, and hardware counter or profiling evidence pointing to coherence traffic and stalled cores under concurrent updates. Mitigations include padding or aligning hot counters to cache-line boundaries, separating producer and consumer indices, and redesigning update patterns to reduce cross-core writes. The strong answer connects the language-level object layout to the hardware coherence system instead of stopping at a definition. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Confusing false sharing with general cache misses",
       "Padding everything without proving the pattern exists"
@@ -1016,7 +1016,7 @@
       "Mention first-touch and pinning",
       "Discuss measurement and compromise"
     ],
-    "sampleAnswer": "NUMA matters because memory latency and bandwidth are not uniform across sockets; a thread running on one node can pay significantly more to access pages allocated on another. That is why placement has to consider the whole path: CPU affinity, where the NIC interrupts land, where the process first touches memory, and whether communicating threads are fighting across sockets. A common strategy is to keep each hot pipeline largely within one NUMA node, preallocate or first-touch its buffers there, and avoid unnecessary cross-node sharing in steady state. Sometimes the business logic forces cross-node communication, but then at least the architecture should acknowledge the cost rather than discovering it accidentally through jitter. The strong answer makes NUMA a deployment and ownership problem, not just a trivia definition about multiple memory controllers.",
+    "sampleAnswer": "NUMA matters because memory latency and bandwidth are not uniform across sockets; a thread running on one node can pay significantly more to access pages allocated on another. That is why placement has to consider the whole path: CPU affinity, where the NIC interrupts land, where the process first touches memory, and whether communicating threads are fighting across sockets. A common strategy is to keep each hot pipeline largely within one NUMA node, preallocate or first-touch its buffers there, and avoid unnecessary cross-node sharing in steady state. Sometimes the business logic forces cross-node communication, but then at least the architecture should acknowledge the cost rather than discovering it accidentally through jitter. The strong answer makes NUMA a deployment and ownership problem, not just a trivia definition about multiple memory controllers. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Pinning threads without considering where memory is allocated",
       "Ignoring NIC-to-NUMA topology"
@@ -1078,7 +1078,7 @@
       "Mention pointer chasing and useful lead distance",
       "Stress measurement"
     ],
-    "sampleAnswer": "My first optimization for a memory-bound loop is usually improving the access pattern rather than adding explicit prefetch instructions, because contiguous predictable access lets the hardware prefetchers do their job well. Software prefetch can help for pointer-heavy structures or irregular traversals where the next useful address is known early enough, but the lead distance has to match the machine and workload or you just create extra traffic. I also consider whether the real win is redesigning the data structure—for example replacing pointer chains with index-based arrays—because that can outperform any prefetch hint. Since prefetching interacts with cache size, memory bandwidth, and branch behavior, I only keep it when profiling shows a repeatable benefit on representative hardware. The strong answer is that prefetch is a tactical tool, while access-pattern design is the strategic one.",
+    "sampleAnswer": "My first optimization for a memory-bound loop is usually improving the access pattern rather than adding explicit prefetch instructions, because contiguous predictable access lets the hardware prefetchers do their job well. Software prefetch can help for pointer-heavy structures or irregular traversals where the next useful address is known early enough, but the lead distance has to match the machine and workload or you just create extra traffic. I also consider whether the real win is redesigning the data structure\u2014for example replacing pointer chains with index-based arrays\u2014because that can outperform any prefetch hint. Since prefetching interacts with cache size, memory bandwidth, and branch behavior, I only keep it when profiling shows a repeatable benefit on representative hardware. The strong answer is that prefetch is a tactical tool, while access-pattern design is the strategic one. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Adding manual prefetch before fixing poor data layout",
       "Assuming a prefetch hint is always honored or beneficial"
@@ -1140,7 +1140,7 @@
       "Discuss serialization and frequency issues",
       "Compare with other clock sources"
     ],
-    "sampleAnswer": "The timestamp counter is attractive because reading it can be much cheaper than a syscall-based clock, making it useful for very fine-grained latency measurement inside one host. I trust it only when the platform provides an invariant, well-synchronized TSC across relevant cores and I understand how migration, power states, or virtualization affect the guarantee. There are also measurement details such as serialization around reads, conversion from cycles to time, and making sure I am not accidentally comparing values across unsynchronized domains. For wire-to-wire or multi-host analysis I still need external synchronization or hardware timestamps, because TSC alone cannot solve distributed clock alignment. The strong answer treats TSC as a powerful local tool with assumptions that must be verified, not blindly trusted.",
+    "sampleAnswer": "The timestamp counter is attractive because reading it can be much cheaper than a syscall-based clock, making it useful for very fine-grained latency measurement inside one host. I trust it only when the platform provides an invariant, well-synchronized TSC across relevant cores and I understand how migration, power states, or virtualization affect the guarantee. There are also measurement details such as serialization around reads, conversion from cycles to time, and making sure I am not accidentally comparing values across unsynchronized domains. For wire-to-wire or multi-host analysis I still need external synchronization or hardware timestamps, because TSC alone cannot solve distributed clock alignment. The strong answer treats TSC as a powerful local tool with assumptions that must be verified, not blindly trusted. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Assuming all CPUs provide identical TSC behavior",
       "Using TSC for cross-host timing without synchronization"
@@ -1202,7 +1202,7 @@
       "Discuss balancing versus determinism",
       "Mention observability and testing"
     ],
-    "sampleAnswer": "Receive-side scaling spreads packets across NIC queues so multiple cores can process traffic in parallel, but the placement only helps if the software threads consuming those queues are aligned sensibly with the interrupt and queue topology. If interrupts for a hot queue land on one core while the user-space thread polling or consuming that traffic runs elsewhere, you pay extra cache movement and jitter for no good reason. For latency-sensitive flows I often prefer a more deterministic mapping: specific queues, specific cores, and explicit IRQ affinity, while less sensitive traffic can use broader balancing. The tradeoff is utilization versus predictability, because maximizing throughput distribution and minimizing single-flow jitter are not always the same goal. The strong answer shows you understand that packet latency is shaped by queue placement and CPU ownership long before your application code touches the payload.",
+    "sampleAnswer": "Receive-side scaling spreads packets across NIC queues so multiple cores can process traffic in parallel, but the placement only helps if the software threads consuming those queues are aligned sensibly with the interrupt and queue topology. If interrupts for a hot queue land on one core while the user-space thread polling or consuming that traffic runs elsewhere, you pay extra cache movement and jitter for no good reason. For latency-sensitive flows I often prefer a more deterministic mapping: specific queues, specific cores, and explicit IRQ affinity, while less sensitive traffic can use broader balancing. The tradeoff is utilization versus predictability, because maximizing throughput distribution and minimizing single-flow jitter are not always the same goal. The strong answer shows you understand that packet latency is shaped by queue placement and CPU ownership long before your application code touches the payload. I would confirm the tradeoff on representative hardware and workload shapes, because scheduler, cache, and I/O behavior often look different in production than in microbenchmarks.",
     "commonMistakes": [
       "Ignoring IRQ affinity while tuning application threads",
       "Optimizing for even CPU usage instead of latency objectives"
@@ -1227,6 +1227,2202 @@
       {
         "title": "Systems Performance, 2nd Edition",
         "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-001",
+    "title": "Kernel bypass value proposition",
+    "question": "What latency costs in the normal kernel network stack motivate technologies like DPDK or OpenOnload?",
+    "topics": [
+      "kernel-bypass",
+      "networking",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: extra context switches, interrupts, copies, and general-purpose stack work can add jitter and overhead. In practice this matters because market-data or order-entry paths that care about microburst behavior. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using use bypass only when measured latency benefit exceeds operational cost. I then validate with packet timestamping, tail-latency histograms, and CPU accounting, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-002",
+    "title": "DPDK design basics",
+    "question": "Explain the basic DPDK model and why polling can beat interrupt-driven packet processing for some workloads.",
+    "topics": [
+      "dpdk",
+      "polling",
+      "packet-processing"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: busy polling trades CPU efficiency for lower wakeup latency and more deterministic processing. In practice this matters because dedicated cores servicing high-rate RX or TX queues. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using pinning cores, sizing rings carefully, and isolating housekeeping away from the dataplane. I then validate with throughput and latency measurement under packet bursts, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-003",
+    "title": "RDMA intuition for systems engineers",
+    "question": "What problems does RDMA solve, and why is it not automatically the right answer for every low-latency system?",
+    "topics": [
+      "rdma",
+      "networking",
+      "memory"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: RDMA can reduce CPU involvement and copies, but it adds hardware, operational, and programming complexity. In practice this matters because internal messaging, state replication, or feed distribution on specialized fabrics. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using using it only when the communication pattern and operational maturity justify it. I then validate with end-to-end latency and failure-mode drills, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-004",
+    "title": "Userspace networking tradeoffs",
+    "question": "What new failure modes or operational costs appear when you move packet processing into userspace?",
+    "topics": [
+      "userspace-networking",
+      "operations",
+      "reliability"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: you take responsibility for batching, backpressure, drops, memory pools, and tooling gaps once the kernel is less involved. In practice this matters because specialized NIC queues and application-owned memory rings. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using explicit telemetry and safe fallbacks rather than assuming speed alone wins. I then validate with drop counters, backlog metrics, and failover drills, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-005",
+    "title": "RSS, queueing, and sharding",
+    "question": "How do RSS and NIC queue mapping interact with low-latency application design?",
+    "topics": [
+      "rss",
+      "nic",
+      "sharding"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: hardware steering determines which core sees which packet stream and therefore shapes cache locality and synchronization needs. In practice this matters because multiqueue feed handlers or gateway sessions. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using aligning queue mapping with application sharding. I then validate with per-queue latency stats and packet-distribution checks, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-006",
+    "title": "Busy polling versus interrupt moderation",
+    "question": "How do you reason about busy polling, interrupt moderation, and hybrid models?",
+    "topics": [
+      "interrupts",
+      "busy-poll",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: interrupts save CPU but add wakeup variance, while polling reduces variance at the cost of dedicated cycles. In practice this matters because mixed workloads with daytime bursts and quieter periods. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using choosing mode per path and time horizon rather than globally. I then validate with CPU utilization and burst-response measurements, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-007",
+    "title": "Fallback strategy for specialized networking",
+    "question": "If a kernel-bypass path degrades or becomes unavailable, how would you think about fallback behavior?",
+    "topics": [
+      "kernel-bypass",
+      "fallbacks",
+      "resilience"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: specialized fast paths need explicit degraded modes because tooling and support paths differ from normal networking. In practice this matters because gateway or feed components that still need business continuity. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using observability, mode signaling, and controlled failover rather than silent changes. I then validate with planned failover tests and mode-specific SLOs, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-kernel-008",
+    "title": "When not to use kernel bypass",
+    "question": "Give an example of a system in a trading stack where you would likely avoid DPDK or RDMA and explain why.",
+    "topics": [
+      "kernel-bypass",
+      "architecture",
+      "tradeoffs"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are you focusing on packet-path latency, throughput, or operational complexity?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level networking systems knowledge",
+      "Evaluating whether the candidate understands when advanced kernel bypass is worth the cost"
+    ],
+    "answerOutline": [
+      "Define the mechanism clearly",
+      "Explain why it helps or hurts latency",
+      "Discuss deployment and operational tradeoffs",
+      "Explain how you would measure the payoff"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: many control-plane and operational services gain little from specialized packet handling relative to their complexity. In practice this matters because config, monitoring, reconciliation, or operator-tooling flows. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using reserving complexity budget for truly latency-sensitive workflows. I then validate with business-impact mapping and differentiated architecture policy, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Treating kernel bypass as an automatic win",
+      "Ignoring CPU, memory, and operations costs"
+    ],
+    "followUps": [
+      "What would make you stay in the kernel path?",
+      "How would you fail safely if the specialized path degrades?"
+    ],
+    "seniorExtension": "Extend the answer to how you decide whether specialized networking complexity is justified for a specific trading workflow.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-001",
+    "title": "CPU affinity fundamentals",
+    "question": "Why does CPU affinity matter in low-latency systems, and what can go wrong if you ignore it?",
+    "topics": [
+      "cpu-affinity",
+      "scheduling",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: core migration disrupts caches, TLBs, and measurement consistency. In practice this matters because hot-path threads sharing hosts with noisy background work. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using pinning with awareness of queue mapping and housekeeping needs. I then validate with per-thread CPU stats and latency histograms, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-002",
+    "title": "NUMA-aware design",
+    "question": "How does NUMA affect memory access latency, and what design or deployment choices reduce the pain?",
+    "topics": [
+      "numa",
+      "memory",
+      "topology"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: remote memory access adds latency and variance, especially when queues and threads cross sockets casually. In practice this matters because ring buffers, allocators, and threads placed without topology awareness. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using co-locating memory, cores, and NIC queues intentionally. I then validate with NUMA counters and topology-specific tests, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-003",
+    "title": "Interrupt steering and isolation",
+    "question": "How do IRQ affinity and interrupt steering influence application latency?",
+    "topics": [
+      "interrupts",
+      "irq-affinity",
+      "isolation"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: poor interrupt placement can steal time from hot cores or scatter network work unpredictably. In practice this matters because NIC interrupts landing on application-critical cores. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using deliberate steering with housekeeping on appropriate cores. I then validate with interrupt data plus end-to-end timing, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-004",
+    "title": "Hyper-threading tradeoffs",
+    "question": "How do you think about SMT or hyper-threading for latency-sensitive services?",
+    "topics": [
+      "smt",
+      "cpu-topology",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: shared core resources can improve utilization or create interference depending on workload shape. In practice this matters because polling loops sharing execution units or caches with another thread. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using deciding per workload and validating rather than following blanket rules. I then validate with tail-latency and counter comparison with SMT on and off, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-005",
+    "title": "Real-time scheduling with isolation",
+    "question": "How do scheduling policy, CPU isolation, and memory locking complement each other in low-latency systems?",
+    "topics": [
+      "real-time",
+      "cpu-isolation",
+      "mlock"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: scheduler priority alone cannot guarantee low latency if the core still handles interrupts, page faults, or noisy neighbors. In practice this matters because dedicated order-entry or feed-processing threads. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using treating them as a bundle of controls instead of isolated tweaks. I then validate with fault counts, run-queue metrics, and latency under stress, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-006",
+    "title": "CFS fairness versus predictability",
+    "question": "Why can the Completely Fair Scheduler be both useful and problematic for latency-critical workloads?",
+    "topics": [
+      "cfs",
+      "scheduler",
+      "fairness"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: fair sharing is good for mixed workloads but can create latency variability for threads that need immediate service. In practice this matters because services sharing cores with other busy tasks. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using partitioning workloads instead of expecting one scheduler class to satisfy all goals. I then validate with run-queue analysis and controlled colocated-load tests, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-007",
+    "title": "Load balancing side effects",
+    "question": "What latency problems can automatic load balancing introduce on a multicore Linux system?",
+    "topics": [
+      "load-balancing",
+      "scheduling",
+      "multicore"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: automatic balancing can move threads for fairness while breaking locality and determinism. In practice this matters because bursty services whose hottest state fits best on one core. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using constraining migration where predictability matters. I then validate with scheduler tracepoints and per-core residency metrics, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-scheduling-008",
+    "title": "Capacity planning by core budget",
+    "question": "How do you think about core budgeting for busy-polling threads, interrupt cores, and background work on one host?",
+    "topics": [
+      "capacity-planning",
+      "cores",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the priority minimizing tail latency, maximizing fairness, or isolating workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler and topology awareness",
+      "Evaluating ability to connect OS behavior to low-latency outcomes"
+    ],
+    "answerOutline": [
+      "Describe the scheduler or placement concept",
+      "Tie it to cache, NUMA, or interrupt behavior",
+      "Explain real operational tradeoffs",
+      "Describe how you would validate placement decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: you need enough dedicated cycles for fast paths without starving observability, control, and housekeeping. In practice this matters because single-host deployments with both trading and support functions. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using explicit core budgeting with preserved slack for abnormal conditions. I then validate with CPU saturation tests and failure-mode drills, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about affinity or isolation as one-time tuning knobs",
+      "Ignoring housekeeping work and cross-core effects"
+    ],
+    "followUps": [
+      "How do you know your pinning is actually helping?",
+      "What changes across different hardware topologies?"
+    ],
+    "seniorExtension": "Extend the answer to how you operationalize scheduling and placement policy rather than tuning it once by hand.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-io-001",
+    "title": "epoll mental model",
+    "question": "How does epoll work, and what design patterns help avoid common performance mistakes with it?",
+    "topics": [
+      "epoll",
+      "network-io",
+      "event-loops"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the workload connection-heavy, disk-heavy, or latency-sensitive network I/O?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux I/O model knowledge",
+      "Evaluating whether the candidate can choose between readiness, completion, and threading approaches"
+    ],
+    "answerOutline": [
+      "Define the I/O model",
+      "Explain its performance characteristics",
+      "Compare with alternatives",
+      "Discuss backpressure and failure handling"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: epoll is readiness-based, so you still need nonblocking discipline and careful drain loops. In practice this matters because many-socket gateways or control-plane services. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using avoiding one-event-per-read assumptions and designing backpressure explicitly. I then validate with load tests with connection churn and partial reads, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Assuming async I/O removes design complexity",
+      "Ignoring queue depth, wakeups, and backpressure"
+    ],
+    "followUps": [
+      "What would you measure first in production?",
+      "How do you test under bursty load?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose an I/O model for both data-plane and control-plane components.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-io-002",
+    "title": "Level-triggered versus edge-triggered",
+    "question": "How do level-triggered and edge-triggered epoll modes differ, and when does that difference matter?",
+    "topics": [
+      "epoll",
+      "edge-triggered",
+      "event-loops"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the workload connection-heavy, disk-heavy, or latency-sensitive network I/O?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux I/O model knowledge",
+      "Evaluating whether the candidate can choose between readiness, completion, and threading approaches"
+    ],
+    "answerOutline": [
+      "Define the I/O model",
+      "Explain its performance characteristics",
+      "Compare with alternatives",
+      "Discuss backpressure and failure handling"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: edge-triggered mode can reduce redundant wakeups but requires disciplined draining to EAGAIN. In practice this matters because high-rate socket processing or large fan-in services. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using choosing the simpler mode unless wakeup cost clearly matters. I then validate with tests with partial buffers and bursty traffic, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Assuming async I/O removes design complexity",
+      "Ignoring queue depth, wakeups, and backpressure"
+    ],
+    "followUps": [
+      "What would you measure first in production?",
+      "How do you test under bursty load?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose an I/O model for both data-plane and control-plane components.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-io-003",
+    "title": "io_uring overview",
+    "question": "What does io_uring change about Linux I/O, and where does it offer real value?",
+    "topics": [
+      "io-uring",
+      "linux",
+      "async-io"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the workload connection-heavy, disk-heavy, or latency-sensitive network I/O?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux I/O model knowledge",
+      "Evaluating whether the candidate can choose between readiness, completion, and threading approaches"
+    ],
+    "answerOutline": [
+      "Define the I/O model",
+      "Explain its performance characteristics",
+      "Compare with alternatives",
+      "Discuss backpressure and failure handling"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: completion-queue style APIs can reduce syscall overhead and unify async operations, but benefits depend on workload. In practice this matters because disk-heavy services, files, or some network control-plane patterns. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using adopting it where queueing and batching align with the application model. I then validate with throughput, latency, and CPU measurement against simpler baselines, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Assuming async I/O removes design complexity",
+      "Ignoring queue depth, wakeups, and backpressure"
+    ],
+    "followUps": [
+      "What would you measure first in production?",
+      "How do you test under bursty load?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose an I/O model for both data-plane and control-plane components.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-io-004",
+    "title": "When threads beat async frameworks",
+    "question": "Give an example where a thread-per-core or thread-pool model is preferable to a more elaborate async I/O architecture.",
+    "topics": [
+      "threads",
+      "async-io",
+      "architecture"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the workload connection-heavy, disk-heavy, or latency-sensitive network I/O?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux I/O model knowledge",
+      "Evaluating whether the candidate can choose between readiness, completion, and threading approaches"
+    ],
+    "answerOutline": [
+      "Define the I/O model",
+      "Explain its performance characteristics",
+      "Compare with alternatives",
+      "Discuss backpressure and failure handling"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: for some bounded, latency-sensitive pipelines, simpler ownership and locality beat maximal connection scalability. In practice this matters because dedicated gateways, feed shards, or fixed-core workers. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using choosing the model that keeps state, backpressure, and debugging clearest. I then validate with operational simplicity and tail-latency benchmarks, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Assuming async I/O removes design complexity",
+      "Ignoring queue depth, wakeups, and backpressure"
+    ],
+    "followUps": [
+      "What would you measure first in production?",
+      "How do you test under bursty load?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose an I/O model for both data-plane and control-plane components.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-io-005",
+    "title": "Backpressure in event loops",
+    "question": "How do you design backpressure into an event-driven I/O system so one slow peer does not destabilize others?",
+    "topics": [
+      "backpressure",
+      "event-loops",
+      "queues"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the workload connection-heavy, disk-heavy, or latency-sensitive network I/O?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux I/O model knowledge",
+      "Evaluating whether the candidate can choose between readiness, completion, and threading approaches"
+    ],
+    "answerOutline": [
+      "Define the I/O model",
+      "Explain its performance characteristics",
+      "Compare with alternatives",
+      "Discuss backpressure and failure handling"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: readiness APIs still need bounded queues and output management or they merely move the problem. In practice this matters because fan-out publishers or request brokers with variable consumers. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using tracking queue depth and explicit shed or degrade policies. I then validate with burst tests with stalled consumers, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Assuming async I/O removes design complexity",
+      "Ignoring queue depth, wakeups, and backpressure"
+    ],
+    "followUps": [
+      "What would you measure first in production?",
+      "How do you test under bursty load?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose an I/O model for both data-plane and control-plane components.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-io-006",
+    "title": "Zero-copy expectations",
+    "question": "What does zero-copy really mean in Linux I/O, and why can the headline be misleading?",
+    "topics": [
+      "zero-copy",
+      "io",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the workload connection-heavy, disk-heavy, or latency-sensitive network I/O?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux I/O model knowledge",
+      "Evaluating whether the candidate can choose between readiness, completion, and threading approaches"
+    ],
+    "answerOutline": [
+      "Define the I/O model",
+      "Explain its performance characteristics",
+      "Compare with alternatives",
+      "Discuss backpressure and failure handling"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: avoiding one copy does not remove all memory movement, cache effects, or synchronization cost. In practice this matters because network sendfile-like paths, mmap, or offload discussions. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using optimizing the actual bottleneck rather than chasing the label. I then validate with CPU counters and end-to-end throughput checks, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Assuming async I/O removes design complexity",
+      "Ignoring queue depth, wakeups, and backpressure"
+    ],
+    "followUps": [
+      "What would you measure first in production?",
+      "How do you test under bursty load?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose an I/O model for both data-plane and control-plane components.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-io-007",
+    "title": "Async disk I/O versus memory mapping",
+    "question": "How do you choose between mmap-style access and explicit async I/O for replay or storage-heavy systems?",
+    "topics": [
+      "storage",
+      "mmap",
+      "async-io"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the workload connection-heavy, disk-heavy, or latency-sensitive network I/O?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux I/O model knowledge",
+      "Evaluating whether the candidate can choose between readiness, completion, and threading approaches"
+    ],
+    "answerOutline": [
+      "Define the I/O model",
+      "Explain its performance characteristics",
+      "Compare with alternatives",
+      "Discuss backpressure and failure handling"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: the choice depends on access pattern, page-fault tolerance, and control over prefetch and backpressure. In practice this matters because market replay stores or historical data services. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using choosing the model that makes latency and working-set behavior tractable. I then validate with page-fault, cache-miss, and sequential-vs-random tests, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Assuming async I/O removes design complexity",
+      "Ignoring queue depth, wakeups, and backpressure"
+    ],
+    "followUps": [
+      "What would you measure first in production?",
+      "How do you test under bursty load?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose an I/O model for both data-plane and control-plane components.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-profiling-001",
+    "title": "Using perf effectively",
+    "question": "What can perf tell you that application-level timing often cannot?",
+    "topics": [
+      "perf",
+      "profiling",
+      "linux"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are you trying to find a hotspot, explain jitter, or validate a before-and-after claim?"
+    ],
+    "interviewerIntent": [
+      "Evaluating performance investigation maturity",
+      "Evaluating ability to connect tooling output to concrete optimization decisions"
+    ],
+    "answerOutline": [
+      "Explain what the tool measures",
+      "Describe a realistic workflow for using it",
+      "Call out common interpretation mistakes",
+      "Tie the result back to engineering decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: sampling reveals where CPU time and stalls accumulate without needing hand instrumentation everywhere. In practice this matters because unexpected hotspots, kernel involvement, or branch and memory issues. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using starting with trustworthy system-level evidence before rewriting code. I then validate with baseline captures under representative load, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Confusing sampling artifacts with root cause",
+      "Optimizing without establishing a trustworthy baseline"
+    ],
+    "followUps": [
+      "How do you avoid measurement distortion?",
+      "What would you do if the tool disagrees with intuition?"
+    ],
+    "seniorExtension": "Extend the answer to how you build a repeatable profiling culture rather than isolated heroic investigations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-profiling-002",
+    "title": "Flamegraph interpretation",
+    "question": "How do you read a flamegraph correctly, and what mistakes do people make?",
+    "topics": [
+      "flamegraphs",
+      "profiling",
+      "visualization"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are you trying to find a hotspot, explain jitter, or validate a before-and-after claim?"
+    ],
+    "interviewerIntent": [
+      "Evaluating performance investigation maturity",
+      "Evaluating ability to connect tooling output to concrete optimization decisions"
+    ],
+    "answerOutline": [
+      "Explain what the tool measures",
+      "Describe a realistic workflow for using it",
+      "Call out common interpretation mistakes",
+      "Tie the result back to engineering decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: width reflects sampled time, not call counts or source-code importance. In practice this matters because teams jumping straight from wide frames to rewrites without context. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using using the graph to form hypotheses and then validating with code and workload knowledge. I then validate with before-and-after graphs plus drill-down into leaf causes, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Confusing sampling artifacts with root cause",
+      "Optimizing without establishing a trustworthy baseline"
+    ],
+    "followUps": [
+      "How do you avoid measurement distortion?",
+      "What would you do if the tool disagrees with intuition?"
+    ],
+    "seniorExtension": "Extend the answer to how you build a repeatable profiling culture rather than isolated heroic investigations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-profiling-003",
+    "title": "Hardware performance counters",
+    "question": "Which hardware counters are most useful when investigating latency jitter, and how do you avoid overinterpreting them?",
+    "topics": [
+      "hardware-counters",
+      "latency",
+      "cpu"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are you trying to find a hotspot, explain jitter, or validate a before-and-after claim?"
+    ],
+    "interviewerIntent": [
+      "Evaluating performance investigation maturity",
+      "Evaluating ability to connect tooling output to concrete optimization decisions"
+    ],
+    "answerOutline": [
+      "Explain what the tool measures",
+      "Describe a realistic workflow for using it",
+      "Call out common interpretation mistakes",
+      "Tie the result back to engineering decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: cache misses, branch misses, cycles, instructions, and context events can hint at causes but require context. In practice this matters because bursty latency regressions with unclear CPU behavior. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using comparing counters alongside code changes and workload shifts rather than in isolation. I then validate with controlled experiments with one variable changed at a time, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Confusing sampling artifacts with root cause",
+      "Optimizing without establishing a trustworthy baseline"
+    ],
+    "followUps": [
+      "How do you avoid measurement distortion?",
+      "What would you do if the tool disagrees with intuition?"
+    ],
+    "seniorExtension": "Extend the answer to how you build a repeatable profiling culture rather than isolated heroic investigations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-profiling-004",
+    "title": "VTune versus perf",
+    "question": "When might a tool like VTune offer value beyond perf?",
+    "topics": [
+      "vtune",
+      "profiling",
+      "tooling"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are you trying to find a hotspot, explain jitter, or validate a before-and-after claim?"
+    ],
+    "interviewerIntent": [
+      "Evaluating performance investigation maturity",
+      "Evaluating ability to connect tooling output to concrete optimization decisions"
+    ],
+    "answerOutline": [
+      "Explain what the tool measures",
+      "Describe a realistic workflow for using it",
+      "Call out common interpretation mistakes",
+      "Tie the result back to engineering decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: richer microarchitectural analysis and guided views can accelerate certain investigations. In practice this matters because deep CPU pipeline or memory-subsystem analysis on supported platforms. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using bringing heavier tools in after simpler sampling narrows the question. I then validate with cross-checks between tools and known baselines, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Confusing sampling artifacts with root cause",
+      "Optimizing without establishing a trustworthy baseline"
+    ],
+    "followUps": [
+      "How do you avoid measurement distortion?",
+      "What would you do if the tool disagrees with intuition?"
+    ],
+    "seniorExtension": "Extend the answer to how you build a repeatable profiling culture rather than isolated heroic investigations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-profiling-005",
+    "title": "Baseline discipline",
+    "question": "Why is establishing a trustworthy performance baseline so important before tuning?",
+    "topics": [
+      "profiling",
+      "baselines",
+      "methodology"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are you trying to find a hotspot, explain jitter, or validate a before-and-after claim?"
+    ],
+    "interviewerIntent": [
+      "Evaluating performance investigation maturity",
+      "Evaluating ability to connect tooling output to concrete optimization decisions"
+    ],
+    "answerOutline": [
+      "Explain what the tool measures",
+      "Describe a realistic workflow for using it",
+      "Call out common interpretation mistakes",
+      "Tie the result back to engineering decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: without a stable baseline you cannot tell regression from noise or improvement from measurement drift. In practice this matters because systems affected by burst patterns, core placement, or market-state changes. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using locking down workload shape, host state, and metrics before comparing versions. I then validate with repeat runs, confidence intervals, and environment capture, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Confusing sampling artifacts with root cause",
+      "Optimizing without establishing a trustworthy baseline"
+    ],
+    "followUps": [
+      "How do you avoid measurement distortion?",
+      "What would you do if the tool disagrees with intuition?"
+    ],
+    "seniorExtension": "Extend the answer to how you build a repeatable profiling culture rather than isolated heroic investigations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-profiling-006",
+    "title": "Profiling lock contention",
+    "question": "How do you investigate contention when a system is not obviously CPU-bound?",
+    "topics": [
+      "profiling",
+      "contention",
+      "locking"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are you trying to find a hotspot, explain jitter, or validate a before-and-after claim?"
+    ],
+    "interviewerIntent": [
+      "Evaluating performance investigation maturity",
+      "Evaluating ability to connect tooling output to concrete optimization decisions"
+    ],
+    "answerOutline": [
+      "Explain what the tool measures",
+      "Describe a realistic workflow for using it",
+      "Call out common interpretation mistakes",
+      "Tie the result back to engineering decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: waiting time can dominate even when total CPU usage looks modest. In practice this matters because queues, futex waits, or shared structures under burst load. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using combining scheduler, lock, and application metrics to see where progress is blocked. I then validate with contention tracing and synthetic burst tests, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Confusing sampling artifacts with root cause",
+      "Optimizing without establishing a trustworthy baseline"
+    ],
+    "followUps": [
+      "How do you avoid measurement distortion?",
+      "What would you do if the tool disagrees with intuition?"
+    ],
+    "seniorExtension": "Extend the answer to how you build a repeatable profiling culture rather than isolated heroic investigations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-profiling-007",
+    "title": "Measuring the measurement overhead",
+    "question": "How do you reason about profiling overhead in very latency-sensitive systems?",
+    "topics": [
+      "profiling",
+      "overhead",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are you trying to find a hotspot, explain jitter, or validate a before-and-after claim?"
+    ],
+    "interviewerIntent": [
+      "Evaluating performance investigation maturity",
+      "Evaluating ability to connect tooling output to concrete optimization decisions"
+    ],
+    "answerOutline": [
+      "Explain what the tool measures",
+      "Describe a realistic workflow for using it",
+      "Call out common interpretation mistakes",
+      "Tie the result back to engineering decisions"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: the act of observing can perturb caches, timing, and scheduling, especially on microsecond-scale paths. In practice this matters because always-on instrumentation versus targeted sampling. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using choosing the lightest tool that answers the current question. I then validate with A/B runs with and without instrumentation, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Confusing sampling artifacts with root cause",
+      "Optimizing without establishing a trustworthy baseline"
+    ],
+    "followUps": [
+      "How do you avoid measurement distortion?",
+      "What would you do if the tool disagrees with intuition?"
+    ],
+    "seniorExtension": "Extend the answer to how you build a repeatable profiling culture rather than isolated heroic investigations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-sync-001",
+    "title": "Futex intuition",
+    "question": "What is a futex, and why is it central to how many Linux synchronization primitives behave?",
+    "topics": [
+      "futex",
+      "synchronization",
+      "linux"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are you focusing on latency under contention, API semantics, or implementation mechanics?"
+    ],
+    "interviewerIntent": [
+      "Evaluating synchronization depth",
+      "Evaluating whether the candidate understands how blocking primitives behave under the hood"
+    ],
+    "answerOutline": [
+      "Define the primitive or pattern",
+      "Explain when it is efficient or dangerous",
+      "Compare with nearby alternatives",
+      "Describe validation under contention"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: the fast path stays in userspace until contention forces a kernel-assisted wait or wake. In practice this matters because mutexes and condition variables that are usually uncontended. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using designs that keep the uncontended case cheap while handling contention correctly. I then validate with contention tests and scheduler tracing, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about synchronization only at the API level",
+      "Ignoring wakeup behavior, contention, or memory ordering"
+    ],
+    "followUps": [
+      "When would you spin instead of block?",
+      "How do you test correctness under contention?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose synchronization strategies for hot paths versus orchestration code.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-sync-002",
+    "title": "Condition variables and lost wakeups",
+    "question": "What patterns prevent lost wakeups and spurious-wakeup bugs with condition variables?",
+    "topics": [
+      "condition-variables",
+      "correctness",
+      "threads"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are you focusing on latency under contention, API semantics, or implementation mechanics?"
+    ],
+    "interviewerIntent": [
+      "Evaluating synchronization depth",
+      "Evaluating whether the candidate understands how blocking primitives behave under the hood"
+    ],
+    "answerOutline": [
+      "Define the primitive or pattern",
+      "Explain when it is efficient or dangerous",
+      "Compare with nearby alternatives",
+      "Describe validation under contention"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: the predicate, mutex, and wait loop must be designed together rather than as independent steps. In practice this matters because producer-consumer queues or state transitions under concurrency. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using waiting in a loop on a protected predicate and minimizing notification races. I then validate with stress tests with timing perturbation and TSAN, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about synchronization only at the API level",
+      "Ignoring wakeup behavior, contention, or memory ordering"
+    ],
+    "followUps": [
+      "When would you spin instead of block?",
+      "How do you test correctness under contention?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose synchronization strategies for hot paths versus orchestration code.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-sync-003",
+    "title": "Spin versus block",
+    "question": "How do you decide when spinning is better than blocking?",
+    "topics": [
+      "spinning",
+      "blocking",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are you focusing on latency under contention, API semantics, or implementation mechanics?"
+    ],
+    "interviewerIntent": [
+      "Evaluating synchronization depth",
+      "Evaluating whether the candidate understands how blocking primitives behave under the hood"
+    ],
+    "answerOutline": [
+      "Define the primitive or pattern",
+      "Explain when it is efficient or dangerous",
+      "Compare with nearby alternatives",
+      "Describe validation under contention"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: the answer depends on expected wait time, core budget, and the cost of sleeping and waking. In practice this matters because short critical sections on dedicated cores versus mixed workloads. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using bounded spinning that avoids stealing cycles from more valuable work. I then validate with latency and CPU-budget measurement under contention, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about synchronization only at the API level",
+      "Ignoring wakeup behavior, contention, or memory ordering"
+    ],
+    "followUps": [
+      "When would you spin instead of block?",
+      "How do you test correctness under contention?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose synchronization strategies for hot paths versus orchestration code.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-sync-004",
+    "title": "Barriers and phased work",
+    "question": "How would you think about implementing or choosing a barrier for phased parallel work?",
+    "topics": [
+      "barriers",
+      "parallelism",
+      "coordination"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are you focusing on latency under contention, API semantics, or implementation mechanics?"
+    ],
+    "interviewerIntent": [
+      "Evaluating synchronization depth",
+      "Evaluating whether the candidate understands how blocking primitives behave under the hood"
+    ],
+    "answerOutline": [
+      "Define the primitive or pattern",
+      "Explain when it is efficient or dangerous",
+      "Compare with nearby alternatives",
+      "Describe validation under contention"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: barriers synchronize progress but can amplify skew and idle time if the workload is imbalanced. In practice this matters because simulation, replay, or batched compute phases. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using designs that minimize unnecessary global synchronization. I then validate with timing breakdown by phase and thread, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about synchronization only at the API level",
+      "Ignoring wakeup behavior, contention, or memory ordering"
+    ],
+    "followUps": [
+      "When would you spin instead of block?",
+      "How do you test correctness under contention?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose synchronization strategies for hot paths versus orchestration code.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-sync-005",
+    "title": "Read-mostly synchronization choices",
+    "question": "How do you choose among rwlocks, seqlocks, or RCU-like patterns for read-mostly data?",
+    "topics": [
+      "rwlocks",
+      "seqlock",
+      "rcu"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are you focusing on latency under contention, API semantics, or implementation mechanics?"
+    ],
+    "interviewerIntent": [
+      "Evaluating synchronization depth",
+      "Evaluating whether the candidate understands how blocking primitives behave under the hood"
+    ],
+    "answerOutline": [
+      "Define the primitive or pattern",
+      "Explain when it is efficient or dangerous",
+      "Compare with nearby alternatives",
+      "Describe validation under contention"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: different primitives trade reader cost, writer complexity, retries, and consistency guarantees differently. In practice this matters because configuration snapshots, reference data, or instrumentation state. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using matching the primitive to update rate and tolerance for retries. I then validate with contention benchmarks with realistic reader-writer ratios, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about synchronization only at the API level",
+      "Ignoring wakeup behavior, contention, or memory ordering"
+    ],
+    "followUps": [
+      "When would you spin instead of block?",
+      "How do you test correctness under contention?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose synchronization strategies for hot paths versus orchestration code.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-sync-006",
+    "title": "Synchronization for hot path versus control plane",
+    "question": "Why should the same team often use different synchronization strategies on hot paths and orchestration code?",
+    "topics": [
+      "synchronization",
+      "architecture",
+      "tradeoffs"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are you focusing on latency under contention, API semantics, or implementation mechanics?"
+    ],
+    "interviewerIntent": [
+      "Evaluating synchronization depth",
+      "Evaluating whether the candidate understands how blocking primitives behave under the hood"
+    ],
+    "answerOutline": [
+      "Define the primitive or pattern",
+      "Explain when it is efficient or dangerous",
+      "Compare with nearby alternatives",
+      "Describe validation under contention"
+    ],
+    "sampleAnswer": "I would start by making the mechanism concrete: hot loops prioritize predictable progress and locality, while control code often values simplicity and correctness over nanoseconds. In practice this matters because mixing data-plane and administrative workflows in one service. In low-latency systems the dangerous mistake is treating infrastructure folklore as free truth instead of asking which workload characteristic is actually dominant: wakeups, cache locality, queue depth, interrupt behavior, topology, or operational support cost. My approach is to connect the abstraction back to real deployment choices by using explicit context-specific standards for primitives and review. I then validate with separate benchmarks and review guidance by subsystem, because system behavior that looks attractive in a synthetic benchmark can become much less compelling once burstiness, housekeeping work, failure handling, and observability are included. The senior answer is not just knowing the mechanism; it is understanding where it helps, where it hurts, and how to prove the tradeoff on real hardware and real traffic shapes.",
+    "commonMistakes": [
+      "Talking about synchronization only at the API level",
+      "Ignoring wakeup behavior, contention, or memory ordering"
+    ],
+    "followUps": [
+      "When would you spin instead of block?",
+      "How do you test correctness under contention?"
+    ],
+    "seniorExtension": "Extend the answer to how you choose synchronization strategies for hot paths versus orchestration code.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
         "source": "book",
         "accessDate": "2026-07-24"
       }
