@@ -165,7 +165,7 @@
     "title": "7-Day Emergency Study Plan",
     "topic": "study-plans",
     "path": "content/study-plans/7-day-emergency-plan.md",
-    "excerpt": "This is not a “learn everything” schedule. It is a triage plan. Your objective is to get interview-ready fast enough that your strongest capabilities "
+    "excerpt": "This is not a \u201clearn everything\u201d schedule. It is a triage plan. Your objective is to get interview-ready fast enough that your strongest capabilities "
   },
   {
     "id": "study-plans-interview-day-checklist",
@@ -188,7 +188,7 @@
     "route": "research/company-evidence-matrix",
     "title": "Company Evidence Matrix",
     "topic": "research",
-    "path": "research/company-evidence-matrix.md",
+    "path": "content/research/company-evidence-matrix.md",
     "excerpt": "- Confirmed: directly supported by official company interview/careers content"
   },
   {
@@ -196,7 +196,7 @@
     "route": "research/research-methodology",
     "title": "Research Methodology",
     "topic": "research",
-    "path": "research/research-methodology.md",
+    "path": "content/research/research-methodology.md",
     "excerpt": "This research layer is intended to support responsible interview preparation. The goal is to help the candidate understand:"
   },
   {
@@ -204,7 +204,7 @@
     "route": "research/sources",
     "title": "Sources",
     "topic": "research",
-    "path": "research/sources.md",
+    "path": "content/research/sources.md",
     "excerpt": "- High: direct official source or authoritative technical source"
   },
   {
@@ -221,7 +221,7 @@
     "title": "Atomics and Lock-Free Programming",
     "topic": "cpp",
     "path": "content/cpp/atomics-and-lock-free.md",
-    "excerpt": "Atomics are the foundation of low-level concurrency in C++. Senior interviews at trading firms often probe whether you can distinguish “atomic,” “lock"
+    "excerpt": "Atomics are the foundation of low-level concurrency in C++. Senior interviews at trading firms often probe whether you can distinguish \u201catomic,\u201d \u201clock"
   },
   {
     "id": "cpp-compilation-linking-abi",
@@ -285,7 +285,7 @@
     "title": "Object Lifetime",
     "topic": "cpp",
     "path": "content/cpp/object-lifetime.md",
-    "excerpt": "Object lifetime is one of the most important and most misunderstood parts of C++. In interview settings, many “trick” questions are really about disti"
+    "excerpt": "Object lifetime is one of the most important and most misunderstood parts of C++. In interview settings, many \u201ctrick\u201d questions are really about disti"
   },
   {
     "id": "cpp-performance",
@@ -317,7 +317,7 @@
     "title": "Undefined Behavior",
     "topic": "cpp",
     "path": "content/cpp/undefined-behavior.md",
-    "excerpt": "Undefined behavior is not merely “the program may crash.” It means the C++ standard imposes no requirements on the program's behavior after the violat"
+    "excerpt": "Undefined behavior is not merely \u201cthe program may crash.\u201d It means the C++ standard imposes no requirements on the program's behavior after the violat"
   },
   {
     "id": "cpp-value-categories",
@@ -325,7 +325,7 @@
     "title": "Value Categories",
     "topic": "cpp",
     "path": "content/cpp/value-categories.md",
-    "excerpt": "Value categories explain overload resolution, move semantics, perfect forwarding, and many “why did the compiler choose that overload?” questions. The"
+    "excerpt": "Value categories explain overload resolution, move semantics, perfect forwarding, and many \u201cwhy did the compiler choose that overload?\u201d questions. The"
   },
   {
     "id": "systems-cpu-cache-and-numa",
@@ -621,7 +621,7 @@
     "title": "Full Loop Simulation (4 Hours)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/full-loop-simulation.md",
-    "excerpt": "| 00:00-00:30 | Interview 1 — Recruiter screen | Establish narrative, motivation, logistics fit |"
+    "excerpt": "| 00:00-00:30 | Interview 1 \u2014 Recruiter screen | Establish narrative, motivation, logistics fit |"
   },
   {
     "id": "mock-interview-guide",
@@ -637,7 +637,7 @@
     "title": "Optiver Behavioral Interview Simulation (45 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/optiver-behavioral-45min.md",
-    "excerpt": "This interview is not a generic “tell me about yourself” round. It is designed to test whether you would operate well in an environment that is:"
+    "excerpt": "This interview is not a generic \u201ctell me about yourself\u201d round. It is designed to test whether you would operate well in an environment that is:"
   },
   {
     "id": "mock-interviews-optiver-behavioral-60min",
@@ -653,7 +653,7 @@
     "title": "Recruiter Screen Simulation 01 (30 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/recruiter-screen-01.md",
-    "excerpt": "- 0:00-2:00 — Introductions and agenda"
+    "excerpt": "- 0:00-2:00 \u2014 Introductions and agenda"
   },
   {
     "id": "mock-interviews-senior-cpp-60min",
@@ -661,7 +661,7 @@
     "title": "Senior C++ Technical Interview Simulation (60 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/senior-cpp-60min.md",
-    "excerpt": "- 0:00-5:00 — Intro and calibration"
+    "excerpt": "- 0:00-5:00 \u2014 Intro and calibration"
   },
   {
     "id": "mock-interviews-system-design-60min",
@@ -669,7 +669,7 @@
     "title": "System Design Interview Simulation (60 Minutes)",
     "topic": "mock-interviews",
     "path": "content/mock-interviews/system-design-60min.md",
-    "excerpt": "- 0:00-5:00 — Requirements clarification"
+    "excerpt": "- 0:00-5:00 \u2014 Requirements clarification"
   },
   {
     "id": "coding-algorithms",
