@@ -551,7 +551,15 @@ a:focus-visible {
 /* Route panel grid placement */
 .route-panel {
   grid-column: span 12;
-  display: contents;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-content: start;
+}
+
+/* Panels that should always span full width within a route-panel */
+.route-panel > .panel {
+  grid-column: span 12;
 }
 
 .route-panel[hidden] { display: none !important; }
