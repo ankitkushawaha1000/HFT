@@ -1,0 +1,74 @@
+[
+  {
+    "id": "study-plans-overview",
+    "route": "study-plans",
+    "title": "Study Plan Overview",
+    "topic": "study-plans",
+    "path": "content/study-plans/overview.md",
+    "excerpt": "Sequence behavioral, C++, systems, low-latency, and trading review intentionally."
+  },
+  {
+    "id": "behavioral-foundations",
+    "route": "behavioral",
+    "title": "Behavioral Foundations",
+    "topic": "behavioral",
+    "path": "content/behavioral/foundations.md",
+    "excerpt": "Use real production stories to demonstrate judgment, influence, and calm incident response."
+  },
+  {
+    "id": "cpp-foundations",
+    "route": "cpp",
+    "title": "C++ Foundations for HFT Interviews",
+    "topic": "cpp",
+    "path": "content/cpp/foundations.md",
+    "excerpt": "Refresh ownership, move semantics, atomics, and data layout with production tradeoffs."
+  },
+  {
+    "id": "systems-foundations",
+    "route": "systems",
+    "title": "Systems Foundations",
+    "topic": "systems",
+    "path": "content/systems/foundations.md",
+    "excerpt": "Connect OS and networking behavior to latency, jitter, and failure modes."
+  },
+  {
+    "id": "low-latency-foundations",
+    "route": "low-latency",
+    "title": "Low-Latency Foundations",
+    "topic": "low-latency",
+    "path": "content/low-latency/foundations.md",
+    "excerpt": "Learn how to reason about deterministic hot paths, tail latency, and measurement."
+  },
+  {
+    "id": "design-foundations",
+    "route": "design",
+    "title": "Design Foundations",
+    "topic": "design",
+    "path": "content/design/foundations.md",
+    "excerpt": "Structure design answers around invariants, critical paths, and overload behavior."
+  },
+  {
+    "id": "trading-foundations",
+    "route": "trading",
+    "title": "Trading Foundations for Engineers",
+    "topic": "trading",
+    "path": "content/trading/foundations.md",
+    "excerpt": "Understand how market structure drives engineering priorities in HFT systems."
+  },
+  {
+    "id": "coding-foundations",
+    "route": "coding",
+    "title": "Coding Interview Foundations",
+    "topic": "coding",
+    "path": "content/coding/foundations.md",
+    "excerpt": "Communicate invariants, edge cases, and data-structure choices clearly while coding."
+  },
+  {
+    "id": "mock-interview-guide",
+    "route": "mock-interviews",
+    "title": "Mock Interview Guide",
+    "topic": "mock-interviews",
+    "path": "content/mock-interviews/guide.md",
+    "excerpt": "Use timers and self-review to practice structured recall under pressure."
+  }
+]

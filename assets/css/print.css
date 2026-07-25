@@ -1,0 +1,79 @@
+
+body {
+  background: #ffffff !important;
+  color: #111827 !important;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.5;
+}
+
+.sidebar,
+.topbar,
+.search-panel,
+.search-results-panel,
+.sidebar__footer,
+.button,
+.icon-button,
+.timer-options,
+.question-card__actions,
+.bookmark-button,
+.reveal-button {
+  display: none !important;
+}
+
+.workspace {
+  margin: 0 !important;
+}
+
+.main-grid {
+  display: block !important;
+  padding: 0 !important;
+}
+
+.panel,
+.question-card,
+.result-card,
+.quiz-card {
+  box-shadow: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 0 1rem !important;
+  page-break-inside: avoid;
+}
+
+.route-panel,
+.dashboard-panel {
+  display: block !important;
+}
+
+.question-answer[hidden] {
+  display: block !important;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.question-card,
+.result-card {
+  page-break-after: avoid;
+}
+
+.markdown-body pre,
+.markdown-body blockquote {
+  page-break-inside: avoid;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem;
+}
+
+.badge,
+.metric-card__label,
+.metric-card__subtext,
+.muted,
+.search-summary {
+  color: #4b5563 !important;
+}
+
+a {
+  color: #111827 !important;
+  text-decoration: none;
+}

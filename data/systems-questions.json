@@ -1,0 +1,1236 @@
+[
+  {
+    "id": "systems-processes-001",
+    "title": "Processes, threads, and context-switch cost",
+    "question": "What practical differences matter between processes and threads in Linux when you are building low-latency systems?",
+    "topics": [
+      "linux",
+      "processes",
+      "threads",
+      "scheduling"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are you asking about isolation, memory sharing, or scheduler behavior?"
+    ],
+    "interviewerIntent": [
+      "Evaluating Linux fundamentals",
+      "Evaluating ability to connect OS abstractions to latency"
+    ],
+    "answerOutline": [
+      "Contrast address spaces and fault domains",
+      "Explain sharing and IPC cost",
+      "Discuss context switches and isolation tradeoffs",
+      "Tie to deployment choices"
+    ],
+    "sampleAnswer": "Threads share an address space, so they communicate cheaply through shared memory but also share corruption risk and require careful synchronization around memory visibility and ownership. Processes isolate faults and memory better, which is valuable for blast-radius control, but communication now needs IPC, shared memory segments, sockets, or kernel-mediated mechanisms that add complexity and often more latency. From a scheduler perspective both are scheduled entities on Linux, so the main latency difference is less about the word process versus thread and more about cache/TLB disruption, synchronization patterns, and cross-core migration behavior. In low-latency systems I often keep the true hot path within a process boundary to avoid extra copies, while using process boundaries around less latency-sensitive or less trusted components for fault isolation. The strong answer is a tradeoff: shared-state efficiency versus failure containment, all filtered through real workload and operational constraints.",
+    "commonMistakes": [
+      "Assuming processes are always slower in every meaningful way",
+      "Ignoring fault isolation and deployment consequences"
+    ],
+    "followUps": [
+      "How does shared memory between processes change the tradeoff?",
+      "Why can thread migration hurt latency?"
+    ],
+    "seniorExtension": "Discuss how huge pages, NUMA pinning, and shared memory rings influence the process-versus-thread boundary in an HFT plant.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-processes-002",
+    "title": "Real-time scheduling classes and their risks",
+    "question": "How do Linux real-time scheduling policies like SCHED_FIFO and SCHED_RR differ from normal scheduling, and what can go wrong if you use them carelessly?",
+    "topics": [
+      "linux",
+      "scheduling",
+      "real-time",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are we discussing user-space threads pinned to dedicated cores?"
+    ],
+    "interviewerIntent": [
+      "Evaluating scheduler depth",
+      "Evaluating operational caution"
+    ],
+    "answerOutline": [
+      "Explain normal vs RT policies",
+      "Describe FIFO and RR semantics",
+      "Call out starvation and priority inversion",
+      "Mention guardrails"
+    ],
+    "sampleAnswer": "`SCHED_FIFO` and `SCHED_RR` sit above normal CFS tasks and are designed to minimize preemption by ordinary work, which can be useful when you want a dedicated latency-sensitive thread to run as soon as it is runnable. `SCHED_FIFO` keeps the highest-priority runnable thread running until it blocks, yields, or a higher-priority RT thread appears, while `SCHED_RR` adds time slicing among same-priority RT threads. The danger is that a buggy or overly busy RT thread can starve the rest of the machine, including housekeeping work, or create nasty priority inversion if it waits on lower-priority holders of needed resources. That is why I only use RT scheduling with strong guardrails: isolated cores, explicit CPU affinity, memory prefaulting where appropriate, bounded blocking, and careful monitoring of run queues and system responsiveness. A good senior answer shows both the latency benefit and the operational blast radius of getting RT policy wrong.",
+    "commonMistakes": [
+      "Thinking real-time scheduling makes code deterministic by itself",
+      "Ignoring starvation and housekeeping effects"
+    ],
+    "followUps": [
+      "Why is memory locking often paired with RT threads?",
+      "How does priority inheritance help?"
+    ],
+    "seniorExtension": "Explain when `SCHED_DEADLINE` might be considered and why many trading systems still avoid it in favor of simpler, more predictable thread models.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-processes-003",
+    "title": "CPU affinity, isolation, and scheduler noise",
+    "question": "What problem does CPU pinning solve, and what are its limitations in production Linux systems?",
+    "topics": [
+      "linux",
+      "cpu-affinity",
+      "isolation",
+      "scheduler"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are the pinned threads communicating heavily with other cores?"
+    ],
+    "interviewerIntent": [
+      "Evaluating practical latency tuning knowledge",
+      "Evaluating awareness of system-level caveats"
+    ],
+    "answerOutline": [
+      "Describe cache and migration benefits",
+      "Mention IRQs and kernel threads",
+      "Explain isolation limits",
+      "Tie to observability"
+    ],
+    "sampleAnswer": "CPU affinity helps by reducing scheduler migration, which preserves cache warmth, avoids some TLB disruption, and makes latency behavior more repeatable for threads that are sensitive to jitter. In practice I often combine pinning with isolated cores, IRQ steering, and careful placement of communicating threads so I am not just moving user threads while interrupts and kernel work still land on the same CPU. The limitation is that pinning is not a silver bullet: if the core still shares resources with noisy neighbors, competes for LLC or memory bandwidth, or handles network interrupts, the latency benefit can be much smaller than expected. Pinning can also hurt if it creates imbalance or forces communicating threads onto distant NUMA nodes, so placement must reflect the actual topology and traffic pattern. The strong answer treats affinity as one part of a whole-machine scheduling and topology strategy rather than a checkbox tweak.",
+    "commonMistakes": [
+      "Pinning application threads but ignoring IRQ placement",
+      "Assuming pinning always helps regardless of NUMA and communication patterns"
+    ],
+    "followUps": [
+      "How do you verify a core is actually isolated?",
+      "What is the downside of pinning too aggressively?"
+    ],
+    "seniorExtension": "Discuss how kernel housekeeping cores, `isolcpus`, and cpusets fit into a production latency-isolation plan.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-processes-004",
+    "title": "Futexes and blocking behavior",
+    "question": "What is a futex, and why does it matter when reasoning about Linux synchronization latency?",
+    "topics": [
+      "linux",
+      "futex",
+      "synchronization",
+      "scheduling"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Do you want the user-space fast path explanation or the kernel wakeup path?"
+    ],
+    "interviewerIntent": [
+      "Evaluating OS synchronization internals",
+      "Evaluating ability to reason about lock latency"
+    ],
+    "answerOutline": [
+      "Define fast userspace mutex",
+      "Explain uncontended versus contended path",
+      "Discuss wakeups and scheduler involvement",
+      "Tie to lock behavior under load"
+    ],
+    "sampleAnswer": "A futex is a Linux primitive that lets synchronization stay in user space when uncontended and only enter the kernel when a thread actually has to sleep or wake another waiter. That is why many mutexes are cheap in the uncontended case: the lock acquisition is just atomic user-space state manipulation until contention forces a `futex` wait or wake syscall. For latency reasoning, this matters because once threads block you have scheduler queues, wakeup delays, priority interactions, and cache disruption in play, which are often much more expensive and variable than the atomic fast path itself. In practice, a lock that is mostly uncontended can be perfectly acceptable, but a lock that enters futex sleep under burst traffic may create long tail behavior and convoying. The strong answer connects the API-level mutex choice to the kernel path that appears only when contention or blocking happens.",
+    "commonMistakes": [
+      "Describing futex as only a kernel lock",
+      "Ignoring the distinction between uncontended and contended behavior"
+    ],
+    "followUps": [
+      "How do you observe futex contention in production?",
+      "Why can spin-then-park be useful?"
+    ],
+    "seniorExtension": "Explain how adaptive spinning policies interact with core isolation and why the best choice depends on expected hold time and oversubscription.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-processes-005",
+    "title": "Fork, exec, and signals in production services",
+    "question": "What subtle issues around fork, exec, and signals are worth remembering in Linux systems programming?",
+    "topics": [
+      "linux",
+      "fork",
+      "exec",
+      "signals"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are we discussing a multithreaded parent process?"
+    ],
+    "interviewerIntent": [
+      "Evaluating operational Unix fundamentals",
+      "Evaluating awareness of rare but serious edge cases"
+    ],
+    "answerOutline": [
+      "Explain COW and descriptor inheritance",
+      "Call out fork in multithreaded processes",
+      "Mention signal-safety and handlers",
+      "Discuss when posix_spawn or exec-only workers are better"
+    ],
+    "sampleAnswer": "`fork()` duplicates the calling process with copy-on-write memory and inherited file descriptors, which is powerful but tricky once the parent is multithreaded because only the calling thread survives in the child. That means the child must be extremely careful before `exec()`: many library states may be mid-update, and only async-signal-safe operations are really safe in the post-fork, pre-exec window. Signals add another layer of subtlety because handlers run asynchronously, can interrupt syscalls, and must avoid unsafe operations unless you deliberately route them through mechanisms like `signalfd` or a self-pipe. In production services I prefer simple models: launch helper processes early, use `exec` quickly after `fork`, set `FD_CLOEXEC` correctly, and keep signal handling centralized and minimal. The strong answer is less about remembering every POSIX detail and more about respecting how process control interacts with shared runtime state.",
+    "commonMistakes": [
+      "Forgetting only one thread survives fork",
+      "Doing complex work in signal handlers"
+    ],
+    "followUps": [
+      "Why can malloc be dangerous after fork in a multithreaded program?",
+      "What does FD_CLOEXEC protect you from?"
+    ],
+    "seniorExtension": "Compare process-launch strategies for operational tools versus ultra-low-latency services where even brief stop-the-world effects matter.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-memory-001",
+    "title": "Page faults, TLBs, and huge pages",
+    "question": "How do page faults, TLB misses, and huge pages affect application latency on Linux?",
+    "topics": [
+      "memory",
+      "virtual-memory",
+      "pages",
+      "tlb"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are we concerned with startup behavior, steady-state latency, or both?"
+    ],
+    "interviewerIntent": [
+      "Evaluating VM fundamentals",
+      "Evaluating whether the candidate can relate memory translation to latency"
+    ],
+    "answerOutline": [
+      "Explain major vs minor faults",
+      "Describe TLB role",
+      "Discuss huge page benefits and tradeoffs",
+      "Mention prefaulting or mlock when relevant"
+    ],
+    "sampleAnswer": "A page fault happens when a virtual page mapping is not currently usable, and the cost ranges from a minor fault that just populates metadata to a major fault that requires disk I/O and is disastrous for latency. Even without faults, TLB misses matter because every memory access needs address translation; if the working set touches many pages, the CPU spends more time refilling translation entries. Huge pages can help by covering more memory with fewer TLB entries, which is valuable for large contiguous buffers, order books, or other structures with predictable access patterns. The tradeoff is flexibility and fragmentation: huge pages are not automatically better for all allocations, and they can make memory management or startup provisioning more complex. The strong answer ties VM behavior to actual latency symptoms and knows when techniques like prefaulting or memory locking are justified.",
+    "commonMistakes": [
+      "Confusing TLB misses with page faults",
+      "Assuming huge pages always improve performance"
+    ],
+    "followUps": [
+      "What is the difference between a minor and major fault?",
+      "When does transparent huge page behavior become risky?"
+    ],
+    "seniorExtension": "Discuss how you would evaluate explicit huge pages versus transparent huge pages in a latency-critical plant with replayable workload tests.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-memory-002",
+    "title": "mmap versus read for file access",
+    "question": "When is mmap a better choice than read, and what latency or correctness tradeoffs come with it?",
+    "topics": [
+      "memory",
+      "mmap",
+      "io",
+      "virtual-memory"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Is the file accessed sequentially, randomly, or shared across processes?"
+    ],
+    "interviewerIntent": [
+      "Evaluating practical VM and I/O knowledge",
+      "Evaluating nuanced tradeoff reasoning"
+    ],
+    "answerOutline": [
+      "Explain mmap strengths",
+      "Discuss page-fault behavior and signals",
+      "Contrast with explicit reads and buffering",
+      "Tie to workload shape"
+    ],
+    "sampleAnswer": "`mmap` is attractive when I want the kernel page cache to back file access directly into my address space, especially for random access or sharing data structures across processes without an extra copy. The downside is that I am now exposed to page-fault latency on first touch and to signal-style failure modes such as `SIGBUS` if the underlying file mapping becomes invalid or truncated unexpectedly. With `read`, I control when I issue I/O, how I size buffers, and how I surface errors, which can be simpler and sometimes more predictable for streaming patterns. So for memory-mapped configuration snapshots or large readonly reference data, `mmap` can be elegant and fast, while for strict latency control in streaming ingestion I often prefer explicit buffered reads. The strong answer is workload-specific and mentions both performance and operational failure semantics, not just fewer copies.",
+    "commonMistakes": [
+      "Assuming mmap avoids copies in all relevant layers",
+      "Ignoring page-fault timing and signal semantics"
+    ],
+    "followUps": [
+      "How does msync fit in?",
+      "What happens if another process truncates the file?"
+    ],
+    "seniorExtension": "Explain how you would benchmark mmap versus pread for a replay engine that scans historical binary captures at high speed.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-memory-003",
+    "title": "Copy-on-write after fork",
+    "question": "How does copy-on-write work after fork, and why can it surprise you in memory-sensitive systems?",
+    "topics": [
+      "memory",
+      "fork",
+      "copy-on-write",
+      "virtual-memory"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 11,
+    "clarifyingQuestions": [
+      "Is the parent process large or memory-fragmented?"
+    ],
+    "interviewerIntent": [
+      "Evaluating understanding of fork semantics",
+      "Evaluating ability to predict hidden costs"
+    ],
+    "answerOutline": [
+      "Explain shared pages after fork",
+      "Describe write-triggered copies",
+      "Mention page-table cost and allocator interaction",
+      "Tie to large services"
+    ],
+    "sampleAnswer": "After `fork`, the parent and child initially share physical pages, and the kernel marks them copy-on-write so each side gets a private copy only when one writes to a shared page. That makes `fork` look cheap at first, but the illusion breaks if either side touches many pages afterward, because the resulting page copies can create latency spikes and memory pressure. There is also nontrivial page-table work up front, and large fragmented heaps can make the post-fork state expensive or operationally awkward even if the child `exec`s quickly. That is why for large multithreaded servers or memory-heavy low-latency processes I avoid casual forking during critical periods and prefer dedicated helper processes or spawn models designed earlier. The strong answer recognizes that COW is a deferred cost model, not free cloning.",
+    "commonMistakes": [
+      "Saying fork copies all memory immediately",
+      "Ignoring page-table overhead and allocator behavior"
+    ],
+    "followUps": [
+      "Why can touching a huge heap after fork hurt badly?",
+      "What does vfork change?"
+    ],
+    "seniorExtension": "Discuss how huge pages, dirty-page rates, and memory locking change the operational risk of forking a large process.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-memory-004",
+    "title": "Overcommit, swapping, and memory pressure",
+    "question": "Why are overcommit and swapping dangerous in latency-sensitive Linux applications, and how do you guard against them?",
+    "topics": [
+      "memory",
+      "overcommit",
+      "swap",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Is the machine dedicated or shared with other workloads?"
+    ],
+    "interviewerIntent": [
+      "Evaluating operational Linux memory knowledge",
+      "Evaluating production hardening instincts"
+    ],
+    "answerOutline": [
+      "Explain overcommit and OOM risk",
+      "Describe swap latency cost",
+      "Mention reservation, limits, and monitoring",
+      "Tie to capacity planning"
+    ],
+    "sampleAnswer": "Linux overcommit can let the system promise more virtual memory than it can back comfortably, which is fine for many workloads but risky for latency-sensitive services that assume allocation or page touch will remain cheap and predictable. Swapping is even worse for a hot path because a single major fault against swapped-out memory can destroy latency and trigger cascading backlog behavior long before the process outright dies. I guard against this with dedicated capacity headroom, sensible overcommit policy for the environment, memory usage alerts, and where justified preallocation or `mlock` for the small truly critical regions. I also watch for indirect pressure from page cache growth, other colocated processes, and allocator fragmentation because the application may not think it is near its own limit when the machine is near a bad state. The strong answer treats memory pressure as a whole-host operational problem, not just a heap-size question inside one process.",
+    "commonMistakes": [
+      "Thinking swap only matters for throughput, not latency",
+      "Ignoring other processes and page cache pressure on the host"
+    ],
+    "followUps": [
+      "Would you disable swap entirely?",
+      "When is mlock appropriate and when is it overkill?"
+    ],
+    "seniorExtension": "Explain how cgroups, container memory limits, and host-level OOM behavior complicate the picture in modern deployments.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-memory-005",
+    "title": "Allocator behavior and fragmentation",
+    "question": "How can allocator behavior and fragmentation affect latency, even if your application is not obviously out of memory?",
+    "topics": [
+      "memory",
+      "allocators",
+      "fragmentation",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are allocations frequent on the hot path, or is the concern long-running drift?"
+    ],
+    "interviewerIntent": [
+      "Evaluating allocator and memory-latency reasoning",
+      "Evaluating ability to connect heap behavior to production symptoms"
+    ],
+    "answerOutline": [
+      "Describe contention and fragmentation costs",
+      "Explain cache and locality effects",
+      "Mention long-running services",
+      "Offer mitigation strategies"
+    ],
+    "sampleAnswer": "Allocator behavior can show up as latency even without OOM because allocation may contend on internal locks, touch cold pages, or return memory layouts that worsen cache locality for the objects you care about. Fragmentation makes this worse over time by increasing the working set, reducing locality, and making it harder for the allocator or kernel to satisfy requests from already-hot memory. In long-running services, you may see stable average latency but rising tails because burst allocations now bounce across more arenas or page ranges than they did after startup. The practical mitigations are workload-dependent: reserve capacity, pool hot objects, isolate thread-local allocators, and measure allocation rate and heap growth so you know whether allocator behavior is part of the real problem. The strong answer is that memory performance is shaped by layout and lifetime patterns, not just by total bytes allocated.",
+    "commonMistakes": [
+      "Treating fragmentation as only a memory-capacity issue",
+      "Ignoring allocator contention and locality effects"
+    ],
+    "followUps": [
+      "How would you observe allocator contention?",
+      "When can pooling make fragmentation worse?"
+    ],
+    "seniorExtension": "Discuss how NUMA-aware allocators and per-thread arenas change the diagnosis and mitigation strategy.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-networking-001",
+    "title": "TCP versus UDP for market data and order flow",
+    "question": "How would you compare TCP and UDP for exchange connectivity, especially market data versus order entry?",
+    "topics": [
+      "networking",
+      "tcp",
+      "udp",
+      "exchange-connectivity"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are we discussing multicast market data, unicast order entry, or both?"
+    ],
+    "interviewerIntent": [
+      "Evaluating network fundamentals in trading context",
+      "Evaluating protocol tradeoff reasoning"
+    ],
+    "answerOutline": [
+      "Explain TCP properties",
+      "Explain UDP properties",
+      "Tie them to market data and order entry use cases",
+      "Mention recovery paths and application logic"
+    ],
+    "sampleAnswer": "TCP gives ordered, reliable byte-stream delivery with congestion control, which is useful for order entry or session-based protocols where correctness and retransmission semantics matter more than raw one-way latency. UDP is connectionless and message-oriented, with less built-in overhead and no retransmission guarantee, which is why it is common for multicast market data where you want the latest updates fast and can tolerate occasional loss with application-level gap recovery. In trading systems the design is usually asymmetric: UDP multicast for high-rate market data, plus a separate recovery or snapshot channel, and TCP or another reliable session protocol for orders, acks, and risk-sensitive control flow. The important point is that using UDP does not remove the need for reliability; it pushes more responsibility into sequence tracking, buffering, and replay logic in the application. A strong answer ties transport semantics to actual exchange workflow rather than speaking about TCP and UDP in generic textbook terms.",
+    "commonMistakes": [
+      "Saying UDP is always faster without considering recovery logic",
+      "Ignoring why order entry typically values reliability and session semantics"
+    ],
+    "followUps": [
+      "Why is multicast common for market data?",
+      "How do you recover a gap on a UDP feed?"
+    ],
+    "seniorExtension": "Discuss when kernel bypass, hardware timestamping, or user-space networking would change the transport choice or only the implementation details.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Beej's Guide to Network Programming",
+        "url": "https://beej.us/guide/bgnet/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-networking-002",
+    "title": "epoll edge-triggered versus level-triggered",
+    "question": "What are the differences between edge-triggered and level-triggered epoll, and when would you choose each?",
+    "topics": [
+      "networking",
+      "sockets",
+      "epoll",
+      "io-multiplexing"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Is the handler fully nonblocking and prepared to drain sockets?"
+    ],
+    "interviewerIntent": [
+      "Evaluating event-loop correctness",
+      "Evaluating I/O tradeoff reasoning"
+    ],
+    "answerOutline": [
+      "Define level-triggered behavior",
+      "Define edge-triggered behavior",
+      "Explain drain-until-EAGAIN rule",
+      "Compare complexity and wakeup behavior"
+    ],
+    "sampleAnswer": "With level-triggered epoll, a file descriptor remains reported as ready as long as the readiness condition still holds, which is simpler and harder to get wrong. With edge-triggered epoll, you are notified only when the state changes, so once you get a read event you must usually drain the socket until `EAGAIN` or you risk leaving unread data without another notification. Edge-triggered mode can reduce redundant wakeups and system-call overhead in well-structured nonblocking loops, but it raises the correctness bar and makes partial-read bugs more subtle. I choose level-triggered when simplicity and safety dominate, and edge-triggered when the event loop is mature, the handlers are disciplined, and avoiding repeated readiness notifications materially helps. The strong answer includes the operational rule: edge-triggered is fine only if every handler is written as if missed wakeups are your fault.",
+    "commonMistakes": [
+      "Using edge-triggered mode without draining until EAGAIN",
+      "Thinking edge-triggered is automatically lower latency in every workload"
+    ],
+    "followUps": [
+      "Why must sockets be nonblocking with edge-triggered epoll?",
+      "How would you debug a missed-read bug?"
+    ],
+    "seniorExtension": "Compare epoll-driven design with busy-poll or dedicated thread-per-connection strategies in environments where connection count is low but latency sensitivity is high.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Beej's Guide to Network Programming",
+        "url": "https://beej.us/guide/bgnet/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-networking-003",
+    "title": "Kernel bypass versus standard sockets",
+    "question": "What problems do kernel-bypass networking approaches solve, and what do you give up by using them?",
+    "topics": [
+      "networking",
+      "kernel-bypass",
+      "latency",
+      "tradeoffs"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are we optimizing for single-digit microseconds or for engineering simplicity at modest rates?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-latency networking depth",
+      "Evaluating pragmatic tradeoff awareness"
+    ],
+    "answerOutline": [
+      "Explain why the kernel stack adds latency and jitter",
+      "Describe bypass benefits",
+      "Discuss operational and portability costs",
+      "State when normal sockets remain sufficient"
+    ],
+    "sampleAnswer": "Kernel-bypass approaches reduce the cost and jitter of the normal network stack by moving packet handling closer to user space, often with NIC queues mapped directly into process memory and fewer context switches or copies. That can materially improve latency and determinism for extreme trading paths, especially when combined with polling, dedicated cores, and careful queue placement. What you give up is convenience and sometimes portability: you may lose mature kernel features, increase operational complexity, tie yourself to specific NICs or drivers, and need stronger in-house tooling for observability and failure handling. For many systems, especially control-plane services or lower-rate paths, standard sockets with good tuning are more than adequate and much easier to operate. The strong answer is not 'bypass is better'; it is knowing the latency target where the complexity premium becomes justified.",
+    "commonMistakes": [
+      "Treating kernel bypass as a free universal win",
+      "Ignoring debugging and portability costs"
+    ],
+    "followUps": [
+      "What remains a bottleneck even after bypass?",
+      "Would you bypass for order entry, market data, or both?"
+    ],
+    "seniorExtension": "Discuss how you would stage adoption of bypass networking so the control plane and replay tooling remain operationally coherent.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-networking-004",
+    "title": "NIC timestamps, offloads, and packet timing",
+    "question": "How do NIC hardware timestamps and offload features affect latency measurement and packet behavior?",
+    "topics": [
+      "networking",
+      "nic",
+      "timestamps",
+      "offloads"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are we measuring one-way wire timing or application-level latency?"
+    ],
+    "interviewerIntent": [
+      "Evaluating measurement literacy around networking",
+      "Evaluating understanding of NIC feature side effects"
+    ],
+    "answerOutline": [
+      "Explain hardware versus software timestamps",
+      "Discuss offloads like GRO/LRO/TSO",
+      "Tie features to measurement accuracy and batching",
+      "Mention environment-specific tuning"
+    ],
+    "sampleAnswer": "Hardware timestamps are valuable because they let you anchor timing much closer to the wire than application or even kernel software timestamps, which absorb scheduler and stack noise. Offloads are more nuanced: features like TSO, GRO, or LRO can improve throughput by batching work, but they can also distort packet timing, coalesce boundaries, or make fine-grained latency analysis less representative of actual wire behavior. In a latency-sensitive environment I want to know which offloads are enabled and why, because the right setting for bulk throughput testing may be wrong for deterministic packet handling or accurate latency attribution. That said, I do not disable features blindly; some offloads are harmless or useful depending on the path, the NIC, and whether the bottleneck is CPU or jitter. The strong answer ties measurement fidelity and packet-shape semantics back to the exact workload rather than treating NIC settings as generic folklore.",
+    "commonMistakes": [
+      "Assuming all offloads are bad for latency",
+      "Measuring wire latency using only application timestamps"
+    ],
+    "followUps": [
+      "Why can GRO hide packet boundaries?",
+      "How do you synchronize timestamps across hosts?"
+    ],
+    "seniorExtension": "Explain how you would build a trustworthy wire-to-app latency histogram when packets traverse multiple queues and software stages.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-networking-005",
+    "title": "Multicast gap recovery and replay",
+    "question": "How do you design gap detection and recovery for a multicast market-data feed?",
+    "topics": [
+      "networking",
+      "multicast",
+      "gap-recovery",
+      "market-data"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Do you have both incremental updates and a snapshot or retransmission channel?"
+    ],
+    "interviewerIntent": [
+      "Evaluating trading-systems networking design",
+      "Evaluating correctness under packet loss"
+    ],
+    "answerOutline": [
+      "Track sequence numbers",
+      "Buffer a bounded window",
+      "Use retransmit or snapshot recovery",
+      "Define when to halt downstream publication"
+    ],
+    "sampleAnswer": "I start by treating sequence numbers as first-class state: every channel or instrument group needs explicit gap detection, duplicate handling, and a policy for small out-of-order windows if the feed can exhibit them. When a gap appears, the handler should buffer a bounded amount of later traffic, request retransmission or a snapshot depending on venue semantics, and decide quickly whether downstream consumers can continue safely or must pause publication. The design needs to distinguish recoverable gaps from unrecoverable state drift; if the missing packet invalidates book correctness, I would rather mark the book stale than publish a guess. Operationally, I expose gap rate, replay success, buffer pressure, and time-to-recover because feed quality issues are often intermittent and hard to diagnose without these signals. The strong answer is that recovery logic is part of correctness, not an afterthought bolted onto a fast UDP parser.",
+    "commonMistakes": [
+      "Continuing to publish potentially inconsistent book state",
+      "Not bounding buffering while waiting for recovery"
+    ],
+    "followUps": [
+      "When would you resnapshot instead of replay?",
+      "How do you test gap recovery deterministically?"
+    ],
+    "seniorExtension": "Discuss how active-active feed handlers across hosts change the gap-recovery story and what consistency contract downstream consumers should rely on.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-cache-001",
+    "title": "Cache lines and false sharing",
+    "question": "What is false sharing, and how do you detect and mitigate it in multi-threaded systems?",
+    "topics": [
+      "cpu-cache",
+      "false-sharing",
+      "multithreading",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are the hot variables being updated by different cores at high frequency?"
+    ],
+    "interviewerIntent": [
+      "Evaluating hardware-aware concurrency understanding",
+      "Evaluating ability to connect cache coherence to latency"
+    ],
+    "answerOutline": [
+      "Define false sharing",
+      "Explain coherence traffic",
+      "Describe detection signals",
+      "Offer mitigation patterns"
+    ],
+    "sampleAnswer": "False sharing happens when threads modify different variables that reside on the same cache line, forcing the coherence protocol to bounce ownership even though the logical data is unrelated. The symptom is often surprising contention or latency in code that appears lock-free, because the real bottleneck is cache-line invalidation rather than algorithmic blocking. I detect it with a mix of code inspection, structure layout awareness, and hardware counter or profiling evidence pointing to coherence traffic and stalled cores under concurrent updates. Mitigations include padding or aligning hot counters to cache-line boundaries, separating producer and consumer indices, and redesigning update patterns to reduce cross-core writes. The strong answer connects the language-level object layout to the hardware coherence system instead of stopping at a definition.",
+    "commonMistakes": [
+      "Confusing false sharing with general cache misses",
+      "Padding everything without proving the pattern exists"
+    ],
+    "followUps": [
+      "Can read-only sharing cause false sharing?",
+      "How does `alignas(64)` help and where can it mislead?"
+    ],
+    "seniorExtension": "Explain how you would evaluate whether padding increased memory footprint enough to hurt LLC residency elsewhere in the system.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Mechanical Sympathy Blog",
+        "url": "https://mechanical-sympathy.blogspot.com/",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-cache-002",
+    "title": "NUMA locality and memory placement",
+    "question": "Why does NUMA matter, and how do you design or deploy software to avoid remote-memory penalties?",
+    "topics": [
+      "cpu-cache",
+      "numa",
+      "memory-placement",
+      "deployment"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Is the process single-socket, dual-socket, or using NICs attached to specific NUMA nodes?"
+    ],
+    "interviewerIntent": [
+      "Evaluating topology-aware performance reasoning",
+      "Evaluating practical deployment judgment"
+    ],
+    "answerOutline": [
+      "Explain local versus remote node cost",
+      "Tie CPU, NIC, and memory placement together",
+      "Mention first-touch and pinning",
+      "Discuss measurement and compromise"
+    ],
+    "sampleAnswer": "NUMA matters because memory latency and bandwidth are not uniform across sockets; a thread running on one node can pay significantly more to access pages allocated on another. That is why placement has to consider the whole path: CPU affinity, where the NIC interrupts land, where the process first touches memory, and whether communicating threads are fighting across sockets. A common strategy is to keep each hot pipeline largely within one NUMA node, preallocate or first-touch its buffers there, and avoid unnecessary cross-node sharing in steady state. Sometimes the business logic forces cross-node communication, but then at least the architecture should acknowledge the cost rather than discovering it accidentally through jitter. The strong answer makes NUMA a deployment and ownership problem, not just a trivia definition about multiple memory controllers.",
+    "commonMistakes": [
+      "Pinning threads without considering where memory is allocated",
+      "Ignoring NIC-to-NUMA topology"
+    ],
+    "followUps": [
+      "What is first-touch allocation?",
+      "How do you detect remote-memory traffic?"
+    ],
+    "seniorExtension": "Discuss how per-socket sharding of symbols or venues can simplify NUMA locality at the application level.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-cache-003",
+    "title": "Prefetching and access-pattern design",
+    "question": "How do you think about prefetching and access patterns when optimizing a latency-sensitive loop?",
+    "topics": [
+      "cpu-cache",
+      "prefetching",
+      "access-patterns",
+      "optimization"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Is the loop scanning contiguous data or chasing pointers?"
+    ],
+    "interviewerIntent": [
+      "Evaluating cache-optimization judgment",
+      "Evaluating ability to avoid premature micro-optimizations"
+    ],
+    "answerOutline": [
+      "Start with layout and stride",
+      "Explain hardware versus software prefetch",
+      "Mention pointer chasing and useful lead distance",
+      "Stress measurement"
+    ],
+    "sampleAnswer": "My first optimization for a memory-bound loop is usually improving the access pattern rather than adding explicit prefetch instructions, because contiguous predictable access lets the hardware prefetchers do their job well. Software prefetch can help for pointer-heavy structures or irregular traversals where the next useful address is known early enough, but the lead distance has to match the machine and workload or you just create extra traffic. I also consider whether the real win is redesigning the data structure—for example replacing pointer chains with index-based arrays—because that can outperform any prefetch hint. Since prefetching interacts with cache size, memory bandwidth, and branch behavior, I only keep it when profiling shows a repeatable benefit on representative hardware. The strong answer is that prefetch is a tactical tool, while access-pattern design is the strategic one.",
+    "commonMistakes": [
+      "Adding manual prefetch before fixing poor data layout",
+      "Assuming a prefetch hint is always honored or beneficial"
+    ],
+    "followUps": [
+      "How far ahead would you prefetch?",
+      "When can prefetching make things worse?"
+    ],
+    "seniorExtension": "Explain how you would evaluate prefetch strategies across different CPU generations without overfitting to one microarchitecture.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-cache-004",
+    "title": "TSC and trustworthy latency timing",
+    "question": "When can you trust the timestamp counter for latency measurement, and what pitfalls should you watch for?",
+    "topics": [
+      "cpu-cache",
+      "timing",
+      "tsc",
+      "measurement"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are measurements confined to one host and one hardware generation?"
+    ],
+    "interviewerIntent": [
+      "Evaluating timing and observability literacy",
+      "Evaluating awareness of clock-source pitfalls"
+    ],
+    "answerOutline": [
+      "Explain what TSC is",
+      "Mention invariant TSC and core synchronization",
+      "Discuss serialization and frequency issues",
+      "Compare with other clock sources"
+    ],
+    "sampleAnswer": "The timestamp counter is attractive because reading it can be much cheaper than a syscall-based clock, making it useful for very fine-grained latency measurement inside one host. I trust it only when the platform provides an invariant, well-synchronized TSC across relevant cores and I understand how migration, power states, or virtualization affect the guarantee. There are also measurement details such as serialization around reads, conversion from cycles to time, and making sure I am not accidentally comparing values across unsynchronized domains. For wire-to-wire or multi-host analysis I still need external synchronization or hardware timestamps, because TSC alone cannot solve distributed clock alignment. The strong answer treats TSC as a powerful local tool with assumptions that must be verified, not blindly trusted.",
+    "commonMistakes": [
+      "Assuming all CPUs provide identical TSC behavior",
+      "Using TSC for cross-host timing without synchronization"
+    ],
+    "followUps": [
+      "Why might thread migration matter for TSC reads?",
+      "When would CLOCK_MONOTONIC_RAW be preferable?"
+    ],
+    "seniorExtension": "Discuss how you would calibrate and validate an internal latency probe built on TSC against NIC hardware timestamps.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  },
+  {
+    "id": "systems-cache-005",
+    "title": "Interrupt steering, RSS, and core placement",
+    "question": "How do RSS, interrupt affinity, and core placement affect network-processing latency?",
+    "topics": [
+      "cpu-cache",
+      "interrupts",
+      "rss",
+      "networking"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are packets being processed by dedicated threads on the same host as the NIC queues?"
+    ],
+    "interviewerIntent": [
+      "Evaluating host-level networking performance knowledge",
+      "Evaluating topology reasoning"
+    ],
+    "answerOutline": [
+      "Explain RSS and queue distribution",
+      "Tie interrupts to CPU locality",
+      "Discuss balancing versus determinism",
+      "Mention observability and testing"
+    ],
+    "sampleAnswer": "Receive-side scaling spreads packets across NIC queues so multiple cores can process traffic in parallel, but the placement only helps if the software threads consuming those queues are aligned sensibly with the interrupt and queue topology. If interrupts for a hot queue land on one core while the user-space thread polling or consuming that traffic runs elsewhere, you pay extra cache movement and jitter for no good reason. For latency-sensitive flows I often prefer a more deterministic mapping: specific queues, specific cores, and explicit IRQ affinity, while less sensitive traffic can use broader balancing. The tradeoff is utilization versus predictability, because maximizing throughput distribution and minimizing single-flow jitter are not always the same goal. The strong answer shows you understand that packet latency is shaped by queue placement and CPU ownership long before your application code touches the payload.",
+    "commonMistakes": [
+      "Ignoring IRQ affinity while tuning application threads",
+      "Optimizing for even CPU usage instead of latency objectives"
+    ],
+    "followUps": [
+      "How does RPS differ from RSS?",
+      "When can broader balancing beat strict affinity?"
+    ],
+    "seniorExtension": "Discuss how active-active feed handlers on one host might partition queues and cores to preserve determinism while maintaining failover capacity.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "systems"
+  }
+]

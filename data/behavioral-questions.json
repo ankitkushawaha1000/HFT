@@ -1,0 +1,1531 @@
+[
+  {
+    "id": "behavioral-leadership-001",
+    "title": "Leading a latency initiative without formal authority",
+    "question": "Tell me about a time you led a performance improvement effort without directly managing the engineers involved.",
+    "topics": [
+      "leadership",
+      "influence",
+      "latency",
+      "stakeholder-management"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Was the primary problem average latency or tail latency?",
+      "Which teams controlled the largest parts of the critical path?"
+    ],
+    "interviewerIntent": [
+      "Evaluating influence without authority",
+      "Evaluating whether the candidate uses data to align teams"
+    ],
+    "answerOutline": [
+      "Frame the business or trading impact",
+      "Explain how you created shared visibility",
+      "Describe the decisions you drove across teams",
+      "Quantify the latency and reliability outcome"
+    ],
+    "sampleAnswer": "In one market-data distribution stack, p99 latency had crept up after several teams added safety checks and logging independently. I did not manage those teams, but I was asked to coordinate a fix before a known high-volume event because the issue crossed application, platform, and network boundaries. I started by building a single measurement view that broke the end-to-end path into components and showed each team exactly where the regression sat, which made the conversation fact-based instead of opinion-based. Then I proposed a two-week plan with small reversible changes, explicit owners, and a daily checkpoint so we could remove duplicate serialization, move one expensive metric off the hot path, and tighten CPU pinning without creating rollout risk. We reduced p99 latency by 37 percent, removed two sources of jitter, and went through the event without operational issues. What I learned is that senior leadership in this environment is often about making tradeoffs visible and giving busy peer teams a low-friction way to contribute, not about having direct reporting lines.",
+    "commonMistakes": [
+      "Telling a story about doing the work alone instead of aligning multiple teams",
+      "Focusing on heroics instead of how priorities and tradeoffs were managed"
+    ],
+    "followUps": [
+      "How did you handle resistance from a team that disagreed with your diagnosis?",
+      "What would you have done if the event date moved closer and you had even less time?"
+    ],
+    "seniorExtension": "Explain how you would institutionalize the measurement and ownership model so the same regression pattern is caught automatically next time.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-leadership-002",
+    "title": "Driving a risky migration with a skeptical team",
+    "question": "Describe a time you had to lead a migration that others thought was too risky or not worth the effort.",
+    "topics": [
+      "leadership",
+      "migration",
+      "risk-management",
+      "execution"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 11,
+    "clarifyingQuestions": [
+      "What was failing in the existing system?",
+      "What would have happened if you had delayed the migration by a quarter?"
+    ],
+    "interviewerIntent": [
+      "Evaluating change leadership",
+      "Evaluating pragmatic risk reduction"
+    ],
+    "answerOutline": [
+      "Explain why status quo was unacceptable",
+      "Show how you decomposed the migration",
+      "Discuss how you reduced blast radius",
+      "Close with measured outcome"
+    ],
+    "sampleAnswer": "I inherited a service that every release team depended on, but deployments were fragile because configuration, binaries, and rollback logic were all coupled together. Several peers felt a migration to immutable artifacts and automated rollback was too disruptive, so my job was to prove that the bigger risk was keeping a system nobody trusted. I broke the work into stages, starting with passive shadow validation and identical release metadata, so we could show parity before any user-facing cutover. I also published explicit go or no-go criteria, ran rehearsals with support teams, and kept a manual fallback for the first two releases so the organization could see we were being aggressive about improvement but conservative about exposure. After the cutover, failed deployments dropped sharply and mean recovery time on bad releases went from over half an hour to single digits. The key leadership move was translating a technical migration into an operational trust problem that everyone already felt, then giving them evidence that the transition was controlled.",
+    "commonMistakes": [
+      "Describing only the technical implementation and skipping stakeholder concerns",
+      "Presenting risk as something to ignore instead of something to reduce deliberately"
+    ],
+    "followUps": [
+      "How did you decide what not to migrate in the first phase?",
+      "What metrics convinced the skeptical stakeholders?"
+    ],
+    "seniorExtension": "Discuss how you would balance migration speed against feature pressure from senior business stakeholders.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-leadership-003",
+    "title": "Influencing traders and engineers toward one plan",
+    "question": "Give an example of when you had to align technical and business stakeholders who wanted different outcomes.",
+    "topics": [
+      "leadership",
+      "cross-functional",
+      "stakeholder-management",
+      "tradeoffs"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 10,
+    "clarifyingQuestions": [
+      "What did each stakeholder group optimize for?"
+    ],
+    "interviewerIntent": [
+      "Evaluating stakeholder management",
+      "Evaluating business-aware engineering judgment"
+    ],
+    "answerOutline": [
+      "State the conflict in goals",
+      "Show how you reframed the decision",
+      "Describe the compromise or sequence",
+      "Show business and engineering outcome"
+    ],
+    "sampleAnswer": "In a pricing platform project, traders wanted a new feature before month-end while engineers wanted to pause everything until we cleaned up several reliability issues. My role was to avoid a false choice where either we shipped fast and created fragility or we improved the system and missed a commercially important date. I reframed the discussion around which capability truly had to be in the hot path for the first release and which parts could be staged behind feature flags and slower post-trade workflows. That allowed us to commit to a narrow first milestone with explicit operational guardrails, while a second milestone tackled the reliability items that would have made a broad launch dangerous. We met the business deadline, avoided a risky all-or-nothing release, and built more trust because both groups could see their concerns had been heard and translated into the plan. The lesson for me was that leadership often means sequencing disagreement into a roadmap instead of trying to win the argument in one meeting.",
+    "commonMistakes": [
+      "Acting as if one side was unreasonable",
+      "Forgetting to explain how the final plan protected downside risk"
+    ],
+    "followUps": [
+      "How did you keep the second milestone from being deprioritized afterward?",
+      "What would you do if the traders pushed to widen scope late in the cycle?"
+    ],
+    "seniorExtension": "Describe how you would communicate the same compromise upward to an executive audience in one minute.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Jane Street Culture Overview",
+        "url": "https://www.janestreet.com/culture/overview/",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-leadership-004",
+    "title": "Raising the bar after a team miss",
+    "question": "Tell me about a time your team missed an important commitment and you had to lead the recovery.",
+    "topics": [
+      "leadership",
+      "accountability",
+      "execution",
+      "standards"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 10,
+    "clarifyingQuestions": [
+      "Was the miss caused by planning, execution, or hidden dependencies?"
+    ],
+    "interviewerIntent": [
+      "Evaluating accountability",
+      "Evaluating how the candidate responds to failure"
+    ],
+    "answerOutline": [
+      "Own the miss clearly",
+      "Explain the root causes",
+      "Show the recovery plan and standard changes",
+      "Quantify trust regained"
+    ],
+    "sampleAnswer": "On a release with several downstream consumers, we missed a deadline because we treated integration work like simple implementation and underestimated environment dependencies. As the senior engineer on the effort, I felt responsible for fixing both the plan and the pattern that created it. I led a short postmortem the same week, identified the planning assumptions that had hidden risk, and converted them into mandatory readiness checks for future work. I also rebaselined the schedule in public, split the remainder into smaller milestones with integration demos, and personally handled the most failure-prone interfaces so we could regain confidence quickly. We delivered the revised scope two weeks later and, more importantly, our next similar release landed on time because the new readiness checklist forced earlier dependency discovery. What mattered most was being explicit that recovery was not just about working harder; it was about changing the operating system around the team.",
+    "commonMistakes": [
+      "Blaming external teams for the miss",
+      "Talking about overtime as the main fix"
+    ],
+    "followUps": [
+      "How did you communicate the miss to leadership?",
+      "What metric told you the new process was actually better?"
+    ],
+    "seniorExtension": "Explain how you decide which misses require a process change and which are just one-off execution failures.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-leadership-005",
+    "title": "Building alignment across platform and application teams",
+    "question": "Describe a time you created alignment between platform and application teams that were optimizing for different things.",
+    "topics": [
+      "leadership",
+      "platform",
+      "application-engineering",
+      "alignment"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "What were the conflicting optimization goals?"
+    ],
+    "interviewerIntent": [
+      "Evaluating systems thinking across team boundaries",
+      "Evaluating ability to align incentives"
+    ],
+    "answerOutline": [
+      "Define the tension",
+      "Show the shared metrics you introduced",
+      "Explain decision mechanisms",
+      "Describe long-term improvement"
+    ],
+    "sampleAnswer": "I worked on a service where platform engineers were pushing standardization while application engineers were pushing for local exceptions to hit latency targets. Neither side was wrong, but the debate had become ideological and was slowing delivery. I introduced a simple decision framework: every exception had to state its latency benefit, operational cost, and rollback story, and every platform standard had to show the cost of compliance in the hot path. Once the conversation moved to explicit economics, we kept a small number of justified exceptions, removed several accidental ones, and agreed on where platform investment would eliminate the need for future carve-outs. That reduced friction immediately and gave us a repeatable way to evaluate new requests without re-litigating principles every sprint. For senior roles, I think that kind of alignment mechanism is more scalable than winning any individual architectural argument.",
+    "commonMistakes": [
+      "Reducing the story to personality conflict",
+      "Skipping how the alignment persisted after the immediate project"
+    ],
+    "followUps": [
+      "Who owned the framework after you introduced it?",
+      "How did you handle an exception request from a very influential stakeholder?"
+    ],
+    "seniorExtension": "Discuss how you would encode the same tradeoff model into architecture review or budgeting processes.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-conflict-001",
+    "title": "Resolving a design disagreement on complexity versus simplicity",
+    "question": "Tell me about a time you strongly disagreed with another senior engineer on a design choice.",
+    "topics": [
+      "conflict",
+      "design",
+      "engineering-judgment",
+      "communication"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 10,
+    "clarifyingQuestions": [
+      "Was the disagreement about performance, reliability, or maintainability?"
+    ],
+    "interviewerIntent": [
+      "Evaluating healthy disagreement",
+      "Evaluating evidence-based decision making"
+    ],
+    "answerOutline": [
+      "Explain the technical disagreement",
+      "Show how you tested assumptions",
+      "Describe the decision and relationship outcome",
+      "Reflect on what you learned"
+    ],
+    "sampleAnswer": "I once disagreed with another senior engineer who wanted a lock-free queue everywhere in a pipeline where I thought a simpler bounded single-threaded stage would be safer and fast enough. The risk was that we were both optimizing for good goals, but continued argument without evidence would have burned time and strained the relationship. I suggested we write down the hypotheses we each believed, then benchmark two representative workloads and include failure-mode analysis such as backpressure and shutdown behavior rather than raw throughput alone. The results showed the lock-free version helped only one bursty path, while the simpler design gave cleaner operability for the broader service, so we used a hybrid design and kept the specialized queue only where it paid for itself. Because the decision came from shared criteria, not status, the relationship stayed strong and we kept working well together. That experience reinforced that senior disagreement should produce better decision quality, not silent resentment.",
+    "commonMistakes": [
+      "Presenting disagreement as a battle to win",
+      "Ignoring the interpersonal side after the technical decision"
+    ],
+    "followUps": [
+      "What would you do if the benchmark had been inconclusive?",
+      "How did you ensure the other engineer still felt ownership afterward?"
+    ],
+    "seniorExtension": "Explain how you avoid overfitting benchmark results when the real production workload is noisier than the test harness.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-conflict-002",
+    "title": "Pushing back on a high-priority request from a desk stakeholder",
+    "question": "Describe a time you had to say no or not yet to an influential stakeholder.",
+    "topics": [
+      "conflict",
+      "prioritization",
+      "stakeholder-management",
+      "risk"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "What was the downside of saying yes immediately?"
+    ],
+    "interviewerIntent": [
+      "Evaluating judgment under pressure",
+      "Evaluating whether the candidate can defend risk boundaries"
+    ],
+    "answerOutline": [
+      "State the request and risk",
+      "Explain how you handled the pushback",
+      "Offer an alternative path",
+      "Show final outcome"
+    ],
+    "sampleAnswer": "A desk stakeholder once pushed for a same-day production change after seeing a competitor behavior they wanted to react to quickly. I understood the commercial urgency, but the requested path bypassed our normal verification for a component that could have created incorrect quoting if we got it wrong. Rather than give a flat no, I explained the specific failure modes, showed what evidence we did not yet have, and proposed a narrowed change that could be tested safely behind tighter limits. That let us respond on the same day in a constrained mode while the full version went through overnight replay and sign-off. The stakeholder was initially unhappy but later acknowledged that the partial release was enough for the decision they needed and avoided unnecessary operational risk. I think strong ownership means protecting the business from bad speed, not just delivering requested speed.",
+    "commonMistakes": [
+      "Sounding rigid or process-driven instead of risk-driven",
+      "Failing to offer an alternative path"
+    ],
+    "followUps": [
+      "How did you preserve trust after saying no?",
+      "What if leadership had overruled you?"
+    ],
+    "seniorExtension": "Discuss how you calibrate when to absorb personal risk by making a fast call versus insisting on additional review.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-conflict-003",
+    "title": "Addressing a peer who bypassed review standards",
+    "question": "Tell me about a time a peer repeatedly bypassed standards or process and you had to address it.",
+    "topics": [
+      "conflict",
+      "standards",
+      "peer-feedback",
+      "ownership"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "mid",
+    "difficulty": "medium",
+    "estimatedMinutes": 8,
+    "clarifyingQuestions": [
+      "Was the behavior causing production issues or mostly team friction?"
+    ],
+    "interviewerIntent": [
+      "Evaluating willingness to confront difficult behavior",
+      "Evaluating focus on standards over personalities"
+    ],
+    "answerOutline": [
+      "Describe the repeated behavior",
+      "Show how you gave direct feedback",
+      "Explain how you drove a process fix",
+      "Close with result"
+    ],
+    "sampleAnswer": "I worked with a peer who was very productive but kept landing changes with minimal review context, which made on-call and follow-up debugging harder for everyone else. Instead of escalating immediately, I first collected a few concrete examples so I could talk about impact rather than intent. In a private conversation, I explained how the pattern was slowing incident response and forcing others to reverse-engineer changes under pressure, and I asked what friction in the current process was making them skip the standard. We agreed on a lighter review template for urgent fixes and a requirement that any expedited change needed a follow-up cleanup issue, which solved the genuine speed concern without normalizing undocumented merges. The quality of review discussions improved quickly and the peer became one of the stronger advocates for better rollout notes because the standard now felt practical. That taught me that durable conflict resolution often comes from removing the incentive to bypass the rule, not just repeating the rule louder.",
+    "commonMistakes": [
+      "Turning the example into a character judgment",
+      "Escalating before giving direct, specific feedback"
+    ],
+    "followUps": [
+      "What would you do if the behavior had continued?",
+      "How did you differentiate urgent exceptions from laziness?"
+    ],
+    "seniorExtension": "Explain how you would handle the same issue if the peer was more senior than you and widely respected.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-conflict-004",
+    "title": "Fixing disagreement about on-call ownership",
+    "question": "Give an example of a disagreement around ownership boundaries and how you resolved it.",
+    "topics": [
+      "conflict",
+      "ownership",
+      "on-call",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "What ambiguity existed in the ownership model?"
+    ],
+    "interviewerIntent": [
+      "Evaluating operational leadership",
+      "Evaluating systems ownership across team seams"
+    ],
+    "answerOutline": [
+      "Describe the ownership gap",
+      "Show how incidents exposed it",
+      "Explain the new model",
+      "Give evidence it helped"
+    ],
+    "sampleAnswer": "Two teams in my organization shared a service boundary, and every incident near that seam turned into delay because each team argued the first action belonged to the other. The immediate problem was not personality conflict; it was that our ownership model had never been designed for real incidents. I reviewed a few postmortems, mapped where the first ten minutes were being lost, and proposed a simple principle: the team receiving the page owned triage and stabilization, while long-term remediation could transfer after the situation was controlled. We backed that with clearer runbooks, dashboards that surfaced dependency health, and a rotating joint review of any handoff that exceeded a time limit. Incidents became noticeably shorter because responders stopped debating responsibility while users were still impacted. For me, strong conflict resolution in operations means removing ambiguity before the next bad night, not trying to negotiate it during the outage.",
+    "commonMistakes": [
+      "Focusing on fairness more than customer impact",
+      "Leaving ownership rules too vague to be actionable at 2 a.m."
+    ],
+    "followUps": [
+      "How did you get both teams to agree to the new rule?",
+      "What happened when the triaging team lacked deep expertise?"
+    ],
+    "seniorExtension": "Describe how you would extend the same model across three or four dependent services, not just two teams.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-conflict-005",
+    "title": "Resolving a data quality dispute with evidence",
+    "question": "Tell me about a time two groups had different interpretations of the data and you had to resolve the disagreement.",
+    "topics": [
+      "conflict",
+      "data-quality",
+      "analysis",
+      "cross-functional"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "mid",
+    "difficulty": "medium",
+    "estimatedMinutes": 8,
+    "clarifyingQuestions": [
+      "Was the disagreement about source data correctness or downstream transformation?"
+    ],
+    "interviewerIntent": [
+      "Evaluating analytical rigor",
+      "Evaluating collaborative conflict resolution"
+    ],
+    "answerOutline": [
+      "Frame the disagreement",
+      "Describe the tracing or instrumentation you added",
+      "Explain the decision",
+      "Show long-term prevention"
+    ],
+    "sampleAnswer": "A strategy team believed a market-data feed was missing updates, while the ingestion team believed downstream normalization was at fault. Because both groups had partial evidence, the debate was consuming time without converging. I added temporary sequence-level tracing through the raw packet capture, decoder, normalizer, and publication stages so we could compare the same event at each boundary instead of arguing from aggregate counters. That made it clear the raw feed was intact and the loss came from a normalization rule that dropped one venue-specific message type during a schema upgrade. We fixed the parser quickly and then kept a lighter version of the trace as a permanent diagnostic tool for future feed disputes. The biggest lesson was that conflict around data often disappears once you create a shared ground truth with enough granularity.",
+    "commonMistakes": [
+      "Declaring a winner before having end-to-end evidence",
+      "Stopping at the fix instead of improving future diagnosability"
+    ],
+    "followUps": [
+      "How long did you keep the temporary tracing in place?",
+      "How did you limit tracing overhead in production?"
+    ],
+    "seniorExtension": "Explain how you would design invariant checks so the next schema issue is detected automatically before users report it.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-incidents-001",
+    "title": "Owning a major production outage end to end",
+    "question": "Walk me through a significant production incident you owned and what you did from detection through follow-up.",
+    "topics": [
+      "production-incidents",
+      "ownership",
+      "incident-response",
+      "postmortem"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "What was the user or business impact?",
+      "What part of the response did you personally lead?"
+    ],
+    "interviewerIntent": [
+      "Evaluating calm operational ownership",
+      "Evaluating structured incident management"
+    ],
+    "answerOutline": [
+      "Describe impact clearly",
+      "Walk through triage and stabilization",
+      "Explain root cause",
+      "Show how the postmortem changed the system"
+    ],
+    "sampleAnswer": "I owned a major outage where a dependency exhaustion issue caused a core service to reject requests during a peak period. My first job was to stabilize the system, so I declared clear roles, paused parallel debugging chatter, and focused responders on restoring capacity while I kept stakeholders updated every few minutes. Once we recovered service, I reconstructed the timeline from metrics, logs, and rollout history and found that a connection reuse regression had amplified an already-tight limit. In the postmortem, I did not stop at the code fix; we also added admission control, clearer saturation alerts, and a rollback checklist tied to the exact failure mode. The immediate fix prevented recurrence, but the more valuable outcome was that later incidents were shorter because our response model and observability were materially better. When I talk about ownership, I mean staying accountable from the first alert through the process and design changes that make the next page less likely.",
+    "commonMistakes": [
+      "Spending too long on root cause before stabilizing service",
+      "Treating the incident as finished once traffic is restored"
+    ],
+    "followUps": [
+      "How did you decide which updates to send to leadership during the incident?",
+      "What would you do differently now?"
+    ],
+    "seniorExtension": "Discuss how you separate tactical responders from someone protecting the overall incident command function.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-incidents-002",
+    "title": "Handling a bad deployment and rollback under pressure",
+    "question": "Tell me about a time a deployment went wrong and how you handled it.",
+    "topics": [
+      "production-incidents",
+      "deployments",
+      "rollback",
+      "communication"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "mid",
+    "difficulty": "medium",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "Was rollback straightforward or did state changes complicate it?"
+    ],
+    "interviewerIntent": [
+      "Evaluating release discipline",
+      "Evaluating decision making under pressure"
+    ],
+    "answerOutline": [
+      "Describe the bad deploy",
+      "Show rollback reasoning",
+      "Explain communication and containment",
+      "Close with deployment improvements"
+    ],
+    "sampleAnswer": "During one release, a seemingly small configuration change increased request amplification and started pushing a critical service toward saturation within minutes. Because the trend was obvious and the change was fresh, I chose rollback quickly instead of trying to hot-patch live while the system was still degrading. I coordinated the rollback, kept one engineer validating recovery indicators, and communicated a simple status line to stakeholders so people were not guessing whether the issue was still active. Afterward, I traced why the pre-release checks missed the risk and added a canary gate around the exact saturation metric that would have stopped broader rollout automatically. That combination of fast reversal and targeted prevention improved confidence in later releases. The main lesson was that good incident ownership is often about making the correct simple decision early, not proving you can debug heroically in production.",
+    "commonMistakes": [
+      "Delaying rollback to protect pride in the change",
+      "Over-communicating theory while under-communicating current status"
+    ],
+    "followUps": [
+      "How did you know the rollback had fully worked?",
+      "What if the rollback itself had risked data inconsistency?"
+    ],
+    "seniorExtension": "Explain how you design rollout policies differently for stateless services versus stateful trading components.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-incidents-003",
+    "title": "Diagnosing a memory leak causing latency regression",
+    "question": "Describe a production issue that was difficult to diagnose and how you worked through it.",
+    "topics": [
+      "production-incidents",
+      "debugging",
+      "memory",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 11,
+    "clarifyingQuestions": [
+      "Was the issue continuous or only under certain traffic shapes?"
+    ],
+    "interviewerIntent": [
+      "Evaluating debugging depth",
+      "Evaluating persistence and hypothesis testing"
+    ],
+    "answerOutline": [
+      "Describe symptoms and impact",
+      "Show narrowing steps",
+      "Explain the eventual root cause",
+      "Describe prevention work"
+    ],
+    "sampleAnswer": "I handled a case where tail latency degraded only after several hours of healthy operation, which made the issue easy to miss in short tests and hard to isolate during business hours. Rather than jumping between theories, I built a short hypothesis list around allocation growth, cache churn, and background compaction and assigned one observable to each. Heap profiles and allocation sampling eventually showed a small per-request object retained by an asynchronous callback path that rarely completed under one specific timeout mode. Once we fixed that path, I added long-duration soak tests and a production dashboard that paired latency with memory growth rate so similar slow-burn issues would surface earlier. The fix removed the leak and brought p99 back in line, but the bigger win was teaching the team to test for time-dependent failure modes instead of only peak load. In incident ownership, I try to leave behind a better detection model, not just a closed ticket.",
+    "commonMistakes": [
+      "Listing tools without explaining the reasoning sequence",
+      "Skipping how you limited risk while diagnosis was ongoing"
+    ],
+    "followUps": [
+      "What temporary mitigation did you use before the permanent fix?",
+      "Why did normal tests fail to catch it?"
+    ],
+    "seniorExtension": "Describe how you would decide whether to invest in always-on allocation profiling for this class of service.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "BPF Performance Tools",
+        "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-incidents-004",
+    "title": "Reducing alert fatigue after repeated pages",
+    "question": "Tell me about a time recurring incidents forced you to improve operational ownership, not just fix one bug.",
+    "topics": [
+      "production-incidents",
+      "ownership",
+      "alerting",
+      "continuous-improvement"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "mid",
+    "difficulty": "medium",
+    "estimatedMinutes": 8,
+    "clarifyingQuestions": [
+      "Were the alerts false positives or real but low-value issues?"
+    ],
+    "interviewerIntent": [
+      "Evaluating whether the candidate attacks root causes",
+      "Evaluating operational empathy"
+    ],
+    "answerOutline": [
+      "Describe the repeated pain",
+      "Explain how you analyzed the alert stream",
+      "Show policy or engineering changes",
+      "Quantify improvement"
+    ],
+    "sampleAnswer": "One service was paging often enough that engineers stopped trusting whether an alert truly meant urgent action. I treated that as an ownership issue because noisy alerting degrades response quality even when each individual rule looked technically defensible. I reviewed a month of pages, grouped them by actionability, and then changed three things: removed purely informational pages, tightened thresholds around user impact, and created a separate work queue for chronic but non-urgent issues. We also fixed the top recurring fault behind the most common page so the team could feel the difference quickly rather than seeing alert tuning as cosmetic. Page volume dropped materially and responders became faster because the remaining alerts carried more signal. That experience reminded me that senior ownership includes protecting team attention as a limited operational resource.",
+    "commonMistakes": [
+      "Confusing fewer alerts with better reliability",
+      "Ignoring the engineering causes behind the noise"
+    ],
+    "followUps": [
+      "What metric told you the alert set was healthier?",
+      "How did you prevent under-alerting?"
+    ],
+    "seniorExtension": "Explain how you would tie alert quality to service-level objectives and postmortem review.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-incidents-005",
+    "title": "Owning a production issue outside your direct area",
+    "question": "Describe a time you stepped into an incident that was technically outside your team's scope.",
+    "topics": [
+      "production-incidents",
+      "ownership",
+      "cross-team",
+      "initiative"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "Why were you involved if the component belonged elsewhere?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end ownership mentality",
+      "Evaluating collaboration in high-pressure situations"
+    ],
+    "answerOutline": [
+      "Explain why the issue needed broader ownership",
+      "Show how you helped without taking over destructively",
+      "Describe the resolution",
+      "Reflect on cross-team trust"
+    ],
+    "sampleAnswer": "I joined an incident where the failing component was owned by another team, but the impact was propagating into a service my team supported and users only saw one broken experience. Instead of saying it was not ours, I helped build the shared timeline, took over one customer-facing mitigation, and let the owning team stay focused on the deepest subsystem diagnosis. That division of labor reduced noise during the incident and made it easier to keep leadership informed because someone had the full end-to-end picture. After recovery, I partnered with the owning team on a postmortem and proposed clearer dependency dashboards and fail-safe behavior at our boundary so the same class of failure would degrade more gracefully. The incident closed faster than it would have if everyone had defended scope boundaries, and the relationship between the teams improved afterward. For me, mature ownership means caring about the service users experience, not the org chart line where the bug lives.",
+    "commonMistakes": [
+      "Sounding territorial about ownership",
+      "Taking over another team's incident in a way that adds confusion"
+    ],
+    "followUps": [
+      "How did you avoid stepping on the owning team's toes?",
+      "Would you do the same if your own service was already under heavy load?"
+    ],
+    "seniorExtension": "Discuss how you decide when cross-team support is helpful versus when it creates too many cooks in the kitchen.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-mentoring-001",
+    "title": "Mentoring a junior engineer on C++ correctness",
+    "question": "Tell me about a time you helped a less experienced engineer grow significantly.",
+    "topics": [
+      "mentoring",
+      "cplusplus",
+      "coaching",
+      "growth"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "What gap was most important to close?"
+    ],
+    "interviewerIntent": [
+      "Evaluating coaching ability",
+      "Evaluating how the candidate multiplies team output"
+    ],
+    "answerOutline": [
+      "Describe the starting gap",
+      "Explain your coaching approach",
+      "Show how independence increased",
+      "Quantify the outcome"
+    ],
+    "sampleAnswer": "I mentored a junior engineer who was smart and fast but kept writing C++ that was functionally correct only under ideal lifetime assumptions. Rather than just fixing reviews line by line, I set up a short weekly session where we used recent code to talk through ownership, invariants, and what tools like sanitizers would have caught earlier. I paired that with deliberately scoped tasks where they had to explain the lifetime model in the design before coding, which forced deeper reasoning instead of patching after comments. Within a couple of months, their code reviews became much stronger, they started catching these issues in their own changes, and they even helped tighten a few unit tests around edge cases. The real success was not that I answered many questions; it was that they developed a reusable way to think about correctness. That is the kind of mentoring I value most because it scales beyond one project.",
+    "commonMistakes": [
+      "Framing mentoring as rescuing someone",
+      "Talking only about teaching syntax instead of judgment"
+    ],
+    "followUps": [
+      "How did you balance coaching time with your own delivery pressure?",
+      "What if the engineer had resisted the extra structure?"
+    ],
+    "seniorExtension": "Describe how you distinguish between coaching that builds independence and coaching that creates dependence on the mentor.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-mentoring-002",
+    "title": "Improving code review standards across a team",
+    "question": "Give an example of when you raised engineering standards for the broader team.",
+    "topics": [
+      "mentoring",
+      "standards",
+      "code-review",
+      "team-improvement"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "Which standard was missing or inconsistently applied?"
+    ],
+    "interviewerIntent": [
+      "Evaluating leadership through standards",
+      "Evaluating the ability to improve engineering quality systematically"
+    ],
+    "answerOutline": [
+      "State the quality problem",
+      "Explain the standard or mechanism you introduced",
+      "Show adoption strategy",
+      "Quantify results"
+    ],
+    "sampleAnswer": "Our code reviews were catching obvious bugs, but they were inconsistent on performance assumptions, rollback notes, and operational impact, which mattered for services with tight latency budgets. I wanted to raise the bar without turning review into bureaucracy. I introduced a lightweight checklist focused on hot-path allocation, concurrency assumptions, observability, and deployment safety, then modeled the behavior by using it consistently in my own reviews first. Because the checklist was short and clearly tied to real incidents we had seen, adoption came quickly and review discussions became deeper without becoming slower. A few months later we were seeing fewer late-cycle surprises because key questions were being asked earlier in development. The standard worked because it encoded judgment in a usable form instead of living only in the heads of the most experienced engineers.",
+    "commonMistakes": [
+      "Adding too many review rules at once",
+      "Confusing standards with personal style preferences"
+    ],
+    "followUps": [
+      "How did you measure whether review quality improved?",
+      "What did you do when someone treated the checklist as a box-ticking exercise?"
+    ],
+    "seniorExtension": "Explain how you would adapt standards for teams with both latency-critical and non-critical services.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-mentoring-003",
+    "title": "Teaching better postmortem discipline",
+    "question": "Tell me about a time you helped a team improve how it learned from failures.",
+    "topics": [
+      "mentoring",
+      "postmortem",
+      "standards",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "mid",
+    "difficulty": "medium",
+    "estimatedMinutes": 8,
+    "clarifyingQuestions": [
+      "What was missing in the old postmortem process?"
+    ],
+    "interviewerIntent": [
+      "Evaluating operational maturity",
+      "Evaluating whether the candidate improves team learning loops"
+    ],
+    "answerOutline": [
+      "Describe the weak state",
+      "Show your coaching intervention",
+      "Explain changes in behavior",
+      "Give a concrete result"
+    ],
+    "sampleAnswer": "I joined a team where postmortems existed, but they were mostly narrative summaries and did not reliably produce follow-through or design changes. I coached the team toward a simpler structure that separated timeline, contributing factors, detection gaps, and prevention items with explicit owners. To make it stick, I facilitated the first few reviews myself and kept pushing people to name the system condition that made the mistake possible instead of stopping at operator error. Over time, the conversations became less defensive and more engineering-focused, and we started seeing repeated issues actually disappear because action items were better targeted. The most important result was not prettier documents; it was a stronger habit of turning incidents into design feedback. That kind of mentoring matters because teams often know they should learn from failures but need help learning how.",
+    "commonMistakes": [
+      "Treating postmortems as compliance paperwork",
+      "Confusing blame avoidance with lack of accountability"
+    ],
+    "followUps": [
+      "How did you make sure action items were completed?",
+      "What if leadership wanted a person to blame?"
+    ],
+    "seniorExtension": "Describe how you would decide which incidents merit deep review versus a lighter retrospective.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-mentoring-004",
+    "title": "Coaching an underperforming teammate back to effectiveness",
+    "question": "Describe a time you helped a teammate who was struggling to meet expectations.",
+    "topics": [
+      "mentoring",
+      "feedback",
+      "performance",
+      "support"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 10,
+    "clarifyingQuestions": [
+      "Was the issue technical skill, communication, or prioritization?"
+    ],
+    "interviewerIntent": [
+      "Evaluating empathy with standards",
+      "Evaluating difficult coaching conversations"
+    ],
+    "answerOutline": [
+      "Describe the performance gap factually",
+      "Show the support plan",
+      "Explain feedback cadence",
+      "Show outcome and limits"
+    ],
+    "sampleAnswer": "I supported a teammate who was missing deadlines and producing work that needed substantial rework, but the root issue was not lack of effort; it was that they were taking on poorly bounded tasks and getting lost in detail. I gave direct feedback on the gap while making it clear my goal was to help them succeed, not to document failure after the fact. Together we changed their work shape for a period: smaller milestones, explicit design check-ins before coding, and a requirement to surface blockers within a day instead of disappearing into the problem. That structure improved predictability and confidence, and after a few cycles they no longer needed the same level of support because they had learned how to break work down themselves. The experience reinforced for me that good coaching combines clarity about the bar with enough structure for someone to actually reach it. It also reminded me that waiting too long to give candid feedback is unfair to everyone involved.",
+    "commonMistakes": [
+      "Soft-pedaling the performance issue so much that nothing changes",
+      "Taking over the work instead of coaching better execution habits"
+    ],
+    "followUps": [
+      "What if performance had not improved?",
+      "How did you keep the teammate's dignity intact?"
+    ],
+    "seniorExtension": "Explain how you coordinate with a manager when you are mentoring someone whose formal performance ownership is not yours.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-mentoring-005",
+    "title": "Creating reusable training for the team",
+    "question": "Tell me about a time you created documentation or training that materially improved the team.",
+    "topics": [
+      "mentoring",
+      "documentation",
+      "training",
+      "team-scale"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "mid",
+    "difficulty": "easy",
+    "estimatedMinutes": 7,
+    "clarifyingQuestions": [
+      "What repeated confusion or onboarding cost were you addressing?"
+    ],
+    "interviewerIntent": [
+      "Evaluating force multiplication",
+      "Evaluating whether the candidate invests beyond immediate tasks"
+    ],
+    "answerOutline": [
+      "Describe the recurring pain",
+      "Explain the material you created",
+      "Show how you drove adoption",
+      "Quantify impact"
+    ],
+    "sampleAnswer": "I noticed that new engineers joining a latency-sensitive service all stumbled over the same invisible rules around thread ownership, deployment sequencing, and how to interpret our dashboards. Rather than answering the same questions repeatedly in ad hoc chats, I created a short onboarding pack with architecture diagrams, common failure patterns, and a guided incident replay. I made sure it was practical by testing it with the next new joiner and updating anything they found confusing instead of assuming the first draft was good enough. Onboarding became much smoother, and senior engineers regained time because foundational questions were answered consistently up front. The biggest value was that the training captured tribal knowledge before it became a hidden dependency on a few people. I see that as a core senior responsibility, especially in fast-moving technical environments.",
+    "commonMistakes": [
+      "Creating documentation nobody uses",
+      "Describing the artifact but not the measurable team benefit"
+    ],
+    "followUps": [
+      "How did you keep the material from going stale?",
+      "What signals told you it was actually helping?"
+    ],
+    "seniorExtension": "Discuss how you would prioritize documentation work when delivery pressure is high but onboarding pain is real.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-ambiguity-001",
+    "title": "Prioritizing among competing latency and reliability asks",
+    "question": "Tell me about a time you had more important work than the team could realistically do and had to prioritize.",
+    "topics": [
+      "ambiguity",
+      "prioritization",
+      "latency",
+      "reliability"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 10,
+    "clarifyingQuestions": [
+      "Were the requests comparable, or did they optimize for different business outcomes?"
+    ],
+    "interviewerIntent": [
+      "Evaluating prioritization framework",
+      "Evaluating business-aware engineering tradeoffs"
+    ],
+    "answerOutline": [
+      "Frame the overload clearly",
+      "Explain your prioritization criteria",
+      "Show communication of tradeoffs",
+      "Describe outcome"
+    ],
+    "sampleAnswer": "I had a quarter where the team was facing simultaneous requests for latency work, resilience cleanup, and a regulatory deadline, and the honest answer was that we could not do all of it well. I built a prioritization view that combined business criticality, incident exposure, and reversibility so we could compare work items using one language instead of each stakeholder arguing from their own context. That led us to protect the non-negotiable deadline, keep only the latency improvements with direct measurable payoff in the current quarter, and defer lower-value cleanup into a visible follow-up plan. I then communicated not just the chosen work but the explicit opportunity cost, which reduced surprise and made later escalations much cleaner. The quarter went well because the team executed a smaller set of high-conviction priorities instead of fragmenting itself across too many worthy tasks. In ambiguous situations, I think a senior engineer adds value by making tradeoffs explicit early rather than pretending capacity is elastic.",
+    "commonMistakes": [
+      "Listing tasks without explaining the prioritization model",
+      "Acting as if every stakeholder got what they wanted"
+    ],
+    "followUps": [
+      "How did you revisit the deferred work?",
+      "What if leadership disagreed with your prioritization?"
+    ],
+    "seniorExtension": "Explain how you would incorporate uncertainty and unknown unknowns into the prioritization model itself.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-ambiguity-002",
+    "title": "Turning a vague request to make it faster into a plan",
+    "question": "Describe a time you were asked to improve something vague, like make it faster or more reliable, with little concrete direction.",
+    "topics": [
+      "ambiguity",
+      "problem-framing",
+      "measurement",
+      "execution"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "mid",
+    "difficulty": "medium",
+    "estimatedMinutes": 8,
+    "clarifyingQuestions": [
+      "What signal told you the current state was not acceptable?"
+    ],
+    "interviewerIntent": [
+      "Evaluating problem framing",
+      "Evaluating ability to create measurable goals from ambiguity"
+    ],
+    "answerOutline": [
+      "Explain the vague request",
+      "Show how you created success metrics",
+      "Describe the workstream",
+      "Close with business impact"
+    ],
+    "sampleAnswer": "I once got a broad request from stakeholders to make a service faster, but nobody could initially say whether they meant average response time, tail latency, startup time, or user-visible throughput. My first step was not to optimize code; it was to define the problem by pairing production traces with stakeholder pain points and agreeing on the metric that actually mattered. We discovered that p99 spikes during burst traffic were the real issue, so I focused the work on queueing behavior, allocation bursts, and a small number of expensive synchronous calls rather than broad micro-optimizations. That reframing let us deliver a targeted improvement quickly and prevented weeks of work on metrics nobody truly cared about. The final result was a materially smoother high-load experience and a shared latency dashboard everyone understood. I have learned that the senior skill in ambiguous performance work is defining the right target before touching the implementation.",
+    "commonMistakes": [
+      "Jumping into optimization before defining the metric",
+      "Equating stakeholder language with the actual system bottleneck"
+    ],
+    "followUps": [
+      "How did you choose which metrics to expose to non-engineers?",
+      "What if stakeholders had disagreed on the target metric?"
+    ],
+    "seniorExtension": "Discuss how you avoid optimizing a local metric that worsens end-to-end behavior elsewhere in the system.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-ambiguity-003",
+    "title": "Choosing between refactoring and feature pressure",
+    "question": "Tell me about a time you had to balance needed technical improvement against a near-term feature deadline.",
+    "topics": [
+      "ambiguity",
+      "technical-debt",
+      "delivery",
+      "tradeoffs"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 9,
+    "clarifyingQuestions": [
+      "What made the refactor necessary rather than merely nice to have?"
+    ],
+    "interviewerIntent": [
+      "Evaluating practical engineering judgment",
+      "Evaluating sequencing and tradeoff management"
+    ],
+    "answerOutline": [
+      "Describe the tension",
+      "Show how you separated mandatory from optional cleanup",
+      "Explain stakeholder communication",
+      "Quantify outcome"
+    ],
+    "sampleAnswer": "I faced a feature deadline where the underlying code had enough complexity that building directly on top of it would have created long-term instability. Instead of framing the choice as refactor or feature, I split the debt into what was structurally required for safe delivery and what could wait without multiplying risk. I sold that plan to stakeholders by tying the mandatory cleanup to concrete failure modes and by keeping the deferred items visible with clear follow-up dates rather than hand-waving them away. That allowed us to deliver the feature on time with a smaller supporting refactor that improved testability and rollback safety without boiling the ocean. The decision worked because it protected near-term delivery while avoiding the trap of knowingly making the next release much harder. In practice, senior judgment here is about finding the minimum responsible architecture change, not pursuing purity.",
+    "commonMistakes": [
+      "Treating all technical debt as equally urgent",
+      "Promising both full refactor and full feature scope with the same capacity"
+    ],
+    "followUps": [
+      "How did you make sure the deferred debt was not forgotten?",
+      "What if the partial refactor exposed more issues than expected?"
+    ],
+    "seniorExtension": "Explain how you decide when to spend credibility insisting on deeper cleanup even if the business view is short term.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Manager's Path",
+        "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-ambiguity-004",
+    "title": "Making a call with incomplete data on a risky optimization",
+    "question": "Describe a time you had to make a technical decision before you had perfect data.",
+    "topics": [
+      "ambiguity",
+      "decision-making",
+      "risk",
+      "optimization"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 10,
+    "clarifyingQuestions": [
+      "What information was missing and why could you not get it in time?"
+    ],
+    "interviewerIntent": [
+      "Evaluating judgment under uncertainty",
+      "Evaluating how the candidate bounds risk"
+    ],
+    "answerOutline": [
+      "State the uncertainty",
+      "Explain the decision principle",
+      "Show safeguards or reversibility",
+      "Reflect on the outcome"
+    ],
+    "sampleAnswer": "I once had to decide whether to enable an optimization that looked promising in staging but had limited production data under the exact traffic shape we cared about. Waiting for perfect certainty would have meant missing an event where the potential gain mattered, but enabling it blindly would have been reckless. I made the decision by asking whether we could bound downside tightly enough through staged rollout, kill switches, and targeted telemetry rather than trying to eliminate uncertainty entirely. We enabled it for a narrow slice of traffic with explicit rollback triggers and an engineer watching the key indicators, and that gave us enough confidence to expand gradually once the first slice behaved as expected. The rollout succeeded, and more importantly the decision process was sound because it treated reversibility as part of the answer. That is usually how I handle ambiguity: not by pretending uncertainty disappears, but by engineering the decision so uncertainty is survivable.",
+    "commonMistakes": [
+      "Presenting confidence as certainty",
+      "Making risky changes without an explicit abort condition"
+    ],
+    "followUps": [
+      "What would have made you choose not to roll it out at all?",
+      "How did you explain the residual risk to stakeholders?"
+    ],
+    "seniorExtension": "Describe how you would change the approach if the optimization touched market correctness rather than pure latency.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  },
+  {
+    "id": "behavioral-ambiguity-005",
+    "title": "Starting a new integration with sparse information",
+    "question": "Tell me about a time you had to deliver in a domain where the requirements or documentation were incomplete.",
+    "topics": [
+      "ambiguity",
+      "new-domain",
+      "learning",
+      "prioritization"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "seniority": "mid",
+    "difficulty": "medium",
+    "estimatedMinutes": 8,
+    "clarifyingQuestions": [
+      "What was the biggest unknown at the start?"
+    ],
+    "interviewerIntent": [
+      "Evaluating learning speed",
+      "Evaluating how the candidate reduces ambiguity systematically"
+    ],
+    "answerOutline": [
+      "Describe the incomplete environment",
+      "Show your discovery plan",
+      "Explain how you reduced risk incrementally",
+      "Show delivery outcome"
+    ],
+    "sampleAnswer": "I worked on an external integration where the protocol documentation was incomplete and several edge cases were only discoverable through test interaction. To avoid building assumptions too early, I separated the project into discovery, simulation, and production-hardening phases rather than pretending the requirements were stable from day one. I kept a living catalog of observed behaviors, built replayable fixtures from real exchanges with the counterpart, and validated each newly learned rule before allowing it into the main flow. That approach slowed the first week slightly but accelerated the rest of the project because unknowns were surfaced early instead of becoming late surprises. We delivered on time with fewer production issues than previous similar integrations because our plan explicitly respected the ambiguity. When information is sparse, I try to convert the project into a learning system with checkpoints, not a single linear implementation bet.",
+    "commonMistakes": [
+      "Pretending unclear requirements are clear",
+      "Failing to create artifacts that capture new knowledge as it emerges"
+    ],
+    "followUps": [
+      "How did you know when discovery was sufficient to proceed?",
+      "What if the external party kept changing behavior?"
+    ],
+    "seniorExtension": "Explain how you would parallelize discovery and delivery work without letting assumptions leak unchecked into production code.",
+    "rubric": {
+      "1": "Weak: Gives a vague story, unclear personal ownership, and little evidence of reflection or measurable outcome.",
+      "3": "Competent: Uses a structured example with clear actions, stakeholder management, and a concrete result.",
+      "5": "Strong: Shows senior judgment, balances speed with risk, quantifies impact, and explains what changed in their leadership approach afterward."
+    },
+    "references": [
+      {
+        "title": "Optiver Careers",
+        "url": "https://optiver.com/careers",
+        "source": "official-career-page",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Beej's Guide to Network Programming",
+        "url": "https://beej.us/guide/bgnet/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "behavioral"
+  }
+]
