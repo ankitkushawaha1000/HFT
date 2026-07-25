@@ -1,0 +1,15 @@
+
+node_modules/
+generated/
+build/
+.DS_Store
+*.o
+*.a
+*.out
+dist/
+.env
+generated/*.pdf
+__pycache__/
+.cache/
+coverage/
+*.log

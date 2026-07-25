@@ -1,0 +1,1510 @@
+[
+  {
+    "id": "cpp-memory-001",
+    "title": "Choosing the right ownership primitive in hot code",
+    "question": "How do you choose between raw pointers, std::unique_ptr, std::shared_ptr, and std::weak_ptr in performance-sensitive C++ systems?",
+    "topics": [
+      "memory-management",
+      "ownership",
+      "smart-pointers",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Is the code on a latency-critical path or mostly control-plane code?"
+    ],
+    "interviewerIntent": [
+      "Evaluating ownership modeling",
+      "Evaluating performance-aware API design"
+    ],
+    "answerOutline": [
+      "Start with ownership semantics",
+      "Explain default choices",
+      "Discuss cycles and hidden costs",
+      "Tie the answer to hot-path tradeoffs"
+    ],
+    "sampleAnswer": "I start by modeling ownership explicitly: `std::unique_ptr<T>` is my default when one object owns another because it has the same indirection cost as a raw pointer but encodes lifetime in the type system. `std::shared_ptr<T>` is for true shared lifetime, not convenience; `auto p = std::make_shared<Book>();` is fine for control-plane graphs, but every copy can imply ref-count traffic and a larger control footprint that I would avoid in a hot market-data path. Raw pointers and references are still useful as non-owning observers, for example `void process(const Book* book)` or `Book& book`, as long as the owning lifetime is obvious and stable. If a back-reference is needed, I prefer `std::weak_ptr<T>` to break cycles, or better yet redesign ownership around IDs, arenas, or parent-owned storage so the cycle never exists. In senior systems work, the strong answer is not memorizing pointer types; it is connecting ownership semantics to cache behavior, atomic overhead, and failure modes such as leaks or use-after-free.",
+    "commonMistakes": [
+      "Using shared_ptr as a default because it feels safe",
+      "Confusing observing pointers with owning pointers"
+    ],
+    "followUps": [
+      "When is `make_shared` worse than separate allocations?",
+      "Would you allow shared_ptr on a latency-critical order path?"
+    ],
+    "seniorExtension": "Discuss how intrusive reference counting or epoch-based reclamation changes the trade space compared with standard smart pointers.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-memory-002",
+    "title": "Avoiding dangling references with views and spans",
+    "question": "What lifetime mistakes commonly happen with std::string_view, std::span, and references, and how do you avoid them?",
+    "topics": [
+      "memory-management",
+      "lifetime",
+      "string_view",
+      "span"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are we discussing local temporary lifetimes or cross-thread publication?"
+    ],
+    "interviewerIntent": [
+      "Evaluating deep lifetime reasoning",
+      "Evaluating practical API safety"
+    ],
+    "answerOutline": [
+      "Define what views are",
+      "Give concrete dangling examples",
+      "Explain safe ownership patterns",
+      "Mention tooling and code review heuristics"
+    ],
+    "sampleAnswer": "`std::string_view` and `std::span` are non-owning views, so the common failure is returning or storing a view whose underlying storage dies or mutates unexpectedly, such as `std::string_view v = std::string(\"abc\");`. I treat them like borrowed ranges: safe when the owner clearly outlives the view, unsafe when the owner is a temporary, a resizable container, or memory handed across asynchronous boundaries. In API design I often accept `std::string_view` for read-only parsing, but if the callee needs to persist data I copy into owned storage immediately instead of keeping the view around. The bug class gets worse across threads because publishing a `span` to a buffer that is later reused or resized can look correct in tests and still become a race or use-after-free in production. The strong engineering answer is to combine type-level discipline, clear ownership comments in interfaces, and sanitizers or fuzz tests that exercise lifetime and buffer reuse edges.",
+    "commonMistakes": [
+      "Assuming views are safer because they avoid copies",
+      "Returning a string_view into a local or moved-from string"
+    ],
+    "followUps": [
+      "Would you store string_view inside a long-lived object?",
+      "How do you review a parser API that takes span?"
+    ],
+    "seniorExtension": "Explain how arena allocation can make some view-heavy APIs safe while still requiring discipline at ownership boundaries.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-memory-003",
+    "title": "Placement new and custom storage safely",
+    "question": "When would you use placement new or a memory pool in C++, and what correctness risks come with it?",
+    "topics": [
+      "memory-management",
+      "placement-new",
+      "allocators",
+      "object-lifetime"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "difficulty": "hard",
+    "estimatedMinutes": 16,
+    "clarifyingQuestions": [
+      "Is the pool for fixed-size hot objects or a general-purpose allocator replacement?"
+    ],
+    "interviewerIntent": [
+      "Evaluating low-level memory control",
+      "Evaluating lifetime correctness under manual allocation"
+    ],
+    "answerOutline": [
+      "State why custom storage is used",
+      "Explain object lifetime start and end",
+      "Discuss alignment and exception safety",
+      "Mention reuse and debugging strategy"
+    ],
+    "sampleAnswer": "I use placement new or fixed-size pools when I need deterministic allocation behavior, fewer calls into the general allocator, or better locality for many short-lived objects such as orders or decoded messages. For example, `void* slot = pool.allocate(); Order* o = new (slot) Order(args...);` starts object lifetime in preallocated storage, but I then own destruction explicitly with `o->~Order(); pool.deallocate(slot);`. The main risks are violating alignment, reusing storage before the old object's lifetime has ended, forgetting destruction for non-trivial types, and accidentally treating raw bytes as if an object still exists there. I also care about debugging cost: pools can hide leaks and double-destroys, so I often add generation counters, poison patterns, or debug-mode fallback to the system allocator. A strong senior answer acknowledges that pools can improve latency, but only if the lifetime protocol is simpler than the bugs they invite.",
+    "commonMistakes": [
+      "Forgetting explicit destruction with placement new",
+      "Ignoring alignment requirements of the stored type"
+    ],
+    "followUps": [
+      "How would you make a pool thread-safe?",
+      "When is a monotonic buffer resource a better fit?"
+    ],
+    "seniorExtension": "Compare hand-written pools with `std::pmr` resources and discuss where each wins in an HFT codebase.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-memory-004",
+    "title": "Rule of zero versus manual special members",
+    "question": "How do you decide whether a type should follow the rule of zero, rule of five, or use deleted operations?",
+    "topics": [
+      "memory-management",
+      "rule-of-zero",
+      "rule-of-five",
+      "resource-management"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Is the type directly managing a resource or only composing RAII members?"
+    ],
+    "interviewerIntent": [
+      "Evaluating class design fundamentals",
+      "Evaluating resource ownership reasoning"
+    ],
+    "answerOutline": [
+      "Define the rules",
+      "Prefer composition and RAII members",
+      "Describe when custom special members are needed",
+      "Mention invariants and noexcept move"
+    ],
+    "sampleAnswer": "If a type only composes members that already manage themselves, I prefer the rule of zero and let the compiler generate special members because that usually gives the simplest and safest code. Once a type directly owns a raw resource such as a file descriptor, mapped region, or custom handle, I either wrap that resource in a dedicated RAII member or implement the relevant special members intentionally, for example deleting copy and making move `noexcept`. A typical pattern is `class Fd { int fd_; public: Fd(Fd&&) noexcept; Fd& operator=(Fd&&) noexcept; Fd(const Fd&) = delete; };`, which encodes unique ownership and makes container moves efficient. The mistake is writing some but not all of the operations, leaving accidental shallow copies or invariant breaks after move. The senior view is that these rules are really about invariant management: choose the smallest ownership surface, then make the type semantics obvious to both humans and the compiler.",
+    "commonMistakes": [
+      "Implementing copy for unique resources",
+      "Forgetting noexcept on moves that need to work well with containers"
+    ],
+    "followUps": [
+      "Why does noexcept matter for vector growth?",
+      "When would you delete move as well?"
+    ],
+    "seniorExtension": "Discuss how PIMPL, ABI stability, and file-descriptor wrappers influence your choice of generated versus custom operations.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-memory-005",
+    "title": "Allocator strategy for latency-sensitive containers",
+    "question": "How would you think about allocator strategy for standard containers in a low-latency application?",
+    "topics": [
+      "memory-management",
+      "allocators",
+      "containers",
+      "latency"
+    ],
+    "companies": [
+      "citadel"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Are allocations occurring on the hot path or only during startup and reconfiguration?"
+    ],
+    "interviewerIntent": [
+      "Evaluating allocator and locality knowledge",
+      "Evaluating pragmatic optimization boundaries"
+    ],
+    "answerOutline": [
+      "Avoid unnecessary hot-path allocation",
+      "Pre-size and reserve where possible",
+      "Discuss PMR or custom allocators",
+      "Explain measurement and failure modes"
+    ],
+    "sampleAnswer": "My first allocator optimization is usually to avoid allocation entirely on the hot path by reserving capacity, using fixed-size structures, or separating startup configuration from run-time execution. When containers must allocate dynamically, I consider locality and determinism: `std::pmr::vector<Order>` backed by a monotonic or pool resource can reduce allocator noise compared with the general heap, especially for bursty short-lived objects. I still verify semantic fit, because monotonic resources are excellent for build-once snapshots but terrible if you expect arbitrary erase patterns or long-lived fragmentation-sensitive workloads. Custom allocators also interact with exception safety, thread ownership, and debugging, so I want simple ownership boundaries and instrumentation around allocation counts and fallback paths. The strong answer is not 'always use a pool'; it is showing that allocator choice follows workload shape, lifetime pattern, and measured latency variance.",
+    "commonMistakes": [
+      "Changing allocators before proving allocation is the bottleneck",
+      "Ignoring the lifetime pattern of the container contents"
+    ],
+    "followUps": [
+      "When would a monotonic buffer resource leak by design?",
+      "How do you benchmark allocator variance, not just mean time?"
+    ],
+    "seniorExtension": "Explain how NUMA locality and per-thread arenas influence allocator design in a multicore feed-handling process.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-concurrency-001",
+    "title": "Mutexes versus atomics in low-latency code",
+    "question": "When do you use atomics instead of mutexes, and what mistakes do engineers make when they reach for lock-free code too early?",
+    "topics": [
+      "concurrency",
+      "atomics",
+      "mutexes",
+      "lock-free"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Is the workload single-producer or many-producer, and what are the contention characteristics?"
+    ],
+    "interviewerIntent": [
+      "Evaluating concurrency judgment",
+      "Evaluating understanding of when complexity is justified"
+    ],
+    "answerOutline": [
+      "Start from correctness and contention",
+      "Explain where mutexes are fine",
+      "Describe atomic-only use cases",
+      "Call out lock-free pitfalls"
+    ],
+    "sampleAnswer": "I start with the data ownership pattern and contention profile, not with a bias that lock-free is automatically faster. A `std::mutex` is often the right answer for infrequent or coarse-grained coordination because it is easier to reason about, while an atomic such as `std::atomic<uint64_t> seq{0};` is appropriate for tiny shared state or carefully designed SPSC handoff paths. Lock-free structures earn their complexity only when they remove measurable contention or blocking from a genuinely hot path; otherwise they often replace a small known cost with much harder correctness work. Common mistakes are composing several atomics without a coherent publication protocol, ignoring cache-line bouncing, and claiming progress guarantees without considering memory reclamation or starvation. In senior systems, the right mindset is that atomics are a precision tool: use them where the state machine is small and proven, and prefer simpler synchronization elsewhere.",
+    "commonMistakes": [
+      "Assuming atomics are always cheaper than locks",
+      "Ignoring the complexity of composing multiple atomic variables"
+    ],
+    "followUps": [
+      "What does lock-free guarantee that wait-free does not?",
+      "Would you use a mutex on an order entry fast path?"
+    ],
+    "seniorExtension": "Discuss how tail latency and scheduler behavior can still make a nominally lock-free design underperform in real systems.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Mechanical Sympathy Blog",
+        "url": "https://mechanical-sympathy.blogspot.com/",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-concurrency-002",
+    "title": "Explaining acquire and release correctly",
+    "question": "Explain acquire-release memory ordering and give a concrete example of when it is sufficient and when it is not.",
+    "topics": [
+      "concurrency",
+      "atomics",
+      "memory-ordering",
+      "publication"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 16,
+    "clarifyingQuestions": [
+      "Is the example single-producer/single-consumer publication or a more complex synchronization pattern?"
+    ],
+    "interviewerIntent": [
+      "Evaluating memory model knowledge",
+      "Evaluating ability to connect theory to code"
+    ],
+    "answerOutline": [
+      "Define release and acquire",
+      "Show a publication example",
+      "State what ordering it does not provide",
+      "Mention when seq_cst or fences are needed"
+    ],
+    "sampleAnswer": "A release store makes prior writes in that thread visible to another thread that performs a matching acquire load and observes that stored value, which is why acquire-release is the standard publication pattern. For example, a producer can write `payload`, then do `ready.store(true, std::memory_order_release);`, and the consumer can spin on `ready.load(std::memory_order_acquire)` before safely reading `payload`. That is sufficient when one atomic flag establishes visibility for the preceding non-atomic writes, but it is not a magic replacement for reasoning about all interleavings or for multi-variable protocols with no clear synchronization edge. If several independent atomics need a single total order or the reasoning is otherwise subtle, I may use stronger ordering such as `seq_cst` or redesign around a simpler handoff structure instead of scattering fences everywhere. The key senior point is to explain not just the definition, but the happens-before relationship you are deliberately creating and why it is enough for that specific state machine.",
+    "commonMistakes": [
+      "Saying acquire and release are about CPU speed only",
+      "Using relaxed loads where a publication edge is required"
+    ],
+    "followUps": [
+      "Would acquire-release alone make a ring buffer correct?",
+      "When are fences preferable to per-operation orderings?"
+    ],
+    "seniorExtension": "Compare acquire-release reasoning on x86 versus weaker architectures and explain why source-level correctness still matters across both.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Mechanical Sympathy Blog",
+        "url": "https://mechanical-sympathy.blogspot.com/",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-concurrency-003",
+    "title": "ABA and memory reclamation in lock-free structures",
+    "question": "What is the ABA problem, and how would you address memory reclamation in a lock-free stack or queue?",
+    "topics": [
+      "concurrency",
+      "lock-free",
+      "aba",
+      "memory-reclamation"
+    ],
+    "companies": [
+      "citadel"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "difficulty": "hard",
+    "estimatedMinutes": 18,
+    "clarifyingQuestions": [
+      "Are we discussing a pointer-based structure with CAS and node reuse?"
+    ],
+    "interviewerIntent": [
+      "Evaluating advanced concurrency depth",
+      "Evaluating ability to connect progress guarantees with reclamation"
+    ],
+    "answerOutline": [
+      "Define ABA with CAS",
+      "Explain why reclaimed memory makes it dangerous",
+      "Discuss mitigation strategies",
+      "Compare hazard pointers, epochs, and tagged pointers"
+    ],
+    "sampleAnswer": "ABA happens when a compare-exchange sees the same pointer value twice and assumes nothing changed, even though the pointed-to node may have been removed, freed, and reused in between. A classic example is `head.compare_exchange_weak(old, old->next)` on a lock-free stack: if another thread pops `old`, frees it, and allocates a new node at the same address, the CAS can succeed on a logically invalid state. Tagged pointers can reduce the ABA risk by extending identity, but they do not solve reclamation by themselves; you still need a policy such as hazard pointers, epoch-based reclamation, or reference counting to ensure removed nodes are not freed while another thread may still observe them. In many low-latency systems I prefer epoch-based reclamation when thread sets are stable because it keeps the fast path simple, while hazard pointers give finer control at the cost of more per-access bookkeeping. The real senior answer is that lock-free correctness is never just about the CAS loop; reclamation strategy is part of the data structure definition.",
+    "commonMistakes": [
+      "Thinking tagged pointers completely solve safe reclamation",
+      "Ignoring reclamation because tests rarely expose ABA"
+    ],
+    "followUps": [
+      "Would shared_ptr solve this?",
+      "What operational issues arise with stalled threads in epoch schemes?"
+    ],
+    "seniorExtension": "Discuss how bounded object pools and generation counters can interact with ABA mitigation in HFT-style fixed-capacity systems.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Mechanical Sympathy Blog",
+        "url": "https://mechanical-sympathy.blogspot.com/",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-concurrency-004",
+    "title": "Designing a bounded ring buffer correctly",
+    "question": "How would you reason about correctness and performance in a bounded ring buffer shared between threads?",
+    "topics": [
+      "concurrency",
+      "ring-buffer",
+      "atomics",
+      "bounded-queues"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "difficulty": "hard",
+    "estimatedMinutes": 17,
+    "clarifyingQuestions": [
+      "Is the queue SPSC, MPSC, or MPMC?"
+    ],
+    "interviewerIntent": [
+      "Evaluating practical concurrency design",
+      "Evaluating throughput versus correctness tradeoffs"
+    ],
+    "answerOutline": [
+      "Fix the producer-consumer model",
+      "Discuss indexing and publication",
+      "Address false sharing and capacity",
+      "Explain backpressure and shutdown semantics"
+    ],
+    "sampleAnswer": "The first design choice is narrowing the concurrency model because an SPSC ring buffer is dramatically simpler than MPMC and often sufficient for feed or handoff stages. In an SPSC design I usually keep producer and consumer indices in separate cache lines, write the element first, then publish the updated tail with release semantics; the consumer acquires the tail before reading the element and advances its own head similarly. I want power-of-two capacity for cheap masking like `index & (capacity - 1)`, but correctness around full and empty states matters more than saving a modulus if the queue semantics are unclear. Performance issues usually come from cache-line ping-pong, unnecessary fences, or blocking behavior when the queue fills, so I define whether writers drop, spin, or backpressure the caller as part of the interface. The strong answer treats the ring buffer as a state machine with explicit publication, capacity, and shutdown contracts, not just as an array with atomics.",
+    "commonMistakes": [
+      "Skipping the exact producer-consumer model",
+      "Putting head and tail on the same cache line"
+    ],
+    "followUps": [
+      "How would the design change for MPMC?",
+      "Would you ever overwrite old data instead of blocking?"
+    ],
+    "seniorExtension": "Explain how sequence numbers per slot can simplify correctness in higher-contention variants and what cost they add.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Mechanical Sympathy Blog",
+        "url": "https://mechanical-sympathy.blogspot.com/",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-concurrency-005",
+    "title": "Condition variables and wakeup discipline",
+    "question": "What are the common pitfalls with std::condition_variable, and how do you use it correctly in production code?",
+    "topics": [
+      "concurrency",
+      "condition-variable",
+      "synchronization",
+      "correctness"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Is the wait path handling shutdown as well as normal work arrival?"
+    ],
+    "interviewerIntent": [
+      "Evaluating basic but important synchronization correctness",
+      "Evaluating production readiness"
+    ],
+    "answerOutline": [
+      "Explain spurious wakeups",
+      "Use predicate loops",
+      "Discuss missed notifications and lock discipline",
+      "Address shutdown or cancellation"
+    ],
+    "sampleAnswer": "The first rule with `std::condition_variable` is that waits must always be predicate-based because spurious wakeups are allowed and notifications can race with the consumer's sleep transition. The standard pattern is `cv.wait(lock, [&]{ return ready || stop; });`, where the predicate is protected by the same mutex as the shared state. Common bugs are checking the condition outside the lock, using `if` instead of `while`, or forgetting to model shutdown, which leaves threads hanging forever during process exit. I also separate the condition from the work when necessary: notify after state change, keep the critical section small, and avoid assuming that `notify_one()` transfers the lock or CPU directly to the waiter. Even though condition variables are more familiar than atomics, strong senior answers still emphasize invariants, predicates, and lifecycle behavior rather than just syntax.",
+    "commonMistakes": [
+      "Using if instead of a predicate loop",
+      "Forgetting a stop condition during teardown"
+    ],
+    "followUps": [
+      "Should notify happen under the lock or after unlock?",
+      "How do you debug missed wakeups in production?"
+    ],
+    "seniorExtension": "Compare condition variables with eventfd, futex-based primitives, or busy-spin handoff for different latency envelopes.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-move-001",
+    "title": "Explaining value categories to drive API design",
+    "question": "How do value categories influence C++ API design, especially in performance-sensitive code?",
+    "topics": [
+      "move-semantics",
+      "value-categories",
+      "api-design",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are we optimizing for sink-style APIs or generic forwarding interfaces?"
+    ],
+    "interviewerIntent": [
+      "Evaluating language depth",
+      "Evaluating ability to translate semantics into interface choices"
+    ],
+    "answerOutline": [
+      "Define lvalues and rvalues in practical terms",
+      "Tie them to overload sets",
+      "Show pass-by-value versus reference tradeoffs",
+      "Connect to move elision"
+    ],
+    "sampleAnswer": "Value categories matter because they tell me whether an object is an identifiable persistent entity or a temporary I can potentially consume, which directly affects overloads and ownership transfer. For a sink API I often prefer `void set_name(std::string s)` and then `name_ = std::move(s);` because callers with temporaries get moves and callers with lvalues make an explicit copy at the call boundary. If copying is expensive and optional, overloads like `const T&` and `T&&` can still be useful, but I use them deliberately rather than as cargo cult because more overloads also mean more surface area and subtle bugs. Understanding xvalues and prvalues also helps explain why return-by-value is often efficient today: copy elision plus move semantics means `return obj;` is frequently cheaper and clearer than manual out-parameters. A strong answer connects the standard terminology to practical interface decisions and measurable cost, not just to textbook definitions.",
+    "commonMistakes": [
+      "Defining value categories abstractly without API consequences",
+      "Using std::move so aggressively that it harms readability or correctness"
+    ],
+    "followUps": [
+      "When is pass-by-value a bad choice?",
+      "Why can moving from const be disappointing?"
+    ],
+    "seniorExtension": "Discuss how ABI, small-string optimization, and exception guarantees change your preferred parameter passing strategy for common library types.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-move-002",
+    "title": "Perfect forwarding without footguns",
+    "question": "What is perfect forwarding, and what are the most common mistakes when using forwarding references?",
+    "topics": [
+      "move-semantics",
+      "perfect-forwarding",
+      "templates",
+      "references"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Is the template forwarding into construction or into another generic call?"
+    ],
+    "interviewerIntent": [
+      "Evaluating template and move semantics depth",
+      "Evaluating whether the candidate understands reference collapsing"
+    ],
+    "answerOutline": [
+      "Define forwarding references",
+      "Explain reference collapsing and std::forward",
+      "Show a correct example",
+      "Warn against overuse"
+    ],
+    "sampleAnswer": "Perfect forwarding means preserving the value category of a caller's argument through a generic layer, typically using a forwarding reference `T&&` in a deduced context plus `std::forward<T>(arg)`. A classic example is `template<class T, class... Args> std::unique_ptr<T> make(Args&&... args) { return std::unique_ptr<T>(new T(std::forward<Args>(args)...)); }`, where lvalues stay lvalues and rvalues stay movable. The biggest mistakes are forgetting that `T&&` is only a forwarding reference when `T` is deduced, forwarding the same object twice, or using forwarding where a simpler overload or pass-by-value would be clearer. I also watch for lifetime traps: perfectly forwarding a temporary into storage that only holds references can preserve category and still create dangling references. Senior engineers should show they understand not just the mechanism, but when perfect forwarding is worth the complexity and when it is unnecessary cleverness.",
+    "commonMistakes": [
+      "Calling std::move instead of std::forward in generic code",
+      "Assuming every T&& parameter is a forwarding reference"
+    ],
+    "followUps": [
+      "What is reference collapsing?",
+      "Why can forwarding constructors break overload resolution?"
+    ],
+    "seniorExtension": "Explain how constraints and concepts can make forwarding-heavy APIs safer and more diagnosable.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-move-003",
+    "title": "Moved-from states and invariants",
+    "question": "What guarantees should a moved-from object provide, and how do you design types so moved-from states are safe?",
+    "topics": [
+      "move-semantics",
+      "invariants",
+      "class-design",
+      "correctness"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Is the type resource-owning, value-semantic, or a handle wrapper?"
+    ],
+    "interviewerIntent": [
+      "Evaluating invariant thinking",
+      "Evaluating practical move semantics"
+    ],
+    "answerOutline": [
+      "Define valid but unspecified",
+      "Explain preserving destructibility and assignability",
+      "Give a design example",
+      "Mention documentation and tests"
+    ],
+    "sampleAnswer": "After move, the standard expectation is usually valid but unspecified: the object must be safe to destroy, assign to, and use in any operations whose preconditions still hold. For a handle-like type I often move by transferring the resource and resetting the source to an explicit neutral state such as `fd_ = -1` or `ptr_ = nullptr`, because that makes destruction and repeated move assignment straightforward. I avoid promising richer moved-from semantics unless the type can maintain them cheaply, since every extra guarantee becomes part of the contract and can constrain optimization. The dangerous pattern is leaving a moved-from object with broken invariants that happen to survive simple tests but fail under exception paths or container operations. A strong answer shows that moved-from design is really invariant design, supported by unit tests for self-move resistance, reassignment, and destruction safety.",
+    "commonMistakes": [
+      "Saying moved-from objects are unusable or invalid",
+      "Assuming std::move itself moves anything"
+    ],
+    "followUps": [
+      "Would you ever document a stronger moved-from guarantee?",
+      "How do containers rely on noexcept move?"
+    ],
+    "seniorExtension": "Discuss how transactional semantics or rollback requirements can justify copy-swap or stronger post-move guarantees in specific domains.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-move-004",
+    "title": "Copy elision and return-by-value performance",
+    "question": "How do copy elision and move semantics interact, and why is return-by-value often the right design today?",
+    "topics": [
+      "move-semantics",
+      "copy-elision",
+      "return-by-value",
+      "performance"
+    ],
+    "companies": [
+      "jane-street"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "medium",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Are we discussing modern C++17 guaranteed elision cases?"
+    ],
+    "interviewerIntent": [
+      "Evaluating understanding of modern C++ object transfer",
+      "Evaluating ability to avoid outdated patterns"
+    ],
+    "answerOutline": [
+      "Explain elision versus move",
+      "Give modern return-by-value example",
+      "Contrast with output parameters",
+      "Mention caveats"
+    ],
+    "sampleAnswer": "In modern C++, `return` by value is often both the cleanest and fastest option because the language can elide copies entirely in many cases and otherwise fall back to an efficient move. For example, `Book make_book() { Book b; /* fill */ return b; }` is typically either guaranteed elision or an eligible move, so the old instinct to use output parameters for performance is often outdated. This matters for API design because value-returning functions express ownership and failure composition more clearly, especially when paired with types like `std::optional<Book>` or `std::expected<Book, Error>`. I still watch for cases where returning enormous objects or polymorphic resources by value is semantically wrong, but I do not prematurely optimize away clarity based on pre-C++11 folklore. The strong answer connects language rules to cleaner interfaces and shows you know when the compiler can remove the transfer cost entirely.",
+    "commonMistakes": [
+      "Thinking std::move on a local return always helps",
+      "Explaining RVO using outdated pre-C++17 rules only"
+    ],
+    "followUps": [
+      "Can adding std::move inhibit copy elision?",
+      "When are output parameters still appropriate?"
+    ],
+    "seniorExtension": "Compare return-by-value with coroutine generators or zero-copy views in APIs where ownership and lifetime boundaries are different.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-move-005",
+    "title": "Pass-by-value versus const reference versus rvalue reference",
+    "question": "How do you decide whether a function parameter should be passed by value, const reference, reference, pointer, or rvalue reference?",
+    "topics": [
+      "move-semantics",
+      "api-design",
+      "parameter-passing",
+      "performance"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Is the function merely observing the parameter or taking ownership?"
+    ],
+    "interviewerIntent": [
+      "Evaluating API design maturity",
+      "Evaluating nuanced performance judgment"
+    ],
+    "answerOutline": [
+      "Start from semantics",
+      "Map each parameter kind to intent",
+      "Use examples",
+      "Mention cost model and readability"
+    ],
+    "sampleAnswer": "I pick parameter passing based on semantics first: `const T&` for cheap observation of potentially large values, `T` by value when I may need a copy or want to sink ownership, `T&&` for explicit sink or forwarding APIs, and pointers or references when nullability or mutation semantics matter. A function like `void set_symbol(std::string s)` is great when the class stores an owned copy, while `void parse(std::span<const char> bytes)` is appropriate for non-owning read-only access to a caller-managed buffer. Non-const references signal in-place mutation, and raw pointers still have a role when null is meaningful or when interoperating with contiguous memory and C APIs. The anti-pattern is optimizing the parameter type in isolation without considering copies forced elsewhere, overload complexity, or whether the interface now communicates the wrong ownership story. A senior answer should sound like interface design, not just micro-optimization folklore.",
+    "commonMistakes": [
+      "Choosing T&& everywhere because move is fashionable",
+      "Ignoring whether null is a meaningful part of the contract"
+    ],
+    "followUps": [
+      "Would you take string_view instead of const string&?",
+      "When is pass-by-value harmful for a large type?"
+    ],
+    "seniorExtension": "Discuss how ABI boundaries, small-object optimization, and cross-language FFI can change your preferred parameter form.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-templates-001",
+    "title": "Concepts versus SFINAE",
+    "question": "How do C++20 concepts improve template code compared with older SFINAE-based techniques?",
+    "topics": [
+      "templates",
+      "concepts",
+      "sfinae",
+      "diagnostics"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Are we discussing user-facing library APIs or internal metaprogramming only?"
+    ],
+    "interviewerIntent": [
+      "Evaluating modern template knowledge",
+      "Evaluating API readability and diagnostics awareness"
+    ],
+    "answerOutline": [
+      "Explain the problem SFINAE solved",
+      "Show how concepts express intent",
+      "Discuss better diagnostics and overload control",
+      "Mention compile-time tradeoffs"
+    ],
+    "sampleAnswer": "SFINAE let us constrain templates indirectly, but it often encoded the requirement in unreadable machinery such as `std::enable_if_t` and produced terrible error messages when a candidate type did not match. Concepts let me state intent directly, for example `template<Sortable T> void sort_book(T& x);`, which makes the API clearer to humans and gives the compiler a named requirement to report when constraints fail. They also improve overload resolution because I can express semantic categories explicitly instead of relying on increasingly clever substitution tricks. Concepts are not free magic—heavy use can still increase compile cost or encourage over-abstraction—but they usually move generic code toward clearer contracts and better diagnostics. The strong answer is that concepts are valuable not because they are newer, but because they align template interfaces more closely with the behavior the code actually requires.",
+    "commonMistakes": [
+      "Treating concepts as only syntactic sugar",
+      "Ignoring compile-time cost or library boundary implications"
+    ],
+    "followUps": [
+      "Would you still use SFINAE anywhere?",
+      "Can concepts change overload ambiguity?"
+    ],
+    "seniorExtension": "Explain how you would migrate a mature internal template library from enable_if-heavy APIs to concepts with minimal churn.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-templates-002",
+    "title": "Managing template instantiation bloat",
+    "question": "How do you control code bloat and compile-time cost in heavily templated C++ code?",
+    "topics": [
+      "templates",
+      "compile-time",
+      "binary-size",
+      "build-systems"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Is the problem compile time only, runtime I-cache pressure, or both?"
+    ],
+    "interviewerIntent": [
+      "Evaluating practical large-codebase experience",
+      "Evaluating understanding of binary and compile-time tradeoffs"
+    ],
+    "answerOutline": [
+      "Explain why templates bloat code",
+      "Discuss factoring and type erasure choices",
+      "Mention explicit instantiation and tooling",
+      "Tie to runtime costs"
+    ],
+    "sampleAnswer": "Template-heavy code can explode both compile time and binary size because every distinct type combination may instantiate another copy of the implementation and associated inlined helpers. I control that by separating hot monomorphic paths from generic wrappers, reducing unnecessary header-only implementation, and using explicit instantiation for a known closed set of important types where it makes sense. Sometimes the right answer is to trade a little abstraction purity for a smaller code footprint, for example moving from deeply templated strategy types to a narrower erased interface off the hot path. I also measure the downstream effect: code bloat is not just a build problem, because a larger binary can hurt I-cache locality and make branch prediction less friendly. Senior engineers should treat templates as a performance tool with real costs, not as an excuse to generate endless special-case code.",
+    "commonMistakes": [
+      "Only discussing compiler time and forgetting runtime instruction-cache effects",
+      "Instantiating templates for every type when the domain is actually small"
+    ],
+    "followUps": [
+      "When would type erasure beat templates?",
+      "How do you profile template compile hotspots?"
+    ],
+    "seniorExtension": "Discuss how modules, precompiled headers, and explicit instantiation can work together in a large low-latency C++ codebase.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-templates-003",
+    "title": "constexpr and consteval in production code",
+    "question": "When do constexpr and consteval meaningfully help in a real codebase, and when are they mostly ceremony?",
+    "topics": [
+      "templates",
+      "constexpr",
+      "consteval",
+      "metaprogramming"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Is the target a compile-time lookup table, protocol metadata, or validation logic?"
+    ],
+    "interviewerIntent": [
+      "Evaluating modern compile-time programming judgment",
+      "Evaluating ability to separate useful static work from gimmicks"
+    ],
+    "answerOutline": [
+      "Define constexpr and consteval roles",
+      "Give production examples",
+      "Discuss readability and build cost",
+      "State when runtime code is better"
+    ],
+    "sampleAnswer": "`constexpr` is valuable when moving work to compile time improves correctness or startup cost without making the code unreadable, such as building fixed lookup tables, validating protocol constants, or precomputing masks. `consteval` is stricter and useful when something must never exist as a runtime computation, for example generating compile-time IDs or rejecting malformed configuration literals at compile time. A simple example is `constexpr auto mask = build_mask(levels);`, where the generated structure becomes part of the binary and avoids repeated runtime setup. I avoid turning ordinary business logic into metaprogramming theater, because the readability and compile-time cost can outweigh tiny startup wins, especially if the values are not actually static. The strong answer shows you know how to use compile-time computation to enforce invariants, not just to impress people with clever templates.",
+    "commonMistakes": [
+      "Using constexpr where the input is not truly compile-time",
+      "Ignoring build-time cost and diagnostics complexity"
+    ],
+    "followUps": [
+      "Can constexpr code still run at runtime?",
+      "When is consteval too restrictive?"
+    ],
+    "seniorExtension": "Explain how you would structure protocol metadata generation so compile-time guarantees remain strong while compile times stay acceptable.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-templates-004",
+    "title": "Type traits and tag dispatch versus if constexpr",
+    "question": "How do you decide between type traits, tag dispatch, specialization, and if constexpr for compile-time branching?",
+    "topics": [
+      "templates",
+      "type-traits",
+      "tag-dispatch",
+      "if-constexpr"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Do the branches imply different behavior, different storage, or only small implementation details?"
+    ],
+    "interviewerIntent": [
+      "Evaluating template design taste",
+      "Evaluating ability to keep generic code maintainable"
+    ],
+    "answerOutline": [
+      "Start from clarity",
+      "Use if constexpr for local branching",
+      "Use specialization for distinct representations",
+      "Mention trait naming and constraints"
+    ],
+    "sampleAnswer": "I choose the mechanism based on how structurally different the branches are rather than on which template trick is most fashionable. If the difference is local implementation detail, `if constexpr` is usually the clearest choice because the algorithm stays in one place while dead branches are discarded at compile time. If the type needs a fundamentally different representation or optimized policy, a specialization or tag-dispatched helper can keep the main interface clean, for example selecting a fast path for trivially copyable payloads. Type traits are most useful when they capture a reusable semantic property, but I try to keep trait vocabulary small and meaningful instead of building a private meta-language nobody else understands. The senior answer is about keeping generic code readable and diagnosable while still enabling zero-cost decisions where they actually matter.",
+    "commonMistakes": [
+      "Using specialization for tiny local differences",
+      "Creating many opaque custom traits with unclear semantics"
+    ],
+    "followUps": [
+      "When is partial specialization preferable to if constexpr?",
+      "How do concepts change this design?"
+    ],
+    "seniorExtension": "Discuss how you would evolve an older tag-dispatch library toward concepts and if constexpr without breaking consumers.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-templates-005",
+    "title": "Variadic templates and fold expressions in APIs",
+    "question": "What are fold expressions good for, and what pitfalls appear when you use variadic templates in real APIs?",
+    "topics": [
+      "templates",
+      "variadic-templates",
+      "fold-expressions",
+      "api-design"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 12,
+    "clarifyingQuestions": [
+      "Is the variadic interface performance-driven or just trying to look flexible?"
+    ],
+    "interviewerIntent": [
+      "Evaluating generic API design",
+      "Evaluating modern language feature fluency"
+    ],
+    "answerOutline": [
+      "Explain fold expressions succinctly",
+      "Give a safe example",
+      "Discuss compile-time diagnostics and overload control",
+      "Warn about over-generalization"
+    ],
+    "sampleAnswer": "Fold expressions are a clean way to reduce parameter packs without recursive boilerplate, for example `return (... + values);` or `(sink.write(std::forward<Args>(args)), ...);`. They are great when the operation is truly associative or when I want ordered side effects in a compact generic helper, such as serializing a fixed list of fields into a buffer. The pitfalls are mostly API design issues: a variadic template can accept far more combinations than you intended, generate ugly diagnostics, and make overload sets surprising unless you constrain it carefully. I therefore pair variadics with concepts or static assertions and use them where they map to a real abstraction, not just to avoid writing three overloads. A strong answer shows that fold expressions reduce implementation noise, but the real challenge is still designing an interface whose valid argument space is understandable.",
+    "commonMistakes": [
+      "Using variadics without constraints",
+      "Assuming every fold has safe ordering or associativity semantics"
+    ],
+    "followUps": [
+      "What happens with empty parameter packs?",
+      "How do you constrain heterogeneous variadics?"
+    ],
+    "seniorExtension": "Explain how you would benchmark compile-time and code-size impact for a heavily variadic serialization layer.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-performance-001",
+    "title": "Benchmarking without lying to yourself",
+    "question": "How do you benchmark C++ code rigorously enough to trust the result in a low-latency system?",
+    "topics": [
+      "performance",
+      "benchmarking",
+      "measurement",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 16,
+    "clarifyingQuestions": [
+      "Are we measuring microbenchmarks, end-to-end latency, or both?"
+    ],
+    "interviewerIntent": [
+      "Evaluating measurement discipline",
+      "Evaluating awareness of benchmark traps"
+    ],
+    "answerOutline": [
+      "Define the question",
+      "Control environment noise",
+      "Measure distributions not just averages",
+      "Validate with production-like workload"
+    ],
+    "sampleAnswer": "I begin by asking what decision the benchmark is supposed to inform, because the setup for a micro-optimization test is different from the setup for end-to-end latency analysis. For microbenchmarks I pin cores, warm caches deliberately, control compiler optimization, prevent dead-code elimination, and record distributions such as p50, p99, and worst cases rather than celebrating one fast mean. I also watch for environment traps like turbo changes, allocator state, NUMA migration, and cross-talk from other processes, because nanosecond-scale claims are meaningless if the machine state is drifting underneath you. A code snippet like `benchmark([&]{ do_work(state); });` is only the starting point; I still need perf counters, traces, or replay traffic to verify the win survives realistic data shapes. The strong answer is that trustworthy benchmarking is a systems exercise, not just a loop around `std::chrono`.",
+    "commonMistakes": [
+      "Reporting only average time",
+      "Running a benchmark that the optimizer can partially remove"
+    ],
+    "followUps": [
+      "How do you benchmark tail latency?",
+      "Would you benchmark with CPU frequency scaling enabled?"
+    ],
+    "seniorExtension": "Discuss how you correlate microbenchmark wins with end-to-end trading-path improvements before shipping an optimization.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-performance-002",
+    "title": "Data layout, cache locality, and branch behavior",
+    "question": "How do data layout and branch prediction affect C++ performance, and what tradeoffs do you consider when optimizing them?",
+    "topics": [
+      "performance",
+      "cache-locality",
+      "branch-prediction",
+      "data-layout"
+    ],
+    "companies": [
+      "optiver"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Is the workload streaming, random-access, or branch-heavy decision logic?"
+    ],
+    "interviewerIntent": [
+      "Evaluating hardware-aware thinking",
+      "Evaluating ability to optimize layout before micro-tuning instructions"
+    ],
+    "answerOutline": [
+      "Start with memory hierarchy",
+      "Discuss contiguous layout and working-set size",
+      "Explain predictable branches and specialization",
+      "Mention readability and maintainability tradeoffs"
+    ],
+    "sampleAnswer": "In many real systems, data layout dominates instruction count because a cache miss costs far more than an extra arithmetic operation, so I first try to make the working set smaller and more contiguous. That can mean preferring structure-of-arrays over array-of-structures for vectorized scans, keeping hot fields together, or splitting cold metadata out so a critical loop touches fewer cache lines. Branch prediction matters too: if one path is overwhelmingly common, shaping the code so the fast path stays linear and the rare path is deferred can reduce frontend stalls and speculation waste. I do not blindly flatten every branch or normalize every structure, because more specialized layouts can hurt maintainability or make updates expensive if the access pattern changes. The strong answer connects cache lines, branch predictability, and domain access patterns, then shows how measurement drives the final choice.",
+    "commonMistakes": [
+      "Counting instructions while ignoring cache misses",
+      "Applying SOA or branchless code without checking the access pattern"
+    ],
+    "followUps": [
+      "When can branchless code be slower?",
+      "How would you detect false sharing versus cache miss problems?"
+    ],
+    "seniorExtension": "Explain how you would redesign a price-level data structure if perf counters showed TLB and LLC misses dominating update latency.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-performance-003",
+    "title": "Virtual dispatch in hot paths",
+    "question": "What are the costs of virtual dispatch in C++, and when should you replace it with templates, variants, or other techniques?",
+    "topics": [
+      "performance",
+      "virtual-dispatch",
+      "polymorphism",
+      "templates"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "medium",
+    "estimatedMinutes": 13,
+    "clarifyingQuestions": [
+      "Is the polymorphism on the hot path or only at system boundaries?"
+    ],
+    "interviewerIntent": [
+      "Evaluating runtime polymorphism tradeoffs",
+      "Evaluating ability to avoid premature devirtualization work"
+    ],
+    "answerOutline": [
+      "Explain indirect call and layout costs",
+      "State when virtuals are fine",
+      "Compare alternatives",
+      "Tie decision to measurement"
+    ],
+    "sampleAnswer": "Virtual dispatch adds an indirect branch and typically an extra pointer chase, which can matter in hot loops because it limits inlining and can hurt branch prediction and cache locality. That said, virtual interfaces are often perfectly fine at system boundaries, configuration layers, or sparse control paths where clarity and substitutability are more valuable than squeezing every cycle out of one call. If profiling shows the polymorphic call itself is on the hot path, I consider alternatives such as templates for static polymorphism, `std::variant` plus visitation for a small closed set, or a manual function table when ABI stability matters. I avoid replacing runtime polymorphism blindly, because template-based solutions can increase code size or couple too many components at compile time. A senior answer makes the tradeoff explicit: indirect calls are a cost, but the right replacement depends on ownership of types, binary shape, and measured hotspot evidence.",
+    "commonMistakes": [
+      "Calling virtual dispatch always bad",
+      "Ignoring code-size blowup from template-based replacements"
+    ],
+    "followUps": [
+      "Can the compiler devirtualize anyway?",
+      "When is variant a poor substitute?"
+    ],
+    "seniorExtension": "Discuss how plugin boundaries, ABI stability, and deployment independence can justify virtual interfaces even in fairly performance-sensitive systems.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-performance-004",
+    "title": "Exceptions in latency-sensitive code",
+    "question": "How do you think about exceptions in a low-latency C++ codebase?",
+    "topics": [
+      "performance",
+      "exceptions",
+      "error-handling",
+      "latency"
+    ],
+    "companies": [
+      "citadel"
+    ],
+    "companyEvidence": "inferred-from-jd",
+    "confidence": "medium",
+    "difficulty": "medium",
+    "estimatedMinutes": 14,
+    "clarifyingQuestions": [
+      "Are we discussing the hot trading path or broader service code around it?"
+    ],
+    "interviewerIntent": [
+      "Evaluating nuanced error-handling judgment",
+      "Evaluating separation between hot and cold paths"
+    ],
+    "answerOutline": [
+      "Separate policy by path type",
+      "Discuss steady-state cost versus unwind cost",
+      "Mention explicit contracts on hot paths",
+      "Explain consistency across the codebase"
+    ],
+    "sampleAnswer": "I separate the codebase by path: in the true latency-critical path I usually prefer explicit error channels such as status codes, `std::expected`, or prevalidated inputs so failure handling stays predictable and visible. Exceptions can still be fine in control-plane or startup code where the error is genuinely exceptional and the clarity benefit outweighs any concern about unwind cost or tooling complexity. The steady-state cost of zero-cost exceptions may be small on some platforms, but the real issue in low-latency code is that an unexpected throw can explode latency, bypass local cleanup assumptions, and complicate reasoning about invariants under stress. So my preference is not ideological avoidance; it is boundary discipline, where hot-path code has a no-throw contract and outer layers decide how errors are logged, translated, or escalated. The strong answer shows consistency: if you ban exceptions in one path, you also need interfaces, tests, and reviews that make that policy enforceable.",
+    "commonMistakes": [
+      "Claiming exceptions are always free or always forbidden",
+      "Ignoring unwind behavior and invariants under failure"
+    ],
+    "followUps": [
+      "Would you allow exceptions during initialization?",
+      "How do you enforce no-throw on the hot path?"
+    ],
+    "seniorExtension": "Compare exceptions with expected-style error returns in terms of binary size, ergonomics, and policy enforcement across a large codebase.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Building Low Latency Applications with C++",
+        "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  },
+  {
+    "id": "cpp-performance-005",
+    "title": "Compiler optimizations, inlining, and aliasing assumptions",
+    "question": "How do compiler optimization settings, inlining, and aliasing rules influence performance work in C++?",
+    "topics": [
+      "performance",
+      "compiler",
+      "inlining",
+      "aliasing"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "difficulty": "hard",
+    "estimatedMinutes": 15,
+    "clarifyingQuestions": [
+      "Is the concern whole-program optimization, hot loop generation, or portability of assumptions?"
+    ],
+    "interviewerIntent": [
+      "Evaluating compiler-level performance reasoning",
+      "Evaluating restraint in source-level optimization"
+    ],
+    "answerOutline": [
+      "Explain optimizer visibility",
+      "Discuss inlining benefits and code-size costs",
+      "Mention aliasing and undefined behavior",
+      "Stress measurement on generated code"
+    ],
+    "sampleAnswer": "A lot of C++ performance work is really about making the optimizer's job easier while not crossing into undefined behavior or unmaintainable source code. Inlining can remove call overhead and expose constant propagation, but excessive inlining can bloat the binary and hurt I-cache, so I check generated assembly or perf counters before assuming more inlining is better. Aliasing rules matter because if the compiler must assume two pointers may refer to the same memory, it will often generate more conservative loads and stores; understanding object lifetimes and strict aliasing helps explain why some transformations appear or disappear. Build settings like LTO and PGO can be extremely powerful because they broaden visibility and hot-path knowledge, but they also change debugging and build complexity, so I use them as part of a measurement-driven pipeline rather than as a magic switch. The strong answer is that source changes, compiler flags, and generated code all need to line up before you can claim a real optimization.",
+    "commonMistakes": [
+      "Assuming force-inline always improves speed",
+      "Relying on undefined behavior to coerce better code generation"
+    ],
+    "followUps": [
+      "What is strict aliasing?",
+      "How would you use PGO in a replay-based trading workload?"
+    ],
+    "seniorExtension": "Explain how you would review a suspicious micro-optimization patch that claims big wins but only changes source-level style and benchmark means.",
+    "rubric": {
+      "1": "Weak: Recites terminology but misses core mechanics, edge cases, or tradeoffs.",
+      "3": "Competent: Explains the concept correctly, gives a reasonable example, and avoids major technical errors.",
+      "5": "Strong: Connects semantics to performance and failure modes, discusses alternatives, and explains how they would validate the design in practice."
+    },
+    "references": [
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "cpp",
+    "seniority": "senior"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "name": "hft-interview-prep",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "serve": "node scripts/serve.mjs",
+    "build": "node scripts/build-site.mjs",
+    "build:pdf": "node scripts/build-pdf.mjs",
+    "validate": "node scripts/validate.mjs",
+    "test:data": "node tests/validate-data.mjs",
+    "test:links": "node tests/validate-links.mjs",
+    "test:cpp": "node tests/validate-cpp.mjs"
+  }
+}

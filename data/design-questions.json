@@ -1,0 +1,1009 @@
+[
+  {
+    "id": "design-feed-handler-001",
+    "title": "Design a multicast feed handler with gap recovery",
+    "question": "Design a low-latency market-data feed handler for a multicast exchange feed, including gap detection, recovery, and downstream publication.",
+    "topics": [
+      "feed-handler",
+      "multicast",
+      "gap-recovery",
+      "market-data",
+      "low-latency"
+    ],
+    "companies": [
+      "optiver",
+      "citadel",
+      "jane-street"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 60,
+    "clarifyingQuestions": [
+      "What is the expected message rate and burst profile?",
+      "Do we have snapshot and retransmit channels in addition to multicast?"
+    ],
+    "interviewerIntent": [
+      "Evaluating end-to-end low-latency architecture",
+      "Evaluating correctness under packet loss and operational failure"
+    ],
+    "answerOutline": [
+      "Define venue protocol assumptions and latency budget",
+      "Separate packet capture, decode, sequencing, book-apply, and publish stages",
+      "Track sequence numbers per channel and instrument group",
+      "Use bounded buffering plus replay or snapshot recovery",
+      "Keep the hot path single-writer where possible",
+      "Design active-active redundancy across hosts and NICs",
+      "Expose health, gap, and latency telemetry",
+      "Provide deterministic replay for testing and postmortems"
+    ],
+    "sampleAnswer": "I would start by fixing the correctness contract: downstream consumers must never confuse missing data with fresh data, so the handler needs explicit stale-state semantics in addition to raw speed. The hot path should be split into capture, decode, sequencing, book-apply, and publish, with minimal copying and a single-writer model per shard so the common case avoids locks and ambiguous ownership. A sequencer per channel detects gaps, duplicates, and unexpected resets; on a gap, it buffers a bounded window of later packets, requests retransmission or snapshot recovery, and decides whether downstream publication can continue or must be marked stale. For resilience, I would run active-active handlers on separate hosts or NIC paths, keep sequence and health telemetry visible, and make failover explicit rather than relying on a silent winner-takes-all race that is hard to debug. Operationally, I want wire-to-app latency histograms, gap rates, recovery success, decode errors, backlog depth, and per-stage timing so production issues can be localized quickly. Finally, I would insist on deterministic replay from packet captures because feed handlers are hard to reason about from logs alone and regression testing is essential once venue quirks and edge cases accumulate.",
+    "commonMistakes": [
+      "Focusing only on parsing speed and skipping recovery logic",
+      "Publishing partial book state while a gap is unresolved"
+    ],
+    "followUps": [
+      "How would you shard by channel or instrument?",
+      "What changes if the venue provides only snapshots and no retransmit?"
+    ],
+    "seniorExtension": "Discuss how you would support multiple venues with heterogeneous protocols while keeping the hot path efficient and the normalization layer testable.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-feed-handler-002",
+    "title": "Design a normalized multi-venue market-data pipeline",
+    "question": "How would you design a system that ingests multiple exchange feeds and publishes one normalized internal market-data model to strategies?",
+    "topics": [
+      "feed-handler",
+      "normalization",
+      "multi-venue",
+      "market-data"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "Do strategies need one canonical model or venue-specific detail as well?",
+      "What consistency guarantees do consumers require during venue outages?"
+    ],
+    "interviewerIntent": [
+      "Evaluating abstraction boundaries",
+      "Evaluating ability to balance low latency with correctness and extensibility"
+    ],
+    "answerOutline": [
+      "Separate venue-specific adapters from the canonical model",
+      "Define immutable message schemas and versioning",
+      "Preserve raw venue identifiers alongside normalized fields",
+      "Handle per-venue sequencing and stale-state independently",
+      "Use sharding and backpressure to isolate bad venues",
+      "Expose both normalized and raw debug views",
+      "Support deterministic replay and schema evolution"
+    ],
+    "sampleAnswer": "I would avoid pretending all venues are identical; instead I would use venue-specific adapters that decode raw messages into a canonical internal schema while still preserving enough raw metadata for debugging and venue-specific strategy logic. Each adapter owns its own sequencing, stale-state, and recovery semantics, because those are venue truths that normalization should not erase. The normalized bus should be versioned and immutable so strategies can evolve safely, and I would shard publication so one misbehaving venue or symbol partition cannot stall unrelated traffic. For operations, I want side-by-side visibility into raw packet counters, decoder errors, normalization drops, and downstream publication lag, since many bugs live exactly at those translation boundaries. Replay is especially important here because every schema change or venue rollout needs a way to prove that normalization preserved intended semantics under historical edge cases. The design principle is to centralize the canonical model while keeping venue truth close enough to the edges that you can still debug and recover correctly.",
+    "commonMistakes": [
+      "Erasing too much venue-specific context during normalization",
+      "Allowing one venue's recovery state to contaminate global publication"
+    ],
+    "followUps": [
+      "Would you publish raw and normalized streams separately?",
+      "How do you roll out schema changes to many strategy consumers?"
+    ],
+    "seniorExtension": "Explain how you would support both ultra-low-latency consumers and slower analytical consumers from the same ingest platform without letting one class degrade the other.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-feed-handler-003",
+    "title": "Design recovery and hot failover for feed infrastructure",
+    "question": "Design the recovery and failover strategy for a feed-handling platform that must survive process, host, and venue issues.",
+    "topics": [
+      "feed-handler",
+      "failover",
+      "recovery",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Do downstream consumers tolerate brief stale periods or require seamless cutover?",
+      "Can both primary and secondary process the same raw feed simultaneously?"
+    ],
+    "interviewerIntent": [
+      "Evaluating resilience design",
+      "Evaluating operational realism around failover tradeoffs"
+    ],
+    "answerOutline": [
+      "Define failure domains: process, host, network path, venue stream",
+      "Run hot standbys with independent capture paths",
+      "Track health through sequence progress and stage lag, not only heartbeat liveness",
+      "Use explicit leader or best-feed selection semantics",
+      "Preserve recovery state and stale markers during cutover",
+      "Provide replay and incident diagnostics for all failover events"
+    ],
+    "sampleAnswer": "I would begin by separating failure domains because process failover, host failover, and venue-side data quality problems need different detection and response policies. For low-latency feeds I prefer hot standbys that ingest the same raw traffic on independent paths, maintain their own sequence and book state, and expose enough metadata that a selector can make an informed cutover decision. Health should include sequence progress, parser error rates, backlog, and wire-to-app latency, not just a heartbeat, because a live but lagging feed can be more dangerous than a clearly dead one. During cutover, downstream consumers need a clear contract: either they switch to a newer coherent state or they receive an explicit stale marker while recovery catches up; silent partial failover is unacceptable. I would store enough event history to replay every failover decision, because these systems are often debugged after the fact when the immediate symptoms are gone. The core tradeoff is between seamlessness and explainability, and I would bias toward a design that operators and strategy teams can reason about under stress.",
+    "commonMistakes": [
+      "Using only heartbeat-based failover",
+      "Failing over to a feed that is alive but internally stale or lagging"
+    ],
+    "followUps": [
+      "How would you prevent split-brain publication?",
+      "What metrics would trigger automatic versus manual cutover?"
+    ],
+    "seniorExtension": "Discuss how disaster recovery to a secondary site changes latency, sequencing, and observability assumptions for downstream strategies.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-order-book-001",
+    "title": "Design an in-memory limit order book",
+    "question": "Design an in-memory limit order book for top-of-book and depth updates with low latency and strong correctness guarantees.",
+    "topics": [
+      "order-book",
+      "data-structures",
+      "latency",
+      "market-data"
+    ],
+    "companies": [
+      "optiver",
+      "jane-street"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "Is this for one venue or a normalized cross-venue book?",
+      "Do we need full depth, top N levels, or per-order detail?"
+    ],
+    "interviewerIntent": [
+      "Evaluating data-structure choice under latency constraints",
+      "Evaluating correctness around updates and sequence handling"
+    ],
+    "answerOutline": [
+      "Clarify book semantics and update model",
+      "Choose representation for price levels and order lookup",
+      "Optimize hot update path for add, modify, cancel, trade",
+      "Preserve sequence and stale-state semantics",
+      "Separate hot book maintenance from derived analytics",
+      "Plan snapshots, replay, and validation tooling"
+    ],
+    "sampleAnswer": "My first step is to pin down semantics, because the right structure differs dramatically between full order-by-order books, price-level books, and top-of-book only views. For a price-level book with dense ticks I would often use array-indexed levels or a compact map keyed by tick offset, plus side-specific best-level tracking so top-of-book reads are O(1) in the common case. If order-level cancellation is required, I also need an ID lookup table pointing to the owning price level entry so deletes do not degenerate into scans. Sequence handling stays outside but adjacent to the book: the book should never apply out-of-order or gap-affected updates without explicit stale semantics, otherwise the data structure can be fast and still wrong. Derived metrics such as imbalance or custom views should usually subscribe to book-change events instead of living inside the core mutation path, which keeps the hot loop tight and easier to reason about. Finally, I want deterministic snapshot and replay support so I can prove correctness under venue edge cases and benchmark real update distributions rather than synthetic happy paths.",
+    "commonMistakes": [
+      "Choosing a fancy data structure before clarifying update semantics",
+      "Mixing derived analytics directly into the mutation hot path"
+    ],
+    "followUps": [
+      "How would you handle sparse price ranges?",
+      "What if you need one book per instrument across tens of thousands of symbols?"
+    ],
+    "seniorExtension": "Discuss how memory layout, NUMA sharding, and per-symbol thread ownership affect a production multi-book implementation.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Agner Fog Optimization Manuals",
+        "url": "https://www.agner.org/optimize/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "What Every Programmer Should Know About Memory",
+        "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-order-book-002",
+    "title": "Design derived analytics on top of the book",
+    "question": "How would you design a system that computes derived analytics such as imbalance, sweep risk, or synthetic prices on top of a fast order book?",
+    "topics": [
+      "order-book",
+      "analytics",
+      "derived-data",
+      "latency"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Must the analytics be synchronous with every book update or can some lag by a few microseconds?",
+      "How many consumers need the derived outputs?"
+    ],
+    "interviewerIntent": [
+      "Evaluating decomposition between core state and derived computation",
+      "Evaluating ability to protect the hot path"
+    ],
+    "answerOutline": [
+      "Separate core book mutation from derived subscribers",
+      "Classify analytics by latency sensitivity and cost",
+      "Use incremental updates rather than full recomputation",
+      "Version or timestamp every derived output",
+      "Bound fan-out and protect against slow consumers",
+      "Support replay validation with known scenarios"
+    ],
+    "sampleAnswer": "I would avoid turning the order book into a kitchen sink, because every extra derived metric in the mutation path expands latency variance and complicates correctness reasoning. Instead I would publish a compact internal event stream from the book—level changed, best bid moved, trade applied, stale state changed—and let analytics modules subscribe according to their latency class. The fastest analytics can run in-process with incremental updates, while heavier ones can consume asynchronously from a ring or snapshot stream, each output tagged with book version or sequence so consumers know exactly what state it reflects. Backpressure matters here: a slow analytics consumer must not block the book owner, so I would use bounded queues, drop or degrade policies for noncritical outputs, and explicit monitoring of lag. Replay is powerful because I can validate both the book and analytics against historical events and ensure derived values remain consistent after implementation changes. The design principle is to preserve a clean single source of truth for the book while letting analytics evolve at their own pace.",
+    "commonMistakes": [
+      "Recomputing heavy analytics on every update",
+      "Allowing slow consumers to block the core book owner"
+    ],
+    "followUps": [
+      "Would you ever co-locate analytics inside the same thread?",
+      "How would you publish snapshots for slower consumers?"
+    ],
+    "seniorExtension": "Explain how you would maintain consistency guarantees when derived analytics combine several venue books or reference-data streams.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-order-book-003",
+    "title": "Design replay and validation for book correctness",
+    "question": "How would you build replay, validation, and debugging support for an order book implementation that must remain fast in production?",
+    "topics": [
+      "order-book",
+      "replay",
+      "testing",
+      "validation"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "Do you have access to raw packet captures or only normalized event logs?"
+    ],
+    "interviewerIntent": [
+      "Evaluating debugging and validation strategy",
+      "Evaluating ability to make fast systems testable"
+    ],
+    "answerOutline": [
+      "Capture deterministic inputs and versioned schemas",
+      "Separate production hot path from debug hooks",
+      "Support event-by-event replay with assertions",
+      "Build reference validators and invariant checks",
+      "Store enough metadata to reproduce sequence anomalies",
+      "Use golden scenarios and fuzz edge cases"
+    ],
+    "sampleAnswer": "For fast stateful systems, replay is not a nice-to-have; it is the main way to understand correctness after the fact without slowing the production path excessively. I would capture deterministic inputs at the closest practical boundary—ideally raw packets or normalized events with sequence metadata—and version the schema so old captures remain usable as the code evolves. The production book code should expose lightweight invariant hooks and state snapshots that a replay harness can enable more aggressively offline, rather than embedding expensive debug logic in the hot path all the time. I also like having a slower reference implementation or validator for small scenarios so I can compare behavior under cancellations, crossed books, reset messages, and gap recovery events. When bugs occur, the replay tooling needs to answer not just what the final state was, but exactly which input caused divergence and what upstream recovery or stale flags were active. The design goal is a book that is both fast live and scientifically debuggable afterward.",
+    "commonMistakes": [
+      "Relying only on unit tests with synthetic happy-path updates",
+      "Capturing too little metadata to reproduce sequence or stale-state problems"
+    ],
+    "followUps": [
+      "How would you keep captures small enough to retain?",
+      "What invariants would you check online versus offline?"
+    ],
+    "seniorExtension": "Discuss how to validate equivalence between a new optimized book implementation and a trusted slower baseline before rolling it out.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-oms-001",
+    "title": "Design an order management system for multi-venue trading",
+    "question": "Design a low-latency order management system that accepts strategy orders, applies checks, routes to venues, and tracks acknowledgements and fills.",
+    "topics": [
+      "oms",
+      "order-routing",
+      "state-management",
+      "low-latency"
+    ],
+    "companies": [
+      "optiver",
+      "citadel"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 60,
+    "clarifyingQuestions": [
+      "What volume and order rates should the system support?",
+      "Are risk checks centralized or colocated with the strategy and venue gateways?"
+    ],
+    "interviewerIntent": [
+      "Evaluating state-machine design under latency constraints",
+      "Evaluating ability to balance speed, correctness, and auditability"
+    ],
+    "answerOutline": [
+      "Define order lifecycle and identifiers",
+      "Separate ingress, risk, routing, venue-session, and state-tracking components",
+      "Use single-writer ownership per order shard",
+      "Make idempotency and replay first-class",
+      "Persist or journal critical transitions",
+      "Design for session resets and venue disconnects",
+      "Expose latency and rejection telemetry"
+    ],
+    "sampleAnswer": "I would model the OMS around explicit order state machines, because correctness depends on understanding exactly which transitions are allowed under new, replace, cancel, ack, reject, partial fill, and disconnect scenarios. The architecture would separate strategy ingress, pre-trade checks, routing, venue-session handling, and authoritative state tracking, with each order shard owned by one thread or partition to avoid cross-thread mutation races. Every order needs stable internal IDs plus mapping to venue IDs, and all externally significant transitions should be journaled or at least durably sequenced so recovery and post-trade audit are possible. Risk and routing must be designed so the hot path stays deterministic, while slower activities like persistence fan-out, analytics, and client reporting consume transition events asynchronously. I would also define session-reset behavior up front: how unknown in-flight orders are reconciled, how idempotent resends work, and when the system enters a protective degraded mode instead of guessing state. The key is building an OMS that is both fast enough for live routing and disciplined enough to recover and explain every state transition afterward.",
+    "commonMistakes": [
+      "Treating the OMS as a stateless router",
+      "Skipping recovery and duplicate-handling semantics for disconnect scenarios"
+    ],
+    "followUps": [
+      "Where would you place persistence in the path?",
+      "How do you reconcile in-flight orders after a gateway restart?"
+    ],
+    "seniorExtension": "Discuss how you would design different latency classes for quoting flow versus lower-frequency manual or supervisory orders within the same OMS platform.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+        "url": "https://cppcon.org/2024-keynote-david-gross/",
+        "source": "conference-talk",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-oms-002",
+    "title": "Design resilient venue gateways and session management",
+    "question": "How would you design venue gateway components that manage sessions, sequence numbers, throttles, and reconnect behavior safely?",
+    "topics": [
+      "oms",
+      "venue-gateway",
+      "sessions",
+      "reliability"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Does the venue use a reliable ordered session protocol or multiple channels?"
+    ],
+    "interviewerIntent": [
+      "Evaluating protocol and state-management design",
+      "Evaluating failure-mode thinking"
+    ],
+    "answerOutline": [
+      "Treat each venue session as a strict state machine",
+      "Track outbound sequence numbers and acknowledgements explicitly",
+      "Implement throttle-aware send queues and backpressure",
+      "Separate reconnect logic from business routing decisions",
+      "Design reconciliation workflows after disconnects",
+      "Expose session health and drift telemetry"
+    ],
+    "sampleAnswer": "I would treat each venue gateway as a protocol adapter with a very explicit session state machine, because subtle reconnect or resend bugs can create duplicates or lost intent even when business logic upstream looks fine. Outbound messages need stable sequencing, persistence or at least replayable journaling, and throttle-aware queues so the router can distinguish venue-imposed delay from local overload. On disconnect, the gateway should not quietly guess continuity; it should enter a known degraded state, reconnect, re-establish session semantics, and reconcile uncertain orders using venue-specific rules before reopening flow fully. Backpressure is important too: if a venue is slow or throttled, the rest of the system needs clear signals so strategy or routing logic can adapt rather than piling up hidden buffers. I want telemetry on session uptime, resend counts, reject reasons, throttling, and time spent in reconciliation because those are often leading indicators before visible incidents occur. The design goal is to isolate venue complexity while still making its state explicit to the layers that depend on it.",
+    "commonMistakes": [
+      "Embedding venue-specific recovery logic throughout the whole OMS",
+      "Treating reconnect as merely reopening a socket"
+    ],
+    "followUps": [
+      "How do you avoid duplicate sends after reconnect?",
+      "What belongs in the router versus the gateway?"
+    ],
+    "seniorExtension": "Discuss how you would validate gateway correctness against venue certification environments and production capture replays.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-oms-003",
+    "title": "Design throttling, idempotency, and duplicate protection",
+    "question": "How would you design throttling, idempotency, and duplicate protection in an order-routing stack?",
+    "topics": [
+      "oms",
+      "throttling",
+      "idempotency",
+      "duplicate-protection"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "Do venues provide client order IDs that can be reused for deduplication?"
+    ],
+    "interviewerIntent": [
+      "Evaluating defensive design for financial correctness",
+      "Evaluating practical handling of retries and overload"
+    ],
+    "answerOutline": [
+      "Define idempotency keys and duplicate boundaries",
+      "Separate client retry semantics from venue resend semantics",
+      "Place throttles near venue constraints and upstream policy",
+      "Track queue depth and expiry behavior",
+      "Journal enough state for replay and dispute resolution",
+      "Design operator controls for emergency slowdown or halt"
+    ],
+    "sampleAnswer": "I would define idempotency at each boundary explicitly, because strategy retries, OMS retries, and venue resends are related but not identical events. Stable client order identifiers, internal transition journals, and gateway-side resend history let the system answer whether a given instruction is new, retried safely, or dangerous to repeat. Throttling should exist both as venue-specific protection and as an upstream fairness policy, with clear backpressure signals instead of hidden queues that silently increase risk and latency. When limits are hit, I want deterministic behavior: reject, delay, or reroute according to policy, with telemetry that explains the decision to both operators and downstream systems. Because duplicates can become financial rather than merely technical bugs, I would bias the design toward explicit state and replayability even if that costs some complexity. The strong answer is about protecting correctness under retries, reconnects, and overload—not just rate limiting requests.",
+    "commonMistakes": [
+      "Assuming one order ID solves duplicates at every boundary",
+      "Adding queues without clear expiry or backpressure semantics"
+    ],
+    "followUps": [
+      "How do you handle at-least-once upstream delivery?",
+      "Would you drop or queue when a venue throttle is hit?"
+    ],
+    "seniorExtension": "Explain how kill switches, cancels-on-disconnect, and venue-specific session semantics influence duplicate and retry design.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-risk-001",
+    "title": "Design a pre-trade risk system",
+    "question": "Design a pre-trade risk system that can enforce limits without adding unacceptable latency to order flow.",
+    "topics": [
+      "risk",
+      "pre-trade",
+      "limits",
+      "latency"
+    ],
+    "companies": [
+      "optiver",
+      "citadel"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 55,
+    "clarifyingQuestions": [
+      "Which limits are hard blocks versus soft warnings?",
+      "Are limits per account, strategy, instrument, or global?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-critical design under latency pressure",
+      "Evaluating state consistency and failure handling"
+    ],
+    "answerOutline": [
+      "Classify hard and soft risk checks",
+      "Shard hot risk state close to order flow",
+      "Use deterministic single-writer updates for exposure",
+      "Define stale-data and dependency-failure behavior conservatively",
+      "Provide override and kill controls with audit trail",
+      "Expose rejection, near-limit, and drift metrics"
+    ],
+    "sampleAnswer": "I would begin by separating risk checks that must synchronously block an order from those that are advisory, because mixing them all into one serial path is a common way to add latency without improving safety. For hard checks such as gross notional, instrument limits, or credit boundaries, I want state sharded close to the order path with deterministic ownership so an order can be evaluated against a coherent snapshot quickly. Updates from fills, cancels, and market moves need an explicit consistency model; if a dependency goes stale, the system should fail conservatively rather than silently relying on unknown state. Operator controls matter too: overrides, kill switches, and emergency risk tightening need strong authentication and a clear audit trail because these actions often happen during stressful events. I would instrument rejection reasons, near-limit behavior, stale-data incidents, and decision latency so we can tune both safety and speed intelligently over time. The design goal is a risk engine that is fast because its state model is simple and local, not because it cut corners on correctness.",
+    "commonMistakes": [
+      "Centralizing all checks into one remote service without regard to latency or blast radius",
+      "Failing open when a risk dependency is stale"
+    ],
+    "followUps": [
+      "Where do fill updates enter the risk state?",
+      "How do you test fail-conservative behavior?"
+    ],
+    "seniorExtension": "Discuss how you would support different risk strictness for quoting, hedging, and manual intervention flows.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-risk-002",
+    "title": "Design real-time positions and exposure tracking",
+    "question": "How would you design a real-time positions and exposure service that stays accurate under high event rates and recovery events?",
+    "topics": [
+      "risk",
+      "positions",
+      "exposure",
+      "recovery"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Do you need intraday only, or also end-of-day reconciliation and historical queries?"
+    ],
+    "interviewerIntent": [
+      "Evaluating event-driven state design",
+      "Evaluating recovery and reconciliation planning"
+    ],
+    "answerOutline": [
+      "Define authoritative event sources",
+      "Use event sequencing and idempotent application",
+      "Shard positions by account and instrument",
+      "Separate hot incremental state from slower query materializations",
+      "Design snapshot plus replay recovery",
+      "Continuously reconcile against external truth"
+    ],
+    "sampleAnswer": "I would build positions and exposure around authoritative events—order acknowledgements, fills, cancels, reference data, and market prices—with every mutation applied through a sequenced, idempotent event pipeline. The hot state should be sharded by a dimension that matches trading and risk usage, such as account or strategy plus instrument, so updates remain local and deterministic under load. I would separate fast incremental state from broader analytical query views; the core engine computes current positions and exposure deltas, while downstream materializations serve dashboards and historical analysis. Recovery needs both periodic snapshots and exact event replay so the service can rebuild state after a restart and still explain why a number moved when it did. Because silent drift is dangerous, I would continuously reconcile against venue drop copies, clearing events, or other external truths and surface discrepancy alarms early. The goal is an exposure platform that can answer now, recover later, and prove consistency across both.",
+    "commonMistakes": [
+      "Using only mutable current state with no event history",
+      "Ignoring reconciliation until end of day"
+    ],
+    "followUps": [
+      "How would you correct a bad historical event?",
+      "What if market data needed for exposure is delayed?"
+    ],
+    "seniorExtension": "Explain how you would handle multi-asset netting or cross-venue aggregation without losing the ability to debug individual contributing events.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-risk-003",
+    "title": "Design kill switches and emergency controls",
+    "question": "How would you design kill switches and emergency controls for a trading platform so they are fast, safe, and auditable?",
+    "topics": [
+      "risk",
+      "kill-switch",
+      "controls",
+      "operations"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "Should controls stop only new orders, or also cancel resting orders and disable market-data publication?"
+    ],
+    "interviewerIntent": [
+      "Evaluating safety-control design",
+      "Evaluating balance between emergency speed and governance"
+    ],
+    "answerOutline": [
+      "Define control scopes and blast radius",
+      "Place local fast-path enforcement near gateways",
+      "Require authenticated operator workflow and audit logging",
+      "Design acknowledgement and verification feedback",
+      "Plan fail-safe behavior if control propagation is partial",
+      "Test drills and dry-runs regularly"
+    ],
+    "sampleAnswer": "Emergency controls need clear scope boundaries first: disable one strategy, one account, one venue, or the whole plant, because an ambiguous kill switch is dangerous even if the code path is fast. Enforcement should happen close to the order gateways so new flow can be stopped immediately, while separate control actions handle canceling open orders or entering venue-specific protective modes. I would require authenticated operator actions, immutable audit logs, and positive acknowledgement from controlled components so we can prove what happened and detect partial propagation. If part of the system is unreachable, the design should fail safe where possible—for example defaulting to block new orders rather than assuming an unseen component is healthy. Operational drills matter because emergency systems that are never exercised are often too slow or confusing when the real incident arrives. The strong design is not just low-latency control propagation; it is confidence that the right thing actually happened and can be explained afterward.",
+    "commonMistakes": [
+      "Designing only the command path and not the verification path",
+      "Creating a kill switch that depends on fragile central infrastructure to work"
+    ],
+    "followUps": [
+      "How would you prevent abuse of kill controls?",
+      "Would the same switch cancel in-flight orders?"
+    ],
+    "seniorExtension": "Discuss how global controls interact with venue-specific behavior such as cancels-on-disconnect or session-level mass cancel semantics.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Designing Data-Intensive Applications",
+        "url": "https://dataintensive.net/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Low-Latency Architecture: Lessons From Trading Systems",
+        "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+        "source": "blog-post",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-monitoring-001",
+    "title": "Design latency observability for a trading stack",
+    "question": "How would you design observability for latency across a trading stack from network ingress to strategy and order egress?",
+    "topics": [
+      "monitoring",
+      "latency",
+      "observability",
+      "tracing"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "hard",
+    "estimatedMinutes": 50,
+    "clarifyingQuestions": [
+      "Do you need nanosecond-scale local timing, cross-host timing, or both?"
+    ],
+    "interviewerIntent": [
+      "Evaluating measurement architecture",
+      "Evaluating ability to make performance issues diagnosable in production"
+    ],
+    "answerOutline": [
+      "Define canonical latency segments and timestamps",
+      "Use appropriate clocks or hardware timestamps per boundary",
+      "Record distributions and tail behavior, not only averages",
+      "Correlate latency with drops, gaps, queue depth, and CPU state",
+      "Separate always-on cheap metrics from high-cost diagnostics",
+      "Support replay and incident deep dives"
+    ],
+    "sampleAnswer": "I would start by naming the important latency segments explicitly—wire to capture, capture to decode, decode to strategy, strategy to risk, risk to gateway, and gateway to wire—because vague end-to-end timing hides where the real variance lives. Each boundary needs a trustworthy clock source appropriate to its scope, whether that is NIC hardware timestamps, synchronized host clocks, or carefully validated TSC-based local probes. I care more about distributions than means, so the default outputs should include p50, p99, worst slices, burst behavior, and correlation with queue depth, packet gaps, drops, and CPU scheduling anomalies. The system also needs layered detail: cheap always-on counters and histograms for broad coverage, plus richer tracing or capture modes that can be enabled during investigations without distorting the hot path too much. Replay support is important because some of the nastiest latency issues are traffic-shape dependent and impossible to reconstruct from counters alone. The aim is observability that helps engineers answer why the tail moved, not just that it moved.",
+    "commonMistakes": [
+      "Reporting only average end-to-end latency",
+      "Adding heavy tracing directly to the hot path with no cost budget"
+    ],
+    "followUps": [
+      "How would you compare latency across hosts?",
+      "What would you always keep on versus sample conditionally?"
+    ],
+    "seniorExtension": "Discuss how you would expose latency observability differently to operators, performance engineers, and strategy developers.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Network Design Considerations for Trading Systems",
+        "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-monitoring-002",
+    "title": "Design incident response and rollback mechanisms",
+    "question": "How would you design deployment, rollback, and incident-response mechanisms for a latency-sensitive production trading platform?",
+    "topics": [
+      "monitoring",
+      "incident-response",
+      "rollback",
+      "deployments"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "Are deployments centralized, per-service, or per-venue component?"
+    ],
+    "interviewerIntent": [
+      "Evaluating operational design maturity",
+      "Evaluating how the candidate reduces blast radius"
+    ],
+    "answerOutline": [
+      "Use staged rollout and explicit canaries",
+      "Define automatic and manual rollback triggers",
+      "Separate configuration from binary promotion safely",
+      "Build incident dashboards and dependency views",
+      "Retain event history and replay artifacts",
+      "Design clear ownership and communication paths"
+    ],
+    "sampleAnswer": "For latency-sensitive systems I want deployment safety built into the platform, not improvised during incidents, so staged rollout and canaries are the default rather than the exception. Each component should have explicit rollback criteria tied to its real failure modes—latency regression, reject spikes, feed gaps, or session instability—not just generic health checks. I prefer a deployment model where binaries, configs, and feature flags are independently visible and reversible, because mixed hidden state is a common reason rollbacks fail under pressure. During incidents, operators need dependency-aware dashboards and clear ownership maps so they can isolate whether the problem is in market data, strategy, risk, or venue gateways instead of flooding every team at once. Post-incident, the platform should retain enough timelines, configuration versions, and replay inputs that the root cause can be reconstructed without guesswork. The design goal is to make the safe action easy when time pressure is highest.",
+    "commonMistakes": [
+      "Using generic health checks that miss latency-specific regressions",
+      "Treating rollback as simply redeploying old code without considering config and state"
+    ],
+    "followUps": [
+      "What would trigger automatic rollback versus human approval?",
+      "How do you avoid canaries that are not representative?"
+    ],
+    "seniorExtension": "Explain how you would design incident command roles and escalation policy for a globally distributed trading environment with market-open constraints.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  },
+  {
+    "id": "design-monitoring-003",
+    "title": "Design capacity planning and performance regression detection",
+    "question": "How would you design capacity planning and performance regression detection for a trading platform that experiences bursty market conditions?",
+    "topics": [
+      "monitoring",
+      "capacity-planning",
+      "performance-regression",
+      "bursts"
+    ],
+    "companies": [
+      "general"
+    ],
+    "companyEvidence": "general-preparation",
+    "confidence": "high",
+    "seniority": "senior",
+    "difficulty": "medium",
+    "estimatedMinutes": 45,
+    "clarifyingQuestions": [
+      "Do you have realistic historical traffic captures for stressful periods?"
+    ],
+    "interviewerIntent": [
+      "Evaluating forward-looking operational design",
+      "Evaluating whether the candidate plans for tails and bursts instead of average load"
+    ],
+    "answerOutline": [
+      "Define capacity in terms of latency and correctness, not only throughput",
+      "Use historical burst replays and synthetic worst cases",
+      "Track headroom per stage and per resource domain",
+      "Automate regression detection against baselines",
+      "Feed findings back into rollout gates and hardware planning",
+      "Model venue or market-event specific stress patterns"
+    ],
+    "sampleAnswer": "I define capacity as the point where the platform can still meet latency and correctness goals under stressful traffic, not merely the point where it has not crashed. To plan for that, I use historical captures from volatile sessions plus synthetic worst-case bursts so we understand queue growth, recovery behavior, and tail latency before the real market day arrives. Headroom needs to be tracked per stage and per resource domain—CPU, memory bandwidth, NIC queues, exchange throttles, and downstream consumers—because the first bottleneck is rarely the same across all conditions. I would automate regression detection against baseline runs so new code, new configs, or even new hardware microcode cannot drift into production unnoticed. Those results should feed rollout gates and hardware planning, otherwise load tests become ceremonial and disconnected from operational decisions. The strong design plans for burst behavior explicitly because that is where trading systems earn or lose trust.",
+    "commonMistakes": [
+      "Planning capacity on average message rates only",
+      "Treating performance testing as an occasional manual exercise"
+    ],
+    "followUps": [
+      "What signals indicate you are nearing unsafe capacity?",
+      "How do you keep replay baselines representative over time?"
+    ],
+    "seniorExtension": "Discuss how you would decide between software optimization, topology changes, or new hardware when capacity margins start shrinking.",
+    "rubric": {
+      "1": "Weak: Produces a generic architecture with little attention to latency, failure handling, or operational detail.",
+      "3": "Competent: Covers the main components, data flow, and core tradeoffs with sensible failure handling.",
+      "5": "Strong: Designs for determinism, observability, recovery, and scale, and explicitly prioritizes what must stay on the hot path versus what can be asynchronous."
+    },
+    "references": [
+      {
+        "title": "The Tail at Scale",
+        "url": "https://research.google/pubs/the-tail-at-scale/",
+        "source": "research-paper",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Systems Performance, 2nd Edition",
+        "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      },
+      {
+        "title": "Performance Analysis and Tuning on Modern CPU",
+        "url": "https://book.easyperf.net/perf_book",
+        "source": "book",
+        "accessDate": "2026-07-24"
+      }
+    ],
+    "category": "design"
+  }
+]

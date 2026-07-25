@@ -1,0 +1,137 @@
+{
+  "companies": [
+    {
+      "id": "optiver",
+      "name": "Optiver",
+      "type": "market-maker",
+      "hq": "Amsterdam, Netherlands",
+      "offices": [
+        "Amsterdam",
+        "Chicago",
+        "Sydney",
+        "Shanghai",
+        "London"
+      ],
+      "focus": "Options and derivatives market making",
+      "techStack": "C++, Python, Java, C#, FPGA (confirmed from official careers and role pages)",
+      "interviewStyle": "Fast-paced process with strong problem solving, production ownership, and low-latency systems depth for senior engineering roles.",
+      "careerPage": "https://optiver.com/careers",
+      "confidence": "high",
+      "notes": "Official careers materials emphasize technology-driven trading, global engineering hubs, and performance-sensitive systems work."
+    },
+    {
+      "id": "citadel-securities",
+      "name": "Citadel Securities",
+      "type": "market-maker",
+      "hq": "Miami, Florida, USA",
+      "offices": [
+        "Miami",
+        "Chicago",
+        "New York",
+        "London",
+        "Hong Kong"
+      ],
+      "focus": "Global market making across equities, options, fixed income, and other asset classes",
+      "techStack": "C++, Python, distributed systems tooling (confirmed from careers and open-opportunities pages)",
+      "interviewStyle": "Highly technical process with strong coding, systems, and performance expectations, especially for experienced engineers.",
+      "careerPage": "https://www.citadelsecurities.com/careers/",
+      "confidence": "high",
+      "notes": "Public materials emphasize technology, quantitative rigor, and global market infrastructure."
+    },
+    {
+      "id": "jane-street",
+      "name": "Jane Street",
+      "type": "market-maker",
+      "hq": "New York, New York, USA",
+      "offices": [
+        "New York",
+        "London",
+        "Hong Kong",
+        "Amsterdam",
+        "Singapore"
+      ],
+      "focus": "Global market making and liquidity provision across asset classes",
+      "techStack": "OCaml, Python, C++, systems and networking tooling (confirmed from official careers and culture pages)",
+      "interviewStyle": "Collaborative and discussion-heavy interviews that probe problem solving, systems reasoning, and communication depth.",
+      "careerPage": "https://www.janestreet.com/careers/",
+      "confidence": "high",
+      "notes": "Official materials highlight in-house tooling, learning culture, and close collaboration between technology and trading."
+    },
+    {
+      "id": "two-sigma",
+      "name": "Two Sigma",
+      "type": "quantitative-investment-firm",
+      "hq": "New York, New York, USA",
+      "offices": [
+        "New York",
+        "Houston",
+        "London",
+        "Hong Kong",
+        "Tokyo"
+      ],
+      "focus": "Data-driven investing, trading, and financial sciences",
+      "techStack": "Python, Java, C++, Go, large-scale data and distributed systems tooling (inferred from careers materials)",
+      "interviewStyle": "Research-minded process combining coding, systems thinking, and discussion of large-scale data and platform design.",
+      "careerPage": "https://www.twosigma.com/careers/",
+      "confidence": "medium",
+      "notes": "Official careers and engineering materials emphasize scientific inquiry, data-intensive systems, and collaboration across disciplines."
+    },
+    {
+      "id": "hudson-river-trading",
+      "name": "Hudson River Trading",
+      "type": "quantitative-trading-firm",
+      "hq": "New York, New York, USA",
+      "offices": [
+        "New York",
+        "Austin",
+        "Chicago",
+        "London",
+        "Singapore"
+      ],
+      "focus": "Automated quantitative trading across global markets",
+      "techStack": "C++, Python, high-performance networking and data infrastructure (inferred from careers materials)",
+      "interviewStyle": "Technical interviews tend to emphasize C++, Linux, data structures, and practical systems depth.",
+      "careerPage": "https://www.hudsonrivertrading.com/careers/",
+      "confidence": "medium",
+      "notes": "Public careers materials emphasize advanced computing environments, automation, and engineering-intensive trading infrastructure."
+    },
+    {
+      "id": "jump-trading",
+      "name": "Jump Trading",
+      "type": "proprietary-trading-firm",
+      "hq": "Chicago, Illinois, USA",
+      "offices": [
+        "Chicago",
+        "New York",
+        "London",
+        "Amsterdam",
+        "Singapore"
+      ],
+      "focus": "Algorithmic and proprietary trading across global asset classes",
+      "techStack": "C++, Python, Linux, FPGA, ML and distributed systems tooling (inferred from careers materials)",
+      "interviewStyle": "Engineering interviews emphasize low-latency infrastructure, protocol depth, and practical performance tradeoffs from hardware to software.",
+      "careerPage": "https://www.jumptrading.com/careers",
+      "confidence": "medium",
+      "notes": "Official careers materials emphasize building from raw silicon through execution and collaboration between researchers and engineers."
+    },
+    {
+      "id": "virtu-financial",
+      "name": "Virtu Financial",
+      "type": "market-maker",
+      "hq": "New York, New York, USA",
+      "offices": [
+        "New York",
+        "Austin",
+        "London",
+        "Dublin",
+        "Singapore"
+      ],
+      "focus": "Global market making and trading technology services",
+      "techStack": "C++, Java, Python, C#, JavaScript/React (inferred from careers materials)",
+      "interviewStyle": "Mix of coding, systems, and trading-infrastructure questions with attention to reliability and low-latency execution.",
+      "careerPage": "https://www.virtu.com/careers/",
+      "confidence": "medium",
+      "notes": "Public careers information highlights financial technology, low-latency engineering, and global market connectivity."
+    }
+  ]
+}
