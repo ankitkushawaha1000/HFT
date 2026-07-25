@@ -1,4 +1,4 @@
-import { readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildHtmlDocument, escapeHtml, extractTitle, markdownToHtml, stripMarkdown } from './lib/content-utils.mjs';
@@ -136,6 +136,35 @@ async function main() {
 
   const copiedAssets = await copyDirectory(assetsDir, path.join(outputDir, 'assets'));
 
+  // Copy root index.html (the SPA) so the SPA is served at /
+  const rootIndexHtml = path.join(projectRoot, 'index.html');
+  if (await exists(rootIndexHtml)) {
+    await copyFile(rootIndexHtml, path.join(outputDir, 'index.html'));
+  }
+
+  // Copy sw.js for service worker support
+  const swSrc = path.join(projectRoot, 'sw.js');
+  if (await exists(swSrc)) {
+    await copyFile(swSrc, path.join(outputDir, 'sw.js'));
+  }
+
+  // Copy raw data JSON files so the SPA can fetch them at runtime
+  const buildDataDir = path.join(outputDir, 'data');
+  await ensureDir(buildDataDir);
+  for (const filePath of jsonFiles) {
+    const destPath = path.join(buildDataDir, path.basename(filePath));
+    await copyFile(filePath, destPath);
+  }
+
+  // Copy raw content markdown files so the SPA can fetch them at runtime
+  const buildContentDir = path.join(outputDir, 'content');
+  for (const filePath of markdownFiles) {
+    const relative = path.relative(contentDir, filePath);
+    const destPath = path.join(buildContentDir, relative);
+    await ensureDir(path.dirname(destPath));
+    await copyFile(filePath, destPath);
+  }
+
   const searchIndex = allPages.map((page) => ({
     title: page.title,
     url: `/${page.outputRelative}`,
@@ -156,42 +185,6 @@ async function main() {
     })),
   };
   await writeFile(path.join(outputDir, 'sitemap.json'), JSON.stringify(sitemap, null, 2), 'utf8');
-
-  const homeBody = `
-    <h1>HFT Interview Prep</h1>
-    <p>Research date: 2026-07-24</p>
-    <h2>Content pages</h2>
-    <ul>${markdownPages
-      .map((page) => `<li><a href="/${page.outputRelative}">${escapeHtml(page.title)}</a></li>`)
-      .join('') || '<li>No markdown content found.</li>'}</ul>
-    <h2>Data pages</h2>
-    <ul>${jsonPages
-      .map((page) => `<li><a href="/${page.outputRelative}">${escapeHtml(page.title)}</a></li>`)
-      .join('') || '<li>No JSON data found.</li>'}</ul>
-  `;
-
-  const homeNavigation = [
-    '<h1>Navigation</h1>',
-    navList(
-      'Content',
-      markdownPages.map((page) => ({ href: `/${page.outputRelative}`, label: page.title })),
-    ),
-    navList(
-      'Data',
-      jsonPages.map((page) => ({ href: `/${page.outputRelative}`, label: page.title })),
-    ),
-  ].join('');
-
-  await writeFile(
-    path.join(outputDir, 'index.html'),
-    buildHtmlDocument({
-      title: 'HFT Interview Prep',
-      description: 'Generated static site for HFT interview preparation content.',
-      navigationHtml: homeNavigation,
-      bodyHtml: homeBody,
-    }),
-    'utf8',
-  );
 
   console.log(`Markdown pages: ${markdownPages.length}`);
   console.log(`JSON pages: ${jsonPages.length}`);

@@ -171,7 +171,26 @@ class App {
     if (!questionsResponse.ok) throw new Error('Unable to load question bank.');
     if (!contentIndexResponse.ok) throw new Error('Unable to load content index.');
 
-    this.questions = await questionsResponse.json();
+    const questionsData = await questionsResponse.json();
+    // Support both array format and {meta, questions} object format
+    const rawQuestions = Array.isArray(questionsData)
+      ? questionsData
+      : (Array.isArray(questionsData.questions) ? questionsData.questions : []);
+
+    // Normalize field names so JS can use consistent property names
+    this.questions = rawQuestions.map((q) => ({
+      id: q.id,
+      title: q.title,
+      prompt: q.prompt ?? q.question ?? '',
+      answer: q.answer ?? q.sampleAnswer ?? '',
+      topic: q.topic ?? q.category ?? 'general',
+      tags: q.tags ?? q.topics ?? [],
+      companies: Array.isArray(q.companies) ? q.companies : [],
+      difficulty: q.difficulty ?? 'medium',
+      summary: q.summary ?? (Array.isArray(q.answerOutline) && q.answerOutline.length ? q.answerOutline[0] : ''),
+      rubric: q.rubric ?? {}
+    }));
+
     this.contentIndex = await contentIndexResponse.json();
   }
 
