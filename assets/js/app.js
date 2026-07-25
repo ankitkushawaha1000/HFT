@@ -23,19 +23,46 @@ const escapeHtml = (value) => value
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#39;');
 
-const fallbackMarkdown = (markdown) => markdown
+const fallbackInlineMarkdown = (text) => escapeHtml(text).replace(/`([^`]+)`/g, '<code>$1</code>');
+
+const fallbackSimpleMarkdown = (markdown) => markdown
   .split(/\n{2,}/)
   .map((block) => {
-    if (block.startsWith('### ')) return `<h3>${escapeHtml(block.slice(4))}</h3>`;
-    if (block.startsWith('## ')) return `<h2>${escapeHtml(block.slice(3))}</h2>`;
-    if (block.startsWith('# ')) return `<h1>${escapeHtml(block.slice(2))}</h1>`;
+    if (block.startsWith('### ')) return `<h3>${fallbackInlineMarkdown(block.slice(4))}</h3>`;
+    if (block.startsWith('## ')) return `<h2>${fallbackInlineMarkdown(block.slice(3))}</h2>`;
+    if (block.startsWith('# ')) return `<h1>${fallbackInlineMarkdown(block.slice(2))}</h1>`;
     if (block.startsWith('- ')) {
-      const items = block.split('\n').map((line) => `<li>${escapeHtml(line.replace(/^-\s*/, ''))}</li>`).join('');
+      const items = block.split('\n').map((line) => `<li>${fallbackInlineMarkdown(line.replace(/^-\s*/, ''))}</li>`).join('');
       return `<ul>${items}</ul>`;
     }
-    return `<p>${escapeHtml(block)}</p>`;
+    return `<p>${fallbackInlineMarkdown(block)}</p>`;
   })
   .join('');
+
+const fallbackMarkdown = (markdown) => {
+  const parts = [];
+  const fencePattern = /```([\w-]+)?\n([\s\S]*?)```/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = fencePattern.exec(markdown)) !== null) {
+    const [raw, language = '', code = ''] = match;
+    const before = markdown.slice(lastIndex, match.index).trim();
+    if (before) {
+      parts.push(fallbackSimpleMarkdown(before));
+    }
+    const languageClass = language ? ` class="language-${escapeHtml(language)}"` : '';
+    parts.push(`<pre><code${languageClass}>${escapeHtml(code.trimEnd())}</code></pre>`);
+    lastIndex = match.index + raw.length;
+  }
+
+  const tail = markdown.slice(lastIndex).trim();
+  if (tail) {
+    parts.push(fallbackSimpleMarkdown(tail));
+  }
+
+  return parts.join('');
+};
 
 class App {
   constructor() {

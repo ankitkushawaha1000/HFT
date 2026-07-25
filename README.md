@@ -21,6 +21,9 @@ This is an **independent educational preparation resource**. It is **NOT affilia
 - **Dark/Light theme**: Study comfortably anytime
 - **Mock interview mode**: Practice with timer and scoring
 - **No backend required**: Works completely offline
+- **Companies interview round library**: Tiered company pages with round-by-round question sets
+- **Coding examples viewer**: Read HFT/C++ source examples directly in the web app
+- **HFT coding prep planner**: Public-source question map + full prep schedule
 
 ### 2. Behavioral Interview Mastery (Optiver Focus)
 - **60+ behavioral questions** with STAR framework answers
