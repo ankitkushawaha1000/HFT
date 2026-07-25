@@ -12,7 +12,8 @@ const STATIC_ROUTES = {
 
 // Legacy section routes kept for backward compatibility (redirect to first sub-page)
 const LEGACY_SECTION_ROUTES = new Set([
-  'study-plans', 'behavioral', 'cpp', 'systems', 'low-latency', 'design', 'trading', 'coding'
+  'study-plans', 'behavioral', 'cpp', 'systems', 'low-latency', 'design', 'trading', 'coding',
+  'optiver', 'research'
 ]);
 
 const escapeHtml = (value) => value
@@ -65,6 +66,7 @@ class App {
     this.questions = [];
     this.contentIndex = [];
     this.contentCache = new Map();
+    this.contentRouteMap = new Map();
     this.currentRoute = 'home';
     this.latestQuestionResults = [];
   }
@@ -73,9 +75,15 @@ class App {
     this.progress = new ProgressController();
     this.#bindShell();
     this.#applyTheme(window.localStorage.getItem('hft-theme') || 'dark');
-    await this.#loadData();
-    const contentDocuments = await this.#loadContentDocuments();
 
+    // Bind routing immediately so deep links work even if data loading is slow
+    window.addEventListener('hashchange', () => this.#route());
+
+    await this.#loadData();
+    // Re-run routing now that contentRouteMap is populated
+    this.#route();
+
+    const contentDocuments = await this.#loadContentDocuments();
     this.search = new SearchController({
       elements: {
         input: document.getElementById('search-input'),
@@ -103,7 +111,6 @@ class App {
     });
     this.quiz.initialize(this.questions);
 
-    window.addEventListener('hashchange', () => this.#route());
     window.addEventListener('progress:updated', () => {
       this.#updateDashboard();
       if (this.currentRoute === 'question-bank') {
@@ -111,50 +118,69 @@ class App {
       }
     });
 
-    this.#route();
     this.#updateDashboard();
     this.#registerServiceWorker();
   }
 
   async #loadData() {
-    const [questionsResponse, contentIndexResponse] = await Promise.all([
+    // Fetch both resources in parallel but handle failures independently
+    const [questionsResult, contentIndexResult] = await Promise.allSettled([
       fetch('data/questions.json'),
       fetch('data/content-index.json')
     ]);
 
-    if (!questionsResponse.ok) throw new Error('Unable to load question bank.');
-    if (!contentIndexResponse.ok) throw new Error('Unable to load content index.');
+    // Load questions — warn and continue with empty bank if unavailable
+    try {
+      const questionsResponse = questionsResult.status === 'fulfilled' ? questionsResult.value : null;
+      if (!questionsResponse?.ok) throw new Error('Unable to load question bank.');
+      const questionsData = await questionsResponse.json();
+      // Support both array format and {meta, questions} object format
+      const rawQuestions = Array.isArray(questionsData)
+        ? questionsData
+        : (Array.isArray(questionsData.questions) ? questionsData.questions : []);
 
-    const questionsData = await questionsResponse.json();
-    // Support both array format and {meta, questions} object format
-    const rawQuestions = Array.isArray(questionsData)
-      ? questionsData
-      : (Array.isArray(questionsData.questions) ? questionsData.questions : []);
+      // Normalize field names so JS can use consistent property names
+      this.questions = rawQuestions.map((q) => ({
+        id: q.id,
+        title: q.title,
+        prompt: q.prompt ?? q.question ?? '',
+        answer: q.answer ?? q.sampleAnswer ?? '',
+        topic: q.topic ?? q.category ?? 'general',
+        tags: q.tags ?? q.topics ?? [],
+        companies: Array.isArray(q.companies) ? q.companies : [],
+        difficulty: q.difficulty ?? 'medium',
+        summary: q.summary ?? (Array.isArray(q.answerOutline) && q.answerOutline.length ? q.answerOutline[0] : ''),
+        rubric: q.rubric ?? {}
+      }));
+    } catch (error) {
+      console.warn('Question bank unavailable; continuing without it.', error);
+      this.questions = [];
+    }
 
-    // Normalize field names so JS can use consistent property names
-    this.questions = rawQuestions.map((q) => ({
-      id: q.id,
-      title: q.title,
-      prompt: q.prompt ?? q.question ?? '',
-      answer: q.answer ?? q.sampleAnswer ?? '',
-      topic: q.topic ?? q.category ?? 'general',
-      tags: q.tags ?? q.topics ?? [],
-      companies: Array.isArray(q.companies) ? q.companies : [],
-      difficulty: q.difficulty ?? 'medium',
-      summary: q.summary ?? (Array.isArray(q.answerOutline) && q.answerOutline.length ? q.answerOutline[0] : ''),
-      rubric: q.rubric ?? {}
-    }));
+    // Load content index — must succeed for routing to work
+    try {
+      const contentIndexResponse = contentIndexResult.status === 'fulfilled' ? contentIndexResult.value : null;
+      if (!contentIndexResponse?.ok) throw new Error('Unable to load content index.');
+      const rawIndex = await contentIndexResponse.json();
+      this.contentIndex = Array.isArray(rawIndex) ? rawIndex : [];
+    } catch (error) {
+      console.warn('Content index unavailable; navigation to content pages will not work.', error);
+      this.contentIndex = [];
+    }
 
-    this.contentIndex = await contentIndexResponse.json();
     // Build a fast lookup map: route → content entry
     this.contentRouteMap = new Map(this.contentIndex.map((entry) => [entry.route, entry]));
   }
 
   async #loadContentDocuments() {
-    return Promise.all(this.contentIndex.map(async (entry) => ({
-      ...entry,
-      body: await this.#fetchText(entry.path)
-    })));
+    return Promise.all(this.contentIndex.map(async (entry) => {
+      try {
+        return { ...entry, body: await this.#fetchText(entry.path) };
+      } catch (error) {
+        console.warn(`Could not preload content file: ${entry.path}`, error);
+        return { ...entry, body: '' };
+      }
+    }));
   }
 
   async #fetchText(path) {
@@ -245,6 +271,12 @@ class App {
     }
 
     // 4. Fallback to home
+    if (requested !== 'home') {
+      console.warn(
+        'Route not found — falling back to home.',
+        { route: requested, contentMapSize: this.contentRouteMap.size }
+      );
+    }
     this.currentRoute = 'home';
     this.#showPanel('home');
     this.#updateNavActive('home');
