@@ -38,50 +38,244 @@
             Dashboard
           </a>
 
-          <p class="sidebar__section-label">Study Content</p>
+          <p class="sidebar__section-label">📚 Study Materials</p>
 
-          <a class="nav-link nav-link--behavioral" data-route="study-plans" href="#study-plans">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Study Plans
-          </a>
-          <a class="nav-link nav-link--behavioral" data-route="behavioral" href="#behavioral">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Behavioral
-          </a>
-          <a class="nav-link nav-link--cpp" data-route="cpp" href="#cpp">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4l4 4-4 4M8 12h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            C++
-          </a>
-          <a class="nav-link nav-link--systems" data-route="systems" href="#systems">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M6 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Systems
-          </a>
-          <a class="nav-link nav-link--lowlatency" data-route="low-latency" href="#low-latency">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v3l2 2H6L8 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 10h12M5 13h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Low-Latency
-          </a>
-          <a class="nav-link nav-link--design" data-route="design" href="#design">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="12" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 4h4M5.5 5.5L8.5 10.5M10.5 5.5L7.5 10.5" stroke="currentColor" stroke-width="1.5"/></svg>
-            System Design
-          </a>
-          <a class="nav-link nav-link--trading" data-route="trading" href="#trading">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 12L6 7l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Trading
-          </a>
-          <a class="nav-link" data-route="coding" href="#coding">
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 4L2 8l3 4M11 4l3 4-3 4M9 3l-2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Coding
-          </a>
+          <!-- Optiver Interview -->
+          <details class="nav-section" data-section="optiver">
+            <summary class="nav-section__toggle">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2l2 4h4l-3 2.5 1 4L8 10l-4 2.5 1-4L2 6h4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Optiver Interview
+              <span class="nav-section__count">6</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink nav-link--optiver" data-route="optiver/interview-overview" href="#optiver/interview-overview">Interview Overview</a>
+              <a class="nav-link nav-sublink nav-link--optiver" data-route="optiver/behavioral-interview" href="#optiver/behavioral-interview">Behavioral Interview</a>
+              <a class="nav-link nav-sublink nav-link--optiver" data-route="optiver/likely-question-themes" href="#optiver/likely-question-themes">Likely Question Themes</a>
+              <a class="nav-link nav-sublink nav-link--optiver" data-route="optiver/senior-engineering-signals" href="#optiver/senior-engineering-signals">Senior Eng. Signals</a>
+              <a class="nav-link nav-sublink nav-link--optiver" data-route="optiver/questions-to-ask-optiver" href="#optiver/questions-to-ask-optiver">Questions to Ask</a>
+              <a class="nav-link nav-sublink nav-link--optiver" data-route="optiver/recruiter-screen" href="#optiver/recruiter-screen">Recruiter Screen</a>
+            </div>
+          </details>
 
-          <p class="sidebar__section-label">Practice</p>
+          <!-- Behavioral Mastery -->
+          <details class="nav-section" data-section="behavioral">
+            <summary class="nav-section__toggle nav-link--behavioral">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Behavioral Mastery
+              <span class="nav-section__count">11</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral" href="#behavioral">Overview</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/behavioral-master-guide" href="#behavioral/behavioral-master-guide">Master Guide</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/star-method" href="#behavioral/star-method">STAR Method</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/story-bank-template" href="#behavioral/story-bank-template">Story Bank Template</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/senior-leadership" href="#behavioral/senior-leadership">Senior Leadership</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/conflict-and-feedback" href="#behavioral/conflict-and-feedback">Conflict &amp; Feedback</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/incidents-and-ownership" href="#behavioral/incidents-and-ownership">Incidents &amp; Ownership</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/mentoring-and-influence" href="#behavioral/mentoring-and-influence">Mentoring &amp; Influence</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/ambiguity-and-prioritization" href="#behavioral/ambiguity-and-prioritization">Ambiguity &amp; Priorities</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/ethics-and-risk" href="#behavioral/ethics-and-risk">Ethics &amp; Risk</a>
+              <a class="nav-link nav-sublink nav-link--behavioral" data-route="behavioral/recruiter-answer-rubrics" href="#behavioral/recruiter-answer-rubrics">Answer Rubrics</a>
+            </div>
+          </details>
+
+          <!-- Study Plans -->
+          <details class="nav-section" data-section="study-plans">
+            <summary class="nav-section__toggle">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Study Plans
+              <span class="nav-section__count">5</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink" data-route="study-plans" href="#study-plans">Overview</a>
+              <a class="nav-link nav-sublink" data-route="study-plans/7-day-emergency-plan" href="#study-plans/7-day-emergency-plan">7-Day Emergency Plan</a>
+              <a class="nav-link nav-sublink" data-route="study-plans/14-day-plan" href="#study-plans/14-day-plan">14-Day Balanced Plan</a>
+              <a class="nav-link nav-sublink" data-route="study-plans/30-day-plan" href="#study-plans/30-day-plan">30-Day Comprehensive</a>
+              <a class="nav-link nav-sublink" data-route="study-plans/60-day-plan" href="#study-plans/60-day-plan">60-Day Mastery Plan</a>
+              <a class="nav-link nav-sublink" data-route="study-plans/interview-day-checklist" href="#study-plans/interview-day-checklist">Interview Day Checklist</a>
+            </div>
+          </details>
+
+          <!-- Research -->
+          <details class="nav-section" data-section="research">
+            <summary class="nav-section__toggle">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 10l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Research &amp; Sources
+              <span class="nav-section__count">3</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink" data-route="research/research-methodology" href="#research/research-methodology">Research Methodology</a>
+              <a class="nav-link nav-sublink" data-route="research/sources" href="#research/sources">Sources</a>
+              <a class="nav-link nav-sublink" data-route="research/company-evidence-matrix" href="#research/company-evidence-matrix">Company Evidence Matrix</a>
+            </div>
+          </details>
+
+          <p class="sidebar__section-label">💻 Technical Training</p>
+
+          <!-- C++ -->
+          <details class="nav-section" data-section="cpp">
+            <summary class="nav-section__toggle nav-link--cpp">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4l4 4-4 4M8 12h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              C++ Curriculum
+              <span class="nav-section__count">14</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp" href="#cpp">Overview</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/modern-cpp" href="#cpp/modern-cpp">Modern C++11–20</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/object-lifetime" href="#cpp/object-lifetime">Object Lifetime</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/memory-and-pointers" href="#cpp/memory-and-pointers">Memory &amp; Pointers</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/value-categories" href="#cpp/value-categories">Value Categories</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/templates-and-concepts" href="#cpp/templates-and-concepts">Templates &amp; Concepts</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/stl-internals" href="#cpp/stl-internals">STL Internals</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/allocators-and-memory" href="#cpp/allocators-and-memory">Allocators &amp; Memory</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/concurrency-memory-model" href="#cpp/concurrency-memory-model">Concurrency Model</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/atomics-and-lock-free" href="#cpp/atomics-and-lock-free">Atomics &amp; Lock-Free</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/undefined-behavior" href="#cpp/undefined-behavior">Undefined Behavior</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/exceptions-and-error-handling" href="#cpp/exceptions-and-error-handling">Exceptions &amp; Errors</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/compilation-linking-abi" href="#cpp/compilation-linking-abi">Compilation &amp; ABI</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/performance" href="#cpp/performance">Performance</a>
+              <a class="nav-link nav-sublink nav-link--cpp" data-route="cpp/debugging" href="#cpp/debugging">Debugging</a>
+            </div>
+          </details>
+
+          <!-- Systems -->
+          <details class="nav-section" data-section="systems">
+            <summary class="nav-section__toggle nav-link--systems">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M6 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Systems &amp; Networking
+              <span class="nav-section__count">9</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems" href="#systems">Overview</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/linux-basics" href="#systems/linux-basics">Linux Basics</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/processes-threads-scheduling" href="#systems/processes-threads-scheduling">Processes &amp; Threads</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/virtual-memory" href="#systems/virtual-memory">Virtual Memory</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/cpu-cache-and-numa" href="#systems/cpu-cache-and-numa">CPU Cache &amp; NUMA</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/networking" href="#systems/networking">Networking</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/kernel-bypass" href="#systems/kernel-bypass">Kernel Bypass</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/synchronization" href="#systems/synchronization">Synchronization</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/profiling" href="#systems/profiling">Profiling</a>
+              <a class="nav-link nav-sublink nav-link--systems" data-route="systems/systems-question-bank" href="#systems/systems-question-bank">Question Bank</a>
+            </div>
+          </details>
+
+          <!-- Trading -->
+          <details class="nav-section" data-section="trading">
+            <summary class="nav-section__toggle nav-link--trading">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 12L6 7l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Trading Microstructure
+              <span class="nav-section__count">6</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink nav-link--trading" data-route="trading" href="#trading">Overview</a>
+              <a class="nav-link nav-sublink nav-link--trading" data-route="trading/market-microstructure" href="#trading/market-microstructure">Market Microstructure</a>
+              <a class="nav-link nav-sublink nav-link--trading" data-route="trading/exchanges-and-order-types" href="#trading/exchanges-and-order-types">Exchanges &amp; Orders</a>
+              <a class="nav-link nav-sublink nav-link--trading" data-route="trading/market-making" href="#trading/market-making">Market Making</a>
+              <a class="nav-link nav-sublink nav-link--trading" data-route="trading/trade-lifecycle" href="#trading/trade-lifecycle">Trade Lifecycle</a>
+              <a class="nav-link nav-sublink nav-link--trading" data-route="trading/risk-basics" href="#trading/risk-basics">Risk Basics</a>
+              <a class="nav-link nav-sublink nav-link--trading" data-route="trading/trading-glossary" href="#trading/trading-glossary">Trading Glossary</a>
+            </div>
+          </details>
+
+          <p class="sidebar__section-label">⚡ Performance &amp; Design</p>
+
+          <!-- Low-Latency -->
+          <details class="nav-section" data-section="low-latency">
+            <summary class="nav-section__toggle nav-link--lowlatency">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v3l2 2H6L8 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 10h12M5 13h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Low-Latency Topics
+              <span class="nav-section__count">8</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency" href="#low-latency">Overview</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/latency-fundamentals" href="#low-latency/latency-fundamentals">Latency Fundamentals</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/measurement-and-benchmarking" href="#low-latency/measurement-and-benchmarking">Measurement &amp; Benchmarking</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/lock-free-queues" href="#low-latency/lock-free-queues">Lock-Free Queues</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/memory-pools" href="#low-latency/memory-pools">Memory Pools</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/data-oriented-design" href="#low-latency/data-oriented-design">Data-Oriented Design</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/tail-latency" href="#low-latency/tail-latency">Tail Latency</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/performance-case-studies" href="#low-latency/performance-case-studies">Performance Case Studies</a>
+              <a class="nav-link nav-sublink nav-link--lowlatency" data-route="low-latency/low-latency-question-bank" href="#low-latency/low-latency-question-bank">Question Bank</a>
+            </div>
+          </details>
+
+          <!-- System Design -->
+          <details class="nav-section" data-section="design">
+            <summary class="nav-section__toggle nav-link--design">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="12" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 4h4M5.5 5.5L8.5 10.5M10.5 5.5L7.5 10.5" stroke="currentColor" stroke-width="1.5"/></svg>
+              System Design
+              <span class="nav-section__count">9</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink nav-link--design" data-route="design" href="#design">Overview</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/senior-system-design" href="#design/senior-system-design">Senior System Design</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/market-data-feed-handler" href="#design/market-data-feed-handler">Market Data Feed</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/order-management-system" href="#design/order-management-system">Order Management</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/exchange-gateway" href="#design/exchange-gateway">Exchange Gateway</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/limit-order-book" href="#design/limit-order-book">Limit Order Book</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/risk-checking-system" href="#design/risk-checking-system">Risk Checking System</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/replay-and-simulation" href="#design/replay-and-simulation">Replay &amp; Simulation</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/monitoring-and-kill-switches" href="#design/monitoring-and-kill-switches">Monitoring &amp; Kill Switches</a>
+              <a class="nav-link nav-sublink nav-link--design" data-route="design/design-rubrics" href="#design/design-rubrics">Design Rubrics</a>
+            </div>
+          </details>
+
+          <p class="sidebar__section-label">🎙️ Interview Practice</p>
+
+          <!-- Mock Interviews -->
+          <details class="nav-section" data-section="mock-interviews">
+            <summary class="nav-section__toggle">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Mock Interviews
+              <span class="nav-section__count">6</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink" data-route="mock-interviews/recruiter-screen-01" href="#mock-interviews/recruiter-screen-01">Recruiter Screen (30 min)</a>
+              <a class="nav-link nav-sublink" data-route="mock-interviews/optiver-behavioral-45min" href="#mock-interviews/optiver-behavioral-45min">Behavioral (45 min)</a>
+              <a class="nav-link nav-sublink" data-route="mock-interviews/optiver-behavioral-60min" href="#mock-interviews/optiver-behavioral-60min">Behavioral (60 min)</a>
+              <a class="nav-link nav-sublink" data-route="mock-interviews/senior-cpp-60min" href="#mock-interviews/senior-cpp-60min">C++ Technical (60 min)</a>
+              <a class="nav-link nav-sublink" data-route="mock-interviews/system-design-60min" href="#mock-interviews/system-design-60min">System Design (60 min)</a>
+              <a class="nav-link nav-sublink" data-route="mock-interviews/full-loop-simulation" href="#mock-interviews/full-loop-simulation">Full Loop (4 hours)</a>
+            </div>
+          </details>
+
+          <!-- Coding Skills -->
+          <details class="nav-section" data-section="coding">
+            <summary class="nav-section__toggle">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 4L2 8l3 4M11 4l3 4-3 4M9 3l-2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Coding Skills
+              <span class="nav-section__count">5</span>
+              <svg class="nav-section__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="nav-section__items">
+              <a class="nav-link nav-sublink" data-route="coding" href="#coding">Overview</a>
+              <a class="nav-link nav-sublink" data-route="coding/coding-interview-strategy" href="#coding/coding-interview-strategy">Interview Strategy</a>
+              <a class="nav-link nav-sublink" data-route="coding/data-structures" href="#coding/data-structures">Data Structures</a>
+              <a class="nav-link nav-sublink" data-route="coding/algorithms" href="#coding/algorithms">Algorithms</a>
+              <a class="nav-link nav-sublink" data-route="coding/implementation-exercises" href="#coding/implementation-exercises">Implementation Exercises</a>
+              <a class="nav-link nav-sublink" data-route="coding/code-review-exercises" href="#coding/code-review-exercises">Code Review Exercises</a>
+            </div>
+          </details>
+
+          <p class="sidebar__section-label">📊 Question Bank</p>
 
           <a class="nav-link" data-route="question-bank" href="#question-bank">
             <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2h8a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 6h5M5.5 9h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Question Bank
+            Browse All 280+ Questions
           </a>
           <a class="nav-link" data-route="mock-interviews" href="#mock-interviews">
             <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Mock Interview
+            Mock Interview Simulator
           </a>
         </nav>
 
@@ -290,6 +484,9 @@
           <!-- ╚═══════════════════════════════════════════╝ -->
           <section class="route-panel" data-panel="content" hidden aria-label="Study content">
             <div class="panel content-panel">
+              <nav class="content-breadcrumb" aria-label="Breadcrumb" id="content-breadcrumb">
+                <a href="#home">Home</a>
+              </nav>
               <a class="button button--ghost back-button" href="#home" aria-label="Back to dashboard">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Back to Dashboard
@@ -300,6 +497,7 @@
               <article id="content-article" class="markdown-body" aria-live="polite">
                 <p class="muted">Loading content…</p>
               </article>
+              <div class="content-prev-next" id="content-prev-next"></div>
             </div>
           </section>
 

@@ -1,11 +1,83 @@
 [
   {
-    "id": "study-plans-overview",
-    "route": "study-plans",
-    "title": "Study Plan Overview",
-    "topic": "study-plans",
-    "path": "content/study-plans/overview.md",
-    "excerpt": "Sequence behavioral, C++, systems, low-latency, and trading review intentionally."
+    "id": "optiver-behavioral-interview",
+    "route": "optiver/behavioral-interview",
+    "title": "Optiver Behavioral Interview Guide",
+    "topic": "optiver",
+    "path": "content/optiver/behavioral-interview.md",
+    "excerpt": "Optiver's behavioral interviews are usually less about polished storytelling and more about whether your real operating habits fit a demanding enginee"
+  },
+  {
+    "id": "optiver-interview-overview",
+    "route": "optiver/interview-overview",
+    "title": "Optiver Software Engineering Interview Overview",
+    "topic": "optiver",
+    "path": "content/optiver/interview-overview.md",
+    "excerpt": "- Research date: 2026-07-24"
+  },
+  {
+    "id": "optiver-likely-question-themes",
+    "route": "optiver/likely-question-themes",
+    "title": "Optiver Behavioral Question Themes",
+    "topic": "optiver",
+    "path": "content/optiver/likely-question-themes.md",
+    "excerpt": "These are the question themes most commonly implied by Optiver job descriptions, public interview advice, and candidate reports. The exact wording wil"
+  },
+  {
+    "id": "optiver-questions-to-ask-optiver",
+    "route": "optiver/questions-to-ask-optiver",
+    "title": "Questions to Ask Interviewers at Optiver",
+    "topic": "optiver",
+    "path": "content/optiver/questions-to-ask-optiver.md",
+    "excerpt": "At Optiver, the questions you ask are part of the evaluation. Good questions signal curiosity, judgment, and seriousness about the work. Weak question"
+  },
+  {
+    "id": "optiver-recruiter-screen",
+    "route": "optiver/recruiter-screen",
+    "title": "Optiver Recruiter Screen Guide",
+    "topic": "optiver",
+    "path": "content/optiver/recruiter-screen.md",
+    "excerpt": "The recruiter screen is usually the smallest stage in time and the biggest stage in terms of funnel efficiency. Recruiters are not trying to verify yo"
+  },
+  {
+    "id": "optiver-senior-engineering-signals",
+    "route": "optiver/senior-engineering-signals",
+    "title": "Senior Engineering Signals at Optiver",
+    "topic": "optiver",
+    "path": "content/optiver/senior-engineering-signals.md",
+    "excerpt": "At senior level, Optiver is not only asking whether you can solve a difficult technical problem. It is asking whether you improve the quality of decis"
+  },
+  {
+    "id": "behavioral-ambiguity-and-prioritization",
+    "route": "behavioral/ambiguity-and-prioritization",
+    "title": "Ambiguity and Prioritization Guide",
+    "topic": "behavioral",
+    "path": "content/behavioral/ambiguity-and-prioritization.md",
+    "excerpt": "Ambiguity questions test whether you can move forward responsibly when information is incomplete. Prioritization questions test whether you can do tha"
+  },
+  {
+    "id": "behavioral-behavioral-master-guide",
+    "route": "behavioral/behavioral-master-guide",
+    "title": "Behavioral Interview Master Guide",
+    "topic": "behavioral",
+    "path": "content/behavioral/behavioral-master-guide.md",
+    "excerpt": "| Question | Assessing | Framework | Answer seed | Mistake |"
+  },
+  {
+    "id": "behavioral-conflict-and-feedback",
+    "route": "behavioral/conflict-and-feedback",
+    "title": "Conflict and Feedback Guide",
+    "topic": "behavioral",
+    "path": "content/behavioral/conflict-and-feedback.md",
+    "excerpt": "Conflict questions are not traps unless you treat them like complaints. Interviewers ask them to see whether you can preserve truth and trust at the s"
+  },
+  {
+    "id": "behavioral-ethics-and-risk",
+    "route": "behavioral/ethics-and-risk",
+    "title": "Ethics and Risk Communication Guide",
+    "topic": "behavioral",
+    "path": "content/behavioral/ethics-and-risk.md",
+    "excerpt": "Ethics questions are often really about judgment under pressure. Interviewers want to know whether you can protect the organization, users, and teamma"
   },
   {
     "id": "behavioral-foundations",
@@ -16,12 +88,252 @@
     "excerpt": "Use real production stories to demonstrate judgment, influence, and calm incident response."
   },
   {
+    "id": "behavioral-incidents-and-ownership",
+    "route": "behavioral/incidents-and-ownership",
+    "title": "Incidents and Ownership Guide",
+    "topic": "behavioral",
+    "path": "content/behavioral/incidents-and-ownership.md",
+    "excerpt": "Incident stories are some of the highest-signal behavioral answers for senior engineers. They reveal how you think under pressure, how you communicate"
+  },
+  {
+    "id": "behavioral-mentoring-and-influence",
+    "route": "behavioral/mentoring-and-influence",
+    "title": "Mentoring and Influence Without Authority",
+    "topic": "behavioral",
+    "path": "content/behavioral/mentoring-and-influence.md",
+    "excerpt": "Senior engineers create leverage through people as well as code. Interviewers ask mentoring and influence questions to understand whether your impact "
+  },
+  {
+    "id": "behavioral-recruiter-answer-rubrics",
+    "route": "behavioral/recruiter-answer-rubrics",
+    "title": "Behavioral Interview Scoring Rubrics",
+    "topic": "behavioral",
+    "path": "content/behavioral/recruiter-answer-rubrics.md",
+    "excerpt": "Recruiters and hiring managers rarely use exactly the same rubric, but strong behavioral evaluation is usually built from the same ingredients: clarit"
+  },
+  {
+    "id": "behavioral-senior-leadership",
+    "route": "behavioral/senior-leadership",
+    "title": "Senior Leadership in Behavioral Interviews",
+    "topic": "behavioral",
+    "path": "content/behavioral/senior-leadership.md",
+    "excerpt": "In behavioral interviews, \"senior\" does not mean \"has more years.\" It means your impact changes the performance of systems and people around you. The "
+  },
+  {
+    "id": "behavioral-star-method",
+    "route": "behavioral/star-method",
+    "title": "STAR and CARL for Senior Behavioral Interviews",
+    "topic": "behavioral",
+    "path": "content/behavioral/star-method.md",
+    "excerpt": "Behavioral interviews are not won by storytelling flair alone. They are won by making the interviewer's job easy: clear context, visible judgment, mea"
+  },
+  {
+    "id": "behavioral-story-bank-template",
+    "route": "behavioral/story-bank-template",
+    "title": "Story Bank Template",
+    "topic": "behavioral",
+    "path": "content/behavioral/story-bank-template.md",
+    "excerpt": "Use this worksheet to build a reusable bank of stories before interviews. The goal is not to memorize scripts. The goal is to prepare evidence. Each s"
+  },
+  {
+    "id": "study-plans-14-day-plan",
+    "route": "study-plans/14-day-plan",
+    "title": "14-Day Balanced Plan",
+    "topic": "study-plans",
+    "path": "content/study-plans/14-day-plan.md",
+    "excerpt": "Two weeks is enough time to do more than triage, but not enough time to wander. This plan deliberately alternates between content acquisition, active "
+  },
+  {
+    "id": "study-plans-30-day-plan",
+    "route": "study-plans/30-day-plan",
+    "title": "30-Day Comprehensive Plan",
+    "topic": "study-plans",
+    "path": "content/study-plans/30-day-plan.md",
+    "excerpt": "A 30-day plan gives you enough time to do four things well:"
+  },
+  {
+    "id": "study-plans-60-day-plan",
+    "route": "study-plans/60-day-plan",
+    "title": "60-Day Mastery Plan",
+    "topic": "study-plans",
+    "path": "content/study-plans/60-day-plan.md",
+    "excerpt": "This 60-day plan is designed for candidates who want to move beyond emergency preparation and actually raise their ceiling. In two months, you can dev"
+  },
+  {
+    "id": "study-plans-7-day-emergency-plan",
+    "route": "study-plans/7-day-emergency-plan",
+    "title": "7-Day Emergency Study Plan",
+    "topic": "study-plans",
+    "path": "content/study-plans/7-day-emergency-plan.md",
+    "excerpt": "This is not a “learn everything” schedule. It is a triage plan. Your objective is to get interview-ready fast enough that your strongest capabilities "
+  },
+  {
+    "id": "study-plans-interview-day-checklist",
+    "route": "study-plans/interview-day-checklist",
+    "title": "Interview Day Checklist",
+    "topic": "study-plans",
+    "path": "content/study-plans/interview-day-checklist.md",
+    "excerpt": "- [ ] Confirm the interview schedule, time zone, and interviewer sequence."
+  },
+  {
+    "id": "study-plans-overview",
+    "route": "study-plans",
+    "title": "Study Plan Overview",
+    "topic": "study-plans",
+    "path": "content/study-plans/overview.md",
+    "excerpt": "Sequence behavioral, C++, systems, low-latency, and trading review intentionally."
+  },
+  {
+    "id": "research-company-evidence-matrix",
+    "route": "research/company-evidence-matrix",
+    "title": "Company Evidence Matrix",
+    "topic": "research",
+    "path": "research/company-evidence-matrix.md",
+    "excerpt": "- Confirmed: directly supported by official company interview/careers content"
+  },
+  {
+    "id": "research-research-methodology",
+    "route": "research/research-methodology",
+    "title": "Research Methodology",
+    "topic": "research",
+    "path": "research/research-methodology.md",
+    "excerpt": "This research layer is intended to support responsible interview preparation. The goal is to help the candidate understand:"
+  },
+  {
+    "id": "research-sources",
+    "route": "research/sources",
+    "title": "Sources",
+    "topic": "research",
+    "path": "research/sources.md",
+    "excerpt": "- High: direct official source or authoritative technical source"
+  },
+  {
+    "id": "cpp-allocators-and-memory",
+    "route": "cpp/allocators-and-memory",
+    "title": "Allocators and Memory Management",
+    "topic": "cpp",
+    "path": "content/cpp/allocators-and-memory.md",
+    "excerpt": "In HFT, custom memory management is not academic. General-purpose allocators are optimized for broad workloads, not necessarily for single-producer qu"
+  },
+  {
+    "id": "cpp-atomics-and-lock-free",
+    "route": "cpp/atomics-and-lock-free",
+    "title": "Atomics and Lock-Free Programming",
+    "topic": "cpp",
+    "path": "content/cpp/atomics-and-lock-free.md",
+    "excerpt": "Atomics are the foundation of low-level concurrency in C++. Senior interviews at trading firms often probe whether you can distinguish “atomic,” “lock"
+  },
+  {
+    "id": "cpp-compilation-linking-abi",
+    "route": "cpp/compilation-linking-abi",
+    "title": "Compilation, Linking, and ABI",
+    "topic": "cpp",
+    "path": "content/cpp/compilation-linking-abi.md",
+    "excerpt": "Senior C++ engineers need a concrete model of what happens between source code and executable binary. This matters for debugging, performance, and dep"
+  },
+  {
+    "id": "cpp-concurrency-memory-model",
+    "route": "cpp/concurrency-memory-model",
+    "title": "Concurrency and the C++ Memory Model",
+    "topic": "cpp",
+    "path": "content/cpp/concurrency-memory-model.md",
+    "excerpt": "Modern C++ concurrency questions test whether you understand two levels at once: the language memory model and the underlying hardware consequences. O"
+  },
+  {
+    "id": "cpp-debugging",
+    "route": "cpp/debugging",
+    "title": "C++ Debugging Guide",
+    "topic": "cpp",
+    "path": "content/cpp/debugging.md",
+    "excerpt": "Senior debugging is about shortening the loop from symptom to mechanism. In C++, that means being comfortable moving between source, stack traces, mem"
+  },
+  {
+    "id": "cpp-exceptions-and-error-handling",
+    "route": "cpp/exceptions-and-error-handling",
+    "title": "Exceptions and Error Handling",
+    "topic": "cpp",
+    "path": "content/cpp/exceptions-and-error-handling.md",
+    "excerpt": "Error handling in production C++ is about more than syntax. It is about expressing failure semantics, preserving invariants, bounding latency, and kee"
+  },
+  {
     "id": "cpp-foundations",
     "route": "cpp",
     "title": "C++ Foundations for HFT Interviews",
     "topic": "cpp",
     "path": "content/cpp/foundations.md",
     "excerpt": "Refresh ownership, move semantics, atomics, and data layout with production tradeoffs."
+  },
+  {
+    "id": "cpp-memory-and-pointers",
+    "route": "cpp/memory-and-pointers",
+    "title": "Memory and Pointers",
+    "topic": "cpp",
+    "path": "content/cpp/memory-and-pointers.md",
+    "excerpt": "Senior C++ interviews in trading firms often move quickly from syntax to memory behavior: where bytes come from, who owns them, how long they live, an"
+  },
+  {
+    "id": "cpp-modern-cpp",
+    "route": "cpp/modern-cpp",
+    "title": "Modern C++11-20",
+    "topic": "cpp",
+    "path": "content/cpp/modern-cpp.md",
+    "excerpt": "Modern C++ is not a list of isolated features; it is a shift toward expressing ownership, lifetime, intent, and constraints in the type system. In HFT"
+  },
+  {
+    "id": "cpp-object-lifetime",
+    "route": "cpp/object-lifetime",
+    "title": "Object Lifetime",
+    "topic": "cpp",
+    "path": "content/cpp/object-lifetime.md",
+    "excerpt": "Object lifetime is one of the most important and most misunderstood parts of C++. In interview settings, many “trick” questions are really about disti"
+  },
+  {
+    "id": "cpp-performance",
+    "route": "cpp/performance",
+    "title": "C++ Performance Optimization",
+    "topic": "cpp",
+    "path": "content/cpp/performance.md",
+    "excerpt": "Performance engineering in C++ is about building a cost model and then validating it with measurements. Senior candidates are expected to know both co"
+  },
+  {
+    "id": "cpp-stl-internals",
+    "route": "cpp/stl-internals",
+    "title": "STL Internals and Performance",
+    "topic": "cpp",
+    "path": "content/cpp/stl-internals.md",
+    "excerpt": "STL knowledge at senior level is mostly about cost models: memory layout, iterator invalidation, allocation behavior, and what the CPU actually sees. "
+  },
+  {
+    "id": "cpp-templates-and-concepts",
+    "route": "cpp/templates-and-concepts",
+    "title": "Templates and Concepts",
+    "topic": "cpp",
+    "path": "content/cpp/templates-and-concepts.md",
+    "excerpt": "Templates are C++'s compile-time abstraction mechanism. In HFT, they matter because they let you write zero-overhead generic code: fixed-size containe"
+  },
+  {
+    "id": "cpp-undefined-behavior",
+    "route": "cpp/undefined-behavior",
+    "title": "Undefined Behavior",
+    "topic": "cpp",
+    "path": "content/cpp/undefined-behavior.md",
+    "excerpt": "Undefined behavior is not merely “the program may crash.” It means the C++ standard imposes no requirements on the program's behavior after the violat"
+  },
+  {
+    "id": "cpp-value-categories",
+    "route": "cpp/value-categories",
+    "title": "Value Categories",
+    "topic": "cpp",
+    "path": "content/cpp/value-categories.md",
+    "excerpt": "Value categories explain overload resolution, move semantics, perfect forwarding, and many “why did the compiler choose that overload?” questions. The"
+  },
+  {
+    "id": "systems-cpu-cache-and-numa",
+    "route": "systems/cpu-cache-and-numa",
+    "title": "CPU Cache and NUMA",
+    "topic": "systems",
+    "path": "content/systems/cpu-cache-and-numa.md",
+    "excerpt": "Many HFT performance problems are memory problems in disguise. The CPU is fast; missing cache, bouncing cache lines, or reading remote NUMA memory is "
   },
   {
     "id": "systems-foundations",
@@ -32,20 +344,76 @@
     "excerpt": "Connect OS and networking behavior to latency, jitter, and failure modes."
   },
   {
-    "id": "low-latency-foundations",
-    "route": "low-latency",
-    "title": "Low-Latency Foundations",
-    "topic": "low-latency",
-    "path": "content/low-latency/foundations.md",
-    "excerpt": "Learn how to reason about deterministic hot paths, tail latency, and measurement."
+    "id": "systems-kernel-bypass",
+    "route": "systems/kernel-bypass",
+    "title": "Kernel Bypass Networking",
+    "topic": "systems",
+    "path": "content/systems/kernel-bypass.md",
+    "excerpt": "Kernel-bypass networking exists because the standard kernel network stack optimizes for fairness, generality, security, and throughput across many wor"
   },
   {
-    "id": "design-foundations",
-    "route": "design",
-    "title": "Design Foundations",
-    "topic": "design",
-    "path": "content/design/foundations.md",
-    "excerpt": "Structure design answers around invariants, critical paths, and overload behavior."
+    "id": "systems-linux-basics",
+    "route": "systems/linux-basics",
+    "title": "Linux Basics for HFT Engineers",
+    "topic": "systems",
+    "path": "content/systems/linux-basics.md",
+    "excerpt": "Linux is the operating system most HFT engineers meet in production, so interview questions usually focus on resource ownership, scheduling, observabi"
+  },
+  {
+    "id": "systems-networking",
+    "route": "systems/networking",
+    "title": "Networking for HFT Engineers",
+    "topic": "systems",
+    "path": "content/systems/networking.md",
+    "excerpt": "HFT networking discussions focus on latency, packet loss, fan-out, and how application design interacts with the NIC and kernel. Interviews usually em"
+  },
+  {
+    "id": "systems-processes-threads-scheduling",
+    "route": "systems/processes-threads-scheduling",
+    "title": "Processes, Threads, and Scheduling",
+    "topic": "systems",
+    "path": "content/systems/processes-threads-scheduling.md",
+    "excerpt": "The Linux execution model matters in HFT because scheduling, affinity, and context switching directly affect latency variance. Senior interviews often"
+  },
+  {
+    "id": "systems-profiling",
+    "route": "systems/profiling",
+    "title": "Profiling and Benchmarking Methodology",
+    "topic": "systems",
+    "path": "content/systems/profiling.md",
+    "excerpt": "Performance work without methodology turns into folklore. Senior HFT engineers are expected to know not just the tools, but how to avoid lying to them"
+  },
+  {
+    "id": "systems-synchronization",
+    "route": "systems/synchronization",
+    "title": "Synchronization Primitives",
+    "topic": "systems",
+    "path": "content/systems/synchronization.md",
+    "excerpt": "Synchronization is about coordinating access to shared state without losing correctness or wasting too much latency budget. Senior interviews typicall"
+  },
+  {
+    "id": "systems-systems-question-bank",
+    "route": "systems/systems-question-bank",
+    "title": "Systems Question Bank",
+    "topic": "systems",
+    "path": "content/systems/systems-question-bank.md",
+    "excerpt": "Below are 55 compact interview drills for senior HFT candidates. Each item includes the question, what it assesses, a concise but complete answer, and"
+  },
+  {
+    "id": "systems-virtual-memory",
+    "route": "systems/virtual-memory",
+    "title": "Virtual Memory",
+    "topic": "systems",
+    "path": "content/systems/virtual-memory.md",
+    "excerpt": "Virtual memory is central to systems performance because every load/store in your program travels through this abstraction. HFT interviews often ask a"
+  },
+  {
+    "id": "trading-exchanges-and-order-types",
+    "route": "trading/exchanges-and-order-types",
+    "title": "Exchanges and Order Types",
+    "topic": "trading",
+    "path": "content/trading/exchanges-and-order-types.md",
+    "excerpt": "Engineers at trading firms build systems against the real operational constraints of exchanges. That means understanding not only order types, but als"
   },
   {
     "id": "trading-foundations",
@@ -56,12 +424,204 @@
     "excerpt": "Understand how market structure drives engineering priorities in HFT systems."
   },
   {
-    "id": "coding-foundations",
-    "route": "coding",
-    "title": "Coding Interview Foundations",
-    "topic": "coding",
-    "path": "content/coding/foundations.md",
-    "excerpt": "Communicate invariants, edge cases, and data-structure choices clearly while coding."
+    "id": "trading-market-making",
+    "route": "trading/market-making",
+    "title": "Market Making Basics for Engineers",
+    "topic": "trading",
+    "path": "content/trading/market-making.md",
+    "excerpt": "Market making is the business of continuously quoting both sides of a market and earning spread while managing inventory and adverse-selection risk. E"
+  },
+  {
+    "id": "trading-market-microstructure",
+    "route": "trading/market-microstructure",
+    "title": "Market Microstructure for Engineers",
+    "topic": "trading",
+    "path": "content/trading/market-microstructure.md",
+    "excerpt": "Market microstructure is the study of how trading actually happens: how orders are displayed, matched, prioritized, and turned into prices. Engineers "
+  },
+  {
+    "id": "trading-risk-basics",
+    "route": "trading/risk-basics",
+    "title": "Risk Management Basics for Engineers",
+    "topic": "trading",
+    "path": "content/trading/risk-basics.md",
+    "excerpt": "Engineers at trading firms implement the mechanisms that make risk policies real. They do not always choose the policies, but they must understand the"
+  },
+  {
+    "id": "trading-trade-lifecycle",
+    "route": "trading/trade-lifecycle",
+    "title": "Trade Lifecycle for Engineers",
+    "topic": "trading",
+    "path": "content/trading/trade-lifecycle.md",
+    "excerpt": "The trade lifecycle is the chain of events from a trading decision to final post-trade processing. Engineers in HFT firms need a crisp mental model of"
+  },
+  {
+    "id": "trading-trading-glossary",
+    "route": "trading/trading-glossary",
+    "title": "Trading Glossary for Engineers",
+    "topic": "trading",
+    "path": "content/trading/trading-glossary.md",
+    "excerpt": "This glossary defines common trading, market microstructure, risk, protocol, and exchange terms at an engineer-friendly level. Definitions are intenti"
+  },
+  {
+    "id": "low-latency-data-oriented-design",
+    "route": "low-latency/data-oriented-design",
+    "title": "Data-Oriented Design for Performance",
+    "topic": "low-latency",
+    "path": "content/low-latency/data-oriented-design.md",
+    "excerpt": "Data-oriented design starts from how the machine executes programs, not from how humans name abstractions. In HFT, this mindset is often the differenc"
+  },
+  {
+    "id": "low-latency-foundations",
+    "route": "low-latency",
+    "title": "Low-Latency Foundations",
+    "topic": "low-latency",
+    "path": "content/low-latency/foundations.md",
+    "excerpt": "Learn how to reason about deterministic hot paths, tail latency, and measurement."
+  },
+  {
+    "id": "low-latency-latency-fundamentals",
+    "route": "low-latency/latency-fundamentals",
+    "title": "Latency Fundamentals for HFT",
+    "topic": "low-latency",
+    "path": "content/low-latency/latency-fundamentals.md",
+    "excerpt": "Latency in high-frequency trading is the elapsed time between a causative event and the system response that matters economically. For a market data p"
+  },
+  {
+    "id": "low-latency-lock-free-queues",
+    "route": "low-latency/lock-free-queues",
+    "title": "Lock-Free Queues in Low-Latency Systems",
+    "topic": "low-latency",
+    "path": "content/low-latency/lock-free-queues.md",
+    "excerpt": "Lock-free queues are a staple of HFT system design because they enable thread-to-thread handoff without kernel blocking and often with far less jitter"
+  },
+  {
+    "id": "low-latency-low-latency-question-bank",
+    "route": "low-latency/low-latency-question-bank",
+    "title": "Low-Latency Interview Question Bank",
+    "topic": "low-latency",
+    "path": "content/low-latency/low-latency-question-bank.md",
+    "excerpt": "This bank contains representative low-latency interview questions for senior engineering roles at high-frequency trading firms. Each item includes a f"
+  },
+  {
+    "id": "low-latency-measurement-and-benchmarking",
+    "route": "low-latency/measurement-and-benchmarking",
+    "title": "Measurement and Benchmarking for Low-Latency Systems",
+    "topic": "low-latency",
+    "path": "content/low-latency/measurement-and-benchmarking.md",
+    "excerpt": "Low-latency engineering fails when measurement is sloppy. Benchmarking in HFT is not about publishing a flattering number; it is about learning whethe"
+  },
+  {
+    "id": "low-latency-memory-pools",
+    "route": "low-latency/memory-pools",
+    "title": "Memory Pools and Allocation-Free Code",
+    "topic": "low-latency",
+    "path": "content/low-latency/memory-pools.md",
+    "excerpt": "Dynamic memory allocation is not inherently evil, but in HFT hot paths it is often a source of unpredictable latency, cache disruption, lock contentio"
+  },
+  {
+    "id": "low-latency-performance-case-studies",
+    "route": "low-latency/performance-case-studies",
+    "title": "Low-Latency Performance Case Studies",
+    "topic": "low-latency",
+    "path": "content/low-latency/performance-case-studies.md",
+    "excerpt": "This document summarizes representative public-information case studies that mirror common HFT performance work. The point is not to claim proprietary"
+  },
+  {
+    "id": "low-latency-tail-latency",
+    "route": "low-latency/tail-latency",
+    "title": "Tail Latency in HFT Systems",
+    "topic": "low-latency",
+    "path": "content/low-latency/tail-latency.md",
+    "excerpt": "HFT systems live and die by outliers. A median latency graph can look beautiful while the desk still complains about missed fills or stale quotes duri"
+  },
+  {
+    "id": "design-design-rubrics",
+    "route": "design/design-rubrics",
+    "title": "System Design Interview Rubrics",
+    "topic": "design",
+    "path": "content/design/design-rubrics.md",
+    "excerpt": "Many candidates improve dramatically once they understand how interviewers actually evaluate design answers. Examiners are usually not waiting for one"
+  },
+  {
+    "id": "design-exchange-gateway",
+    "route": "design/exchange-gateway",
+    "title": "Exchange Gateway Design",
+    "topic": "design",
+    "path": "content/design/exchange-gateway.md",
+    "excerpt": "An exchange gateway is the venue-facing edge of the trading stack. It manages sessions, translates internal order intents into venue protocol messages"
+  },
+  {
+    "id": "design-foundations",
+    "route": "design",
+    "title": "Design Foundations",
+    "topic": "design",
+    "path": "content/design/foundations.md",
+    "excerpt": "Structure design answers around invariants, critical paths, and overload behavior."
+  },
+  {
+    "id": "design-limit-order-book",
+    "route": "design/limit-order-book",
+    "title": "Limit Order Book Design",
+    "topic": "design",
+    "path": "content/design/limit-order-book.md",
+    "excerpt": "Designing a limit order book is a classic HFT interview problem because it mixes domain knowledge with data-structure tradeoffs. A strong answer shoul"
+  },
+  {
+    "id": "design-market-data-feed-handler",
+    "route": "design/market-data-feed-handler",
+    "title": "Market Data Feed Handler Design",
+    "topic": "design",
+    "path": "content/design/market-data-feed-handler.md",
+    "excerpt": "A market data feed handler receives raw exchange traffic, validates and parses it, detects gaps, recovers missing data, normalizes messages, and publi"
+  },
+  {
+    "id": "design-monitoring-and-kill-switches",
+    "route": "design/monitoring-and-kill-switches",
+    "title": "Monitoring, Circuit Breakers, and Kill Switches",
+    "topic": "design",
+    "path": "content/design/monitoring-and-kill-switches.md",
+    "excerpt": "Low-latency systems need operational safety mechanisms that are fast, understandable, and hard to bypass accidentally. Monitoring tells you that the p"
+  },
+  {
+    "id": "design-order-management-system",
+    "route": "design/order-management-system",
+    "title": "Order Management System Design",
+    "topic": "design",
+    "path": "content/design/order-management-system.md",
+    "excerpt": "An order management system (OMS) sits between strategies and venues. It tracks the lifecycle of orders, applies or coordinates risk checks, routes to "
+  },
+  {
+    "id": "design-replay-and-simulation",
+    "route": "design/replay-and-simulation",
+    "title": "Replay and Simulation Platform Design",
+    "topic": "design",
+    "path": "content/design/replay-and-simulation.md",
+    "excerpt": "A replay and simulation platform lets engineers and quants run historical market data through strategies and infrastructure logic at original speed, s"
+  },
+  {
+    "id": "design-risk-checking-system",
+    "route": "design/risk-checking-system",
+    "title": "Pre-Trade Risk Checking System Design",
+    "topic": "design",
+    "path": "content/design/risk-checking-system.md",
+    "excerpt": "A pre-trade risk checking system sits on the critical path between strategy intent and exchange submission. The interview challenge is to design a sys"
+  },
+  {
+    "id": "design-senior-system-design",
+    "route": "design/senior-system-design",
+    "title": "Senior System Design Interview Approach",
+    "topic": "design",
+    "path": "content/design/senior-system-design.md",
+    "excerpt": "Senior system design interviews are not primarily tests of diagram drawing. They are tests of judgment under ambiguity. At high-frequency trading firm"
+  },
+  {
+    "id": "mock-interviews-full-loop-simulation",
+    "route": "mock-interviews/full-loop-simulation",
+    "title": "Full Loop Simulation (4 Hours)",
+    "topic": "mock-interviews",
+    "path": "content/mock-interviews/full-loop-simulation.md",
+    "excerpt": "| 00:00-00:30 | Interview 1 — Recruiter screen | Establish narrative, motivation, logistics fit |"
   },
   {
     "id": "mock-interview-guide",
@@ -70,5 +630,93 @@
     "topic": "mock-interviews",
     "path": "content/mock-interviews/guide.md",
     "excerpt": "Use timers and self-review to practice structured recall under pressure."
+  },
+  {
+    "id": "mock-interviews-optiver-behavioral-45min",
+    "route": "mock-interviews/optiver-behavioral-45min",
+    "title": "Optiver Behavioral Interview Simulation (45 Minutes)",
+    "topic": "mock-interviews",
+    "path": "content/mock-interviews/optiver-behavioral-45min.md",
+    "excerpt": "This interview is not a generic “tell me about yourself” round. It is designed to test whether you would operate well in an environment that is:"
+  },
+  {
+    "id": "mock-interviews-optiver-behavioral-60min",
+    "route": "mock-interviews/optiver-behavioral-60min",
+    "title": "Optiver Behavioral Interview Simulation (60 Minutes, Deeper Version)",
+    "topic": "mock-interviews",
+    "path": "content/mock-interviews/optiver-behavioral-60min.md",
+    "excerpt": "Even with only three years of experience, you can present as senior if you consistently demonstrate:"
+  },
+  {
+    "id": "mock-interviews-recruiter-screen-01",
+    "route": "mock-interviews/recruiter-screen-01",
+    "title": "Recruiter Screen Simulation 01 (30 Minutes)",
+    "topic": "mock-interviews",
+    "path": "content/mock-interviews/recruiter-screen-01.md",
+    "excerpt": "- 0:00-2:00 — Introductions and agenda"
+  },
+  {
+    "id": "mock-interviews-senior-cpp-60min",
+    "route": "mock-interviews/senior-cpp-60min",
+    "title": "Senior C++ Technical Interview Simulation (60 Minutes)",
+    "topic": "mock-interviews",
+    "path": "content/mock-interviews/senior-cpp-60min.md",
+    "excerpt": "- 0:00-5:00 — Intro and calibration"
+  },
+  {
+    "id": "mock-interviews-system-design-60min",
+    "route": "mock-interviews/system-design-60min",
+    "title": "System Design Interview Simulation (60 Minutes)",
+    "topic": "mock-interviews",
+    "path": "content/mock-interviews/system-design-60min.md",
+    "excerpt": "- 0:00-5:00 — Requirements clarification"
+  },
+  {
+    "id": "coding-algorithms",
+    "route": "coding/algorithms",
+    "title": "Algorithms for HFT Coding Interviews",
+    "topic": "coding",
+    "path": "content/coding/algorithms.md",
+    "excerpt": "Algorithm questions at HFT firms typically emphasize fast, clean reasoning rather than obscure tricks. The strongest candidates know the standard fami"
+  },
+  {
+    "id": "coding-code-review-exercises",
+    "route": "coding/code-review-exercises",
+    "title": "Code Review Exercises for HFT Interviews",
+    "topic": "coding",
+    "path": "content/coding/code-review-exercises.md",
+    "excerpt": "Some HFT interviews assess review skill rather than greenfield coding. The interviewer wants to know whether you can spot correctness, concurrency, me"
+  },
+  {
+    "id": "coding-coding-interview-strategy",
+    "route": "coding/coding-interview-strategy",
+    "title": "Coding Interview Strategy for HFT Roles",
+    "topic": "coding",
+    "path": "content/coding/coding-interview-strategy.md",
+    "excerpt": "Coding interviews at HFT firms test more than algorithm recall. They measure whether you can reason clearly under time pressure, write correct and per"
+  },
+  {
+    "id": "coding-data-structures",
+    "route": "coding/data-structures",
+    "title": "Data Structures for HFT Coding Interviews",
+    "topic": "coding",
+    "path": "content/coding/data-structures.md",
+    "excerpt": "Interviewers use data-structure questions to test whether you can map a problem to the right representation quickly. For HFT-oriented roles, the best "
+  },
+  {
+    "id": "coding-foundations",
+    "route": "coding",
+    "title": "Coding Interview Foundations",
+    "topic": "coding",
+    "path": "content/coding/foundations.md",
+    "excerpt": "Communicate invariants, edge cases, and data-structure choices clearly while coding."
+  },
+  {
+    "id": "coding-implementation-exercises",
+    "route": "coding/implementation-exercises",
+    "title": "Practical C++ Implementation Exercises",
+    "topic": "coding",
+    "path": "content/coding/implementation-exercises.md",
+    "excerpt": "These exercises are representative of the implementation-heavy questions that appear in HFT interviews. The goal is not always to finish every line of"
   }
 ]

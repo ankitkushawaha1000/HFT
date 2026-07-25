@@ -3,63 +3,17 @@ import { SearchController } from './search.js';
 import { ProgressController } from './progress.js';
 import { QuizController } from './quiz.js';
 
-const ROUTES = {
+// Static routes for panels that are not driven by content-index.json
+const STATIC_ROUTES = {
   home: { panel: 'home' },
-  'study-plans': {
-    panel: 'content',
-    title: 'Study Plans',
-    description: 'How to allocate time and sequence your preparation.',
-    path: 'content/study-plans/overview.md'
-  },
-  behavioral: {
-    panel: 'content',
-    title: 'Behavioral',
-    description: 'Senior-level behavioral framing and story construction.',
-    path: 'content/behavioral/foundations.md'
-  },
-  cpp: {
-    panel: 'content',
-    title: 'C++',
-    description: 'Modern C++ topics that matter in performance-sensitive systems.',
-    path: 'content/cpp/foundations.md'
-  },
-  systems: {
-    panel: 'content',
-    title: 'Systems',
-    description: 'Operating systems, memory hierarchy, and networking essentials.',
-    path: 'content/systems/foundations.md'
-  },
-  'low-latency': {
-    panel: 'content',
-    title: 'Low-Latency',
-    description: 'Latency budgeting, deterministic paths, and measurement discipline.',
-    path: 'content/low-latency/foundations.md'
-  },
-  design: {
-    panel: 'content',
-    title: 'Design',
-    description: 'HFT-oriented system design and tradeoff analysis.',
-    path: 'content/design/foundations.md'
-  },
-  trading: {
-    panel: 'content',
-    title: 'Trading',
-    description: 'Market structure and microstructure concepts for engineering interviews.',
-    path: 'content/trading/foundations.md'
-  },
-  coding: {
-    panel: 'content',
-    title: 'Coding',
-    description: 'Interview execution patterns for coding rounds.',
-    path: 'content/coding/foundations.md'
-  },
-  'mock-interviews': {
-    panel: 'mock-interviews'
-  },
-  'question-bank': {
-    panel: 'question-bank'
-  }
+  'mock-interviews': { panel: 'mock-interviews' },
+  'question-bank': { panel: 'question-bank' }
 };
+
+// Legacy section routes kept for backward compatibility (redirect to first sub-page)
+const LEGACY_SECTION_ROUTES = new Set([
+  'study-plans', 'behavioral', 'cpp', 'systems', 'low-latency', 'design', 'trading', 'coding'
+]);
 
 const escapeHtml = (value) => value
   .replaceAll('&', '&amp;')
@@ -192,6 +146,8 @@ class App {
     }));
 
     this.contentIndex = await contentIndexResponse.json();
+    // Build a fast lookup map: route → content entry
+    this.contentRouteMap = new Map(this.contentIndex.map((entry) => [entry.route, entry]));
   }
 
   async #loadContentDocuments() {
@@ -251,30 +207,110 @@ class App {
 
   #route() {
     const requested = window.location.hash.replace('#', '') || 'home';
-    this.currentRoute = ROUTES[requested] ? requested : 'home';
-    for (const link of this.elements.navLinks) {
-      link.classList.toggle('is-active', link.dataset.route === this.currentRoute);
-    }
-    for (const panel of this.elements.routePanels) {
-      panel.hidden = panel.dataset.panel !== ROUTES[this.currentRoute].panel;
-    }
-    this.#toggleSidebar(false);
 
-    if (ROUTES[this.currentRoute].panel === 'content') {
-      this.#renderContentRoute(this.currentRoute);
-    } else if (this.currentRoute === 'question-bank') {
-      this.#renderQuestionBank(this.latestQuestionResults.length ? this.latestQuestionResults : this.questions);
+    // 1. Static non-content panels (home, question-bank, mock-interviews)
+    if (STATIC_ROUTES[requested]) {
+      this.currentRoute = requested;
+      this.#showPanel(STATIC_ROUTES[requested].panel);
+      this.#updateNavActive(requested);
+      this.#toggleSidebar(false);
+      if (requested === 'question-bank') {
+        this.#renderQuestionBank(this.latestQuestionResults.length ? this.latestQuestionResults : this.questions);
+      }
+      return;
+    }
+
+    // 2. Dynamic content routes from content-index.json
+    const contentEntry = this.contentRouteMap?.get(requested);
+    if (contentEntry) {
+      this.currentRoute = requested;
+      this.#showPanel('content');
+      this.#updateNavActive(requested);
+      this.#toggleSidebar(false);
+      this.#renderContentEntry(contentEntry);
+      return;
+    }
+
+    // 3. Legacy section routes (e.g. #behavioral, #cpp) — find their canonical entry
+    if (LEGACY_SECTION_ROUTES.has(requested)) {
+      const fallback = this.contentRouteMap?.get(requested);
+      if (fallback) {
+        this.currentRoute = requested;
+        this.#showPanel('content');
+        this.#updateNavActive(requested);
+        this.#toggleSidebar(false);
+        this.#renderContentEntry(fallback);
+        return;
+      }
+    }
+
+    // 4. Fallback to home
+    this.currentRoute = 'home';
+    this.#showPanel('home');
+    this.#updateNavActive('home');
+    this.#toggleSidebar(false);
+  }
+
+  #showPanel(panelId) {
+    for (const panel of this.elements.routePanels) {
+      panel.hidden = panel.dataset.panel !== panelId;
     }
   }
 
-  async #renderContentRoute(routeKey) {
-    const route = ROUTES[routeKey];
-    this.elements.contentTitle.textContent = route.title;
-    this.elements.contentDescription.textContent = route.description;
+  #updateNavActive(route) {
+    for (const link of this.elements.navLinks) {
+      link.classList.toggle('is-active', link.dataset.route === route);
+    }
+
+    // Auto-open the parent <details> section for the active sub-page
+    for (const link of this.elements.navLinks) {
+      if (link.dataset.route === route) {
+        const details = link.closest('details.nav-section');
+        if (details) details.open = true;
+        break;
+      }
+    }
+  }
+
+  async #renderContentEntry(entry) {
+    const topicLabel = entry.topic.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    this.elements.contentTitle.textContent = entry.title;
+    this.elements.contentDescription.textContent = entry.excerpt ?? '';
     this.elements.contentArticle.innerHTML = '<p class="muted">Loading content…</p>';
+
+    // Build breadcrumb
+    const breadcrumbEl = document.getElementById('content-breadcrumb');
+    if (breadcrumbEl) {
+      const section = entry.route.split('/')[0];
+      const sectionEntry = this.contentRouteMap?.get(section);
+      breadcrumbEl.innerHTML = `
+        <a href="#home">Home</a>
+        <span aria-hidden="true">›</span>
+        ${sectionEntry
+          ? `<a href="#${sectionEntry.route}">${escapeHtml(topicLabel)}</a>`
+          : `<span>${escapeHtml(topicLabel)}</span>`}
+        ${entry.route.includes('/') ? `<span aria-hidden="true">›</span><span>${escapeHtml(entry.title)}</span>` : ''}
+      `;
+    }
+
+    // Build prev/next navigation
+    const pagesInSection = this.contentIndex.filter((e) => e.topic === entry.topic);
+    const idx = pagesInSection.findIndex((e) => e.route === entry.route);
+    const prevEntry = idx > 0 ? pagesInSection[idx - 1] : null;
+    const nextEntry = idx < pagesInSection.length - 1 ? pagesInSection[idx + 1] : null;
+    const prevNextEl = document.getElementById('content-prev-next');
+    if (prevNextEl) {
+      prevNextEl.innerHTML = `
+        ${prevEntry ? `<a class="button button--ghost" href="#${prevEntry.route}">← ${escapeHtml(prevEntry.title)}</a>` : '<span></span>'}
+        ${nextEntry ? `<a class="button button--ghost" href="#${nextEntry.route}">${escapeHtml(nextEntry.title)} →</a>` : ''}
+      `;
+    }
+
     try {
-      const markdown = await this.#fetchText(route.path);
+      const markdown = await this.#fetchText(entry.path);
       this.elements.contentArticle.innerHTML = this.renderMarkdown(markdown);
+      // Scroll to top of content
+      this.elements.contentArticle.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
       this.elements.contentArticle.innerHTML = `<div class="error-card">${escapeHtml(error.message)}</div>`;
     }
