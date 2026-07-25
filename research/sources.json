@@ -1,0 +1,272 @@
+[
+  {
+    "id": "src-001",
+    "title": "Optiver Careers",
+    "url": "https://optiver.com/careers",
+    "type": "official-career-page",
+    "company": "optiver",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official starting point for Optiver technology, trading, and internship roles."
+  },
+  {
+    "id": "src-002",
+    "title": "Jobs in Trading, Quant & Tech | Optiver",
+    "url": "https://optiver.com/working-at-optiver/career-opportunities/8220939002/",
+    "type": "job-description",
+    "company": "optiver",
+    "confidence": "medium",
+    "accessDate": "2026-07-24",
+    "notes": "Public Optiver role listing page used to infer current focus areas such as C++, Python, and quantitative engineering."
+  },
+  {
+    "id": "src-003",
+    "title": "Citadel Securities Careers",
+    "url": "https://www.citadelsecurities.com/careers/",
+    "type": "official-career-page",
+    "company": "citadel",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official careers page describing engineering, trading, research, and operations opportunities."
+  },
+  {
+    "id": "src-004",
+    "title": "Citadel Securities Open Opportunities",
+    "url": "https://www.citadelsecurities.com/careers/open-opportunities/",
+    "type": "job-description",
+    "company": "citadel",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Role portal used to infer language requirements, systems depth, and senior interview expectations."
+  },
+  {
+    "id": "src-005",
+    "title": "Jane Street Careers",
+    "url": "https://www.janestreet.com/careers/",
+    "type": "official-career-page",
+    "company": "jane-street",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official Jane Street careers overview for software engineering, trading, and research roles."
+  },
+  {
+    "id": "src-006",
+    "title": "Jane Street Open Roles",
+    "url": "https://www.janestreet.com/join-jane-street/open-roles/",
+    "type": "job-description",
+    "company": "jane-street",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Open role listings that help ground interview preparation topics in current hiring areas."
+  },
+  {
+    "id": "src-007",
+    "title": "Two Sigma Careers",
+    "url": "https://www.twosigma.com/careers/",
+    "type": "official-career-page",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official Two Sigma careers page describing technical and research-heavy teams."
+  },
+  {
+    "id": "src-008",
+    "title": "Two Sigma Careers Portal",
+    "url": "https://careers.twosigma.com/",
+    "type": "job-description",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Job portal used to infer tooling, distributed systems, and data-intensive role expectations."
+  },
+  {
+    "id": "src-009",
+    "title": "Hudson River Trading Careers",
+    "url": "https://www.hudsonrivertrading.com/careers/",
+    "type": "official-career-page",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official HRT careers page for engineering, research, and infrastructure roles."
+  },
+  {
+    "id": "src-010",
+    "title": "Jump Trading Careers",
+    "url": "https://www.jumptrading.com/careers",
+    "type": "official-career-page",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official Jump Trading careers page emphasizing infrastructure, low-latency engineering, and research."
+  },
+  {
+    "id": "src-011",
+    "title": "Virtu Financial Careers",
+    "url": "https://www.virtu.com/careers/",
+    "type": "official-career-page",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official Virtu Financial careers page highlighting low-latency and trading technology roles."
+  },
+  {
+    "id": "src-012",
+    "title": "Jane Street Culture Overview",
+    "url": "https://www.janestreet.com/culture/overview/",
+    "type": "blog-post",
+    "company": "jane-street",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Official culture page used for collaboration and interview style notes."
+  },
+  {
+    "id": "src-013",
+    "title": "Two Sigma Engineering Blog",
+    "url": "https://engineering.twosigma.com/",
+    "type": "blog-post",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Public engineering articles on data systems, distributed systems, and production engineering."
+  },
+  {
+    "id": "src-014",
+    "title": "When Nanoseconds Matter: Ultrafast Trading Systems in C++",
+    "url": "https://cppcon.org/2024-keynote-david-gross/",
+    "type": "conference-talk",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "CppCon keynote directly focused on ultrafast trading systems, latency budgets, and C++ design choices."
+  },
+  {
+    "id": "src-015",
+    "title": "Network Design Considerations for Trading Systems",
+    "url": "https://conferences.sigcomm.org/hotnets/2024/papers/hotnets24-262.pdf",
+    "type": "research-paper",
+    "company": "jane-street",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Public paper on trading network design tradeoffs and infrastructure considerations."
+  },
+  {
+    "id": "src-016",
+    "title": "Low-Latency Architecture: Lessons From Trading Systems",
+    "url": "https://www.pragmaticcoders.com/blog/low-latency-architecture-lessons-from-trading-systems",
+    "type": "blog-post",
+    "company": "general",
+    "confidence": "medium",
+    "accessDate": "2026-07-24",
+    "notes": "Accessible system-design summary of latency, determinism, and observability tradeoffs."
+  },
+  {
+    "id": "src-017",
+    "title": "Systems Performance, 2nd Edition",
+    "url": "https://www.oreilly.com/library/view/systems-performance-2nd/9780136821694/",
+    "type": "book",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Authoritative Linux performance reference for CPU, memory, networking, and tracing."
+  },
+  {
+    "id": "src-018",
+    "title": "Agner Fog Optimization Manuals",
+    "url": "https://www.agner.org/optimize/",
+    "type": "book",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Canonical low-level CPU, cache, and instruction optimization reference."
+  },
+  {
+    "id": "src-019",
+    "title": "Performance Analysis and Tuning on Modern CPU",
+    "url": "https://book.easyperf.net/perf_book",
+    "type": "book",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Practical guide to benchmarking, counters, and optimization on modern CPUs."
+  },
+  {
+    "id": "src-020",
+    "title": "Building Low Latency Applications with C++",
+    "url": "https://www.packtpub.com/en-us/product/building-low-latency-applications-with-c-9781837639359/",
+    "type": "book",
+    "company": "general",
+    "confidence": "medium",
+    "accessDate": "2026-07-24",
+    "notes": "Book focused on allocator, concurrency, and architecture choices for latency-sensitive C++ systems."
+  },
+  {
+    "id": "src-021",
+    "title": "Beej's Guide to Network Programming",
+    "url": "https://beej.us/guide/bgnet/",
+    "type": "book",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Widely used practical sockets reference for TCP, UDP, select/poll, and network basics."
+  },
+  {
+    "id": "src-022",
+    "title": "Mechanical Sympathy Blog",
+    "url": "https://mechanical-sympathy.blogspot.com/",
+    "type": "blog-post",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Classic posts on queues, memory ordering, false sharing, and low-latency design."
+  },
+  {
+    "id": "src-023",
+    "title": "The Tail at Scale",
+    "url": "https://research.google/pubs/the-tail-at-scale/",
+    "type": "research-paper",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Foundational paper for understanding latency distributions and operational tail risk."
+  },
+  {
+    "id": "src-024",
+    "title": "What Every Programmer Should Know About Memory",
+    "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+    "type": "research-paper",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Deep reference on caches, NUMA, virtual memory, and memory hierarchy effects."
+  },
+  {
+    "id": "src-025",
+    "title": "Designing Data-Intensive Applications",
+    "url": "https://dataintensive.net/",
+    "type": "book",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Useful design reference for correctness, durability, recovery, and dataflow tradeoffs."
+  },
+  {
+    "id": "src-026",
+    "title": "The Manager's Path",
+    "url": "https://www.oreilly.com/library/view/the-managers-path/9781491973882/",
+    "type": "book",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Leadership and mentoring reference used to ground behavioral answers for senior engineers."
+  },
+  {
+    "id": "src-027",
+    "title": "BPF Performance Tools",
+    "url": "https://www.brendangregg.com/bpf-performance-tools-book.html",
+    "type": "book",
+    "company": "general",
+    "confidence": "high",
+    "accessDate": "2026-07-24",
+    "notes": "Reference for tracing scheduler, syscall, network, and memory behavior in Linux production systems."
+  }
+]
